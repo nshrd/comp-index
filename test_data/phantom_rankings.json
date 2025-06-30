@@ -1,0 +1,548 @@
+[
+  {
+    "date": "2025-04-01",
+    "rank": 294.0,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-04-02",
+    "rank": 323.3,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-04-03",
+    "rank": 340.8,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-04-04",
+    "rank": 326.7,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-04-05",
+    "rank": 322.6,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-04-06",
+    "rank": 305.9,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-04-07",
+    "rank": 312.6,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-04-08",
+    "rank": 329.5,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-04-09",
+    "rank": 353.9,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-04-10",
+    "rank": 352.4,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-04-11",
+    "rank": 324.3,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-04-12",
+    "rank": 313.8,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-04-13",
+    "rank": 309.4,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-04-14",
+    "rank": 293.7,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-04-15",
+    "rank": 306.2,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-04-16",
+    "rank": 313.1,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-04-17",
+    "rank": 321.5,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-04-18",
+    "rank": 289.5,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-04-19",
+    "rank": 278.8,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-04-20",
+    "rank": 270.6,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-04-21",
+    "rank": 247.9,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-04-22",
+    "rank": 269.8,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-04-23",
+    "rank": 279.1,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-04-24",
+    "rank": 288.3,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-04-25",
+    "rank": 273.4,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-04-26",
+    "rank": 253.8,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-04-27",
+    "rank": 264.5,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-04-28",
+    "rank": 263.8,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-04-29",
+    "rank": 291.8,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-04-30",
+    "rank": 316.7,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-05-01",
+    "rank": 314.8,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-05-02",
+    "rank": 313.2,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-05-03",
+    "rank": 304.9,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-05-04",
+    "rank": 297.0,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-05-05",
+    "rank": 312.0,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-05-06",
+    "rank": 334.0,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-05-07",
+    "rank": 343.6,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-05-08",
+    "rank": 356.6,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-05-09",
+    "rank": 343.8,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-05-10",
+    "rank": 330.9,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-05-11",
+    "rank": 308.7,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-05-12",
+    "rank": 307.9,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-05-13",
+    "rank": 310.4,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-05-14",
+    "rank": 338.4,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-05-15",
+    "rank": 319.6,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-05-16",
+    "rank": 309.2,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-05-17",
+    "rank": 284.7,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-05-18",
+    "rank": 263.9,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-05-19",
+    "rank": 262.0,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-05-20",
+    "rank": 279.0,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-05-21",
+    "rank": 278.6,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-05-22",
+    "rank": 304.2,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-05-23",
+    "rank": 275.9,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-05-24",
+    "rank": 264.2,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-05-25",
+    "rank": 252.8,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-05-26",
+    "rank": 261.2,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-05-27",
+    "rank": 284.1,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-05-28",
+    "rank": 295.3,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-05-29",
+    "rank": 300.7,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-05-30",
+    "rank": 298.5,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-05-31",
+    "rank": 291.4,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-06-01",
+    "rank": 285.9,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-06-02",
+    "rank": 303.9,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-06-03",
+    "rank": 327.5,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-06-04",
+    "rank": 343.3,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-06-05",
+    "rank": 343.6,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-06-06",
+    "rank": 351.3,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-06-07",
+    "rank": 317.6,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-06-08",
+    "rank": 319.2,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-06-09",
+    "rank": 313.4,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-06-10",
+    "rank": 317.1,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-06-11",
+    "rank": 331.7,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-06-12",
+    "rank": 338.5,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-06-13",
+    "rank": 318.6,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-06-14",
+    "rank": 304.3,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-06-15",
+    "rank": 274.5,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-06-16",
+    "rank": 279.6,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-06-17",
+    "rank": 300.4,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-06-18",
+    "rank": 299.0,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-06-19",
+    "rank": 293.1,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-06-20",
+    "rank": 282.1,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-06-21",
+    "rank": 257.4,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-06-22",
+    "rank": 254.4,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-06-23",
+    "rank": 258.2,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-06-24",
+    "rank": 259.1,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-06-25",
+    "rank": 284.6,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-06-26",
+    "rank": 303.4,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-06-27",
+    "rank": 285.0,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-06-28",
+    "rank": 287.2,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-06-29",
+    "rank": 284.4,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  },
+  {
+    "date": "2025-06-30",
+    "rank": 274.6,
+    "app_name": "Test App Phantom",
+    "category": "phantom"
+  }
+]

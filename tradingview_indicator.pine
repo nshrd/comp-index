@@ -1,0 +1,158 @@
+//@version=6
+indicator("Композитный Индекс Рейтингов vs BTC", shorttitle="App-Rank vs BTC", overlay=false)
+
+// ═══════════════════════════════════════════════════════════════════════
+// ПАРАМЕТРЫ ИНДИКАТОРА
+// ═══════════════════════════════════════════════════════════════════════
+
+// Основные настройки
+maLen = input.int(30, title="Длина MA", minval=1, maxval=200, tooltip="Период скользящего среднего для композитного ранга")
+showRaw = input.bool(false, title="Показать сырой ранг?", tooltip="Отображать ли сырые данные композитного ранга")
+showBTC = input.bool(true, title="Показать цену BTC?", tooltip="Отображать ли цену Bitcoin на правой оси")
+
+// Настройки Seeds репозитория (замените на ваши)
+seedsRepo = input.string("app_ranks_seed", title="Pine Seeds Репозиторий", tooltip="Название вашего Pine Seeds репозитория")
+
+// Визуальные настройки
+compColor = input.color(color.red, title="Цвет MA композита", group="Цвета")
+rawColor = input.color(color.orange, title="Цвет сырого ранга", group="Цвета") 
+btcColor = input.color(color.blue, title="Цвет BTC", group="Цвета")
+
+compLineWidth = input.int(2, title="Толщина линии MA", minval=1, maxval=5, group="Стили")
+rawLineWidth = input.int(1, title="Толщина сырой линии", minval=1, maxval=5, group="Стили")
+btcLineWidth = input.int(2, title="Толщина линии BTC", minval=1, maxval=5, group="Стили")
+
+// ═══════════════════════════════════════════════════════════════════════
+// ЗАГРУЗКА ДАННЫХ
+// ═══════════════════════════════════════════════════════════════════════
+
+// Загружаем композитный MA из Seeds репозитория
+// Формат: request.seed(repo_name, symbol_name, field)
+var float compMA = na
+var float compRaw = na
+
+// Пробуем загрузить данные MA композита
+try
+    compMA := request.seed(seedsRepo, "COMP_MA", close)
+catch
+    runtime.error("Ошибка загрузки COMP_MA из Seeds репозитория: " + seedsRepo)
+
+// Загружаем сырые данные композита (если нужно)
+if showRaw
+    try
+        compRaw := request.seed(seedsRepo, "COMP_RAW", close)
+    catch
+        runtime.error("Ошибка загрузки COMP_RAW из Seeds репозитория: " + seedsRepo)
+
+// Загружаем цену BTC (если нужно)
+var float btcPrice = na
+if showBTC
+    btcPrice := request.security("BINANCE:BTCUSDT", timeframe.period, close)
+
+// ═══════════════════════════════════════════════════════════════════════
+// ОБРАБОТКА ДАННЫХ
+// ═══════════════════════════════════════════════════════════════════════
+
+// Дополнительное сглаживание MA (опционально)
+compMASmoothed = ta.sma(compMA, math.max(1, math.round(maLen/5)))
+
+// Нормализация для лучшего отображения (инвертируем ранги)
+// Чем меньше ранг, тем выше должна быть линия на графике
+maxRank = 600.0  // Примерное максимальное значение ранга
+compMANormalized = maxRank - compMASmoothed
+compRawNormalized = showRaw ? maxRank - compRaw : na
+
+// ═══════════════════════════════════════════════════════════════════════
+// ОТРИСОВКА ГРАФИКОВ
+// ═══════════════════════════════════════════════════════════════════════
+
+// Основная линия композитного MA
+plot(compMANormalized, 
+     title="Композитный MA", 
+     color=compColor, 
+     linewidth=compLineWidth, 
+     display=display.all)
+
+// Сырые данные композита (если включено)
+plot(showRaw ? compRawNormalized : na, 
+     title="Сырой композитный ранг", 
+     color=rawColor, 
+     linewidth=rawLineWidth, 
+     display=display.all)
+
+// Цена Bitcoin на правой оси (если включено)
+plot(showBTC ? btcPrice : na, 
+     title="BTC Price", 
+     color=btcColor, 
+     linewidth=btcLineWidth, 
+     display=display.all,
+     precision=0)
+
+// ═══════════════════════════════════════════════════════════════════════
+// ДОПОЛНИТЕЛЬНЫЕ ИНДИКАТОРЫ
+// ═══════════════════════════════════════════════════════════════════════
+
+// Зоны экстремальных значений
+topZone = input.float(500.0, title="Верхняя зона", tooltip="Значение для отметки верхней зоны")
+bottomZone = input.float(100.0, title="Нижняя зона", tooltip="Значение для отметки нижней зоны")
+
+// Горизонтальные линии зон
+hline(topZone, title="Верхняя зона", color=color.gray, linestyle=hline.style_dashed, linewidth=1)
+hline(bottomZone, title="Нижняя зона", color=color.gray, linestyle=hline.style_dashed, linewidth=1)
+
+// Заливка между зонами
+fill(hline(topZone), hline(bottomZone), color=color.new(color.gray, 95), title="Нормальная зона")
+
+// ═══════════════════════════════════════════════════════════════════════
+// АЛЕРТЫ И УСЛОВИЯ
+// ═══════════════════════════════════════════════════════════════════════
+
+// Условия для алертов
+crossAbove = ta.crossover(compMANormalized, topZone)
+crossBelow = ta.crossunder(compMANormalized, bottomZone)
+btcCross = showBTC and ta.cross(compMANormalized, btcPrice / 100)  // Масштабирование для сравнения
+
+// Настройка алертов
+alertcondition(crossAbove, 
+              title="Ранг выше верхней зоны", 
+              message="Композитный ранг пересек верхнюю зону: {{close}}")
+
+alertcondition(crossBelow, 
+              title="Ранг ниже нижней зоны", 
+              message="Композитный ранг пересек нижнюю зону: {{close}}")
+
+if showBTC
+    alertcondition(btcCross, 
+                  title="Пересечение с BTC", 
+                  message="Композитный ранг пересекся с нормализованной ценой BTC")
+
+// ═══════════════════════════════════════════════════════════════════════
+// ТАБЛИЦА СТАТИСТИКИ (ОПЦИОНАЛЬНО)
+// ═══════════════════════════════════════════════════════════════════════
+
+showStats = input.bool(false, title="Показать статистику?", group="Дополнительно")
+
+if showStats and barstate.islast
+    var table statsTable = table.new(position.top_right, 2, 6, bgcolor=color.white, border_width=1)
+    
+    if not na(compMANormalized)
+        table.cell(statsTable, 0, 0, "Метрика", text_color=color.black, text_size=size.small)
+        table.cell(statsTable, 1, 0, "Значение", text_color=color.black, text_size=size.small)
+        
+        table.cell(statsTable, 0, 1, "Текущий MA", text_color=color.black, text_size=size.small)
+        table.cell(statsTable, 1, 1, str.tostring(compMANormalized, "#.##"), text_color=color.black, text_size=size.small)
+        
+        table.cell(statsTable, 0, 2, "MA Период", text_color=color.black, text_size=size.small)
+        table.cell(statsTable, 1, 2, str.tostring(maLen), text_color=color.black, text_size=size.small)
+        
+        if showBTC and not na(btcPrice)
+            table.cell(statsTable, 0, 3, "BTC Price", text_color=color.black, text_size=size.small)
+            table.cell(statsTable, 1, 3, "$" + str.tostring(btcPrice, "#,###"), text_color=color.black, text_size=size.small)
+        
+        // Добавляем информацию о Seeds репозитории
+        table.cell(statsTable, 0, 4, "Seeds Repo", text_color=color.black, text_size=size.small)
+        table.cell(statsTable, 1, 4, seedsRepo, text_color=color.black, text_size=size.small)
+        
+        // Время последнего обновления
+        table.cell(statsTable, 0, 5, "Время", text_color=color.black, text_size=size.small)
+        table.cell(statsTable, 1, 5, str.tostring(time, "yyyy-MM-dd HH:mm"), text_color=color.black, text_size=size.small) 
