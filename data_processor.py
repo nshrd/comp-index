@@ -205,6 +205,22 @@ class AppRankProcessor:
         # 4. Создаем CSV файлы для Pine Seeds
         self.create_pine_seeds_csv(composite_df)
         
+        # 5. Генерируем Pine Script с встроенными данными
+        try:
+            import subprocess
+            print("\n🔧 Генерация Pine Script с встроенными данными...")
+            result = subprocess.run([
+                'python3', 
+                os.path.join(os.path.dirname(__file__), 'generate_pine_with_data.py')
+            ], capture_output=True, text=True)
+            
+            if result.returncode == 0:
+                print("✅ Pine Script с данными успешно сгенерирован")
+            else:
+                print(f"⚠️  Ошибка генерации Pine Script: {result.stderr}")
+        except Exception as e:
+            print(f"⚠️  Не удалось сгенерировать Pine Script: {e}")
+        
         print(f"✅ Обработка завершена ({datetime.now()})")
         
         # Выводим краткую статистику
