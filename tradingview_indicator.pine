@@ -1,5 +1,5 @@
 //@version=6
-indicator("Композитный Индекс Рейтингов vs BTC", shorttitle="App-Rank vs BTC", overlay=false)
+indicator("Композитный Индекс Рейтингов vs BTC", shorttitle="App-Rank vs BTC", overlay=true, scale=scale.right)
 
 // ═══════════════════════════════════════════════════════════════════════
 // ПАРАМЕТРЫ ИНДИКАТОРА
@@ -7,6 +7,8 @@ indicator("Композитный Индекс Рейтингов vs BTC", short
 
 // Основные настройки
 maLen = input.int(30, title="Длина MA", minval=1, maxval=200, tooltip="Период скользящего среднего для композитного ранга")
+scaleFactor = input.float(100., title="Scale factor", tooltip="Масштаб композита, чтобы сопоставить с ценой", minval=0.1)
+offset      = input.float(0.,   title="Vertical shift", tooltip="Вертикальный сдвиг композита")
 showRaw = input.bool(false, title="Показать сырой ранг?", tooltip="Отображать ли сырые данные композитного ранга")
 showBTC = input.bool(true, title="Показать цену BTC?", tooltip="Отображать ли цену Bitcoin на правой оси")
 
@@ -26,23 +28,9 @@ btcLineWidth = input.int(2, title="Толщина линии BTC", minval=1, max
 // ЗАГРУЗКА ДАННЫХ
 // ═══════════════════════════════════════════════════════════════════════
 
-// Загружаем композитный MA из Seeds репозитория
-// Формат: request.seed(repo_name, symbol_name, field)
-var float compMA = na
-var float compRaw = na
-
-// Пробуем загрузить данные MA композита
-try
-    compMA := request.seed(seedsRepo, "COMP_MA", close)
-catch
-    runtime.error("Ошибка загрузки COMP_MA из Seeds репозитория: " + seedsRepo)
-
-// Загружаем сырые данные композита (если нужно)
-if showRaw
-    try
-        compRaw := request.seed(seedsRepo, "COMP_RAW", close)
-    catch
-        runtime.error("Ошибка загрузки COMP_RAW из Seeds репозитория: " + seedsRepo)
+// Загружаем композитный MA и RAW из Seeds репозитория
+float compMA   = request.seed(seedsRepo, "COMP_MA", close)
+float compRaw  = showRaw ? request.seed(seedsRepo, "COMP_RAW", close) : na
 
 // Загружаем цену BTC (если нужно)
 var float btcPrice = na
@@ -56,25 +44,23 @@ if showBTC
 // Дополнительное сглаживание MA (опционально)
 compMASmoothed = ta.sma(compMA, math.max(1, math.round(maLen/5)))
 
-// Нормализация для лучшего отображения (инвертируем ранги)
-// Чем меньше ранг, тем выше должна быть линия на графике
-maxRank = 600.0  // Примерное максимальное значение ранга
-compMANormalized = maxRank - compMASmoothed
-compRawNormalized = showRaw ? maxRank - compRaw : na
+// Масштабируем к цене BTC (или к любому диапазону)
+compMA_scaled  = compMASmoothed * scaleFactor + offset
+compRaw_scaled = showRaw ? compRaw * scaleFactor + offset : na
 
 // ═══════════════════════════════════════════════════════════════════════
 // ОТРИСОВКА ГРАФИКОВ
 // ═══════════════════════════════════════════════════════════════════════
 
 // Основная линия композитного MA
-plot(compMANormalized, 
+plot(compMA_scaled, 
      title="Композитный MA", 
      color=compColor, 
      linewidth=compLineWidth, 
      display=display.all)
 
 // Сырые данные композита (если включено)
-plot(showRaw ? compRawNormalized : na, 
+plot(showRaw ? compRaw_scaled : na, 
      title="Сырой композитный ранг", 
      color=rawColor, 
      linewidth=rawLineWidth, 
@@ -108,23 +94,17 @@ fill(hline(topZone), hline(bottomZone), color=color.new(color.gray, 95), title="
 // ═══════════════════════════════════════════════════════════════════════
 
 // Условия для алертов
-crossAbove = ta.crossover(compMANormalized, topZone)
-crossBelow = ta.crossunder(compMANormalized, bottomZone)
-btcCross = showBTC and ta.cross(compMANormalized, btcPrice / 100)  // Масштабирование для сравнения
+crossAbove = ta.crossover(compMA_scaled, topZone * scaleFactor + offset)
+crossBelow = ta.crossunder(compMA_scaled, bottomZone * scaleFactor + offset)
+
+// Выносим ta.cross в отдельную переменную, чтобы он вычислялся на каждом баре
+btcCrossRaw = ta.cross(compMA_scaled, btcPrice)
+btcCross    = showBTC and btcCrossRaw
 
 // Настройка алертов
-alertcondition(crossAbove, 
-              title="Ранг выше верхней зоны", 
-              message="Композитный ранг пересек верхнюю зону: {{close}}")
-
-alertcondition(crossBelow, 
-              title="Ранг ниже нижней зоны", 
-              message="Композитный ранг пересек нижнюю зону: {{close}}")
-
-if showBTC
-    alertcondition(btcCross, 
-                  title="Пересечение с BTC", 
-                  message="Композитный ранг пересекся с нормализованной ценой BTC")
+alertcondition(crossAbove,  title="Ранг выше верхней зоны", message="Composite rank > upper zone")
+alertcondition(crossBelow,  title="Ранг ниже нижней зоны",  message="Composite rank < lower zone")
+alertcondition(btcCross,    title="Пересечение с BTC",      message="Composite rank crossed BTC (norm)")
 
 // ═══════════════════════════════════════════════════════════════════════
 // ТАБЛИЦА СТАТИСТИКИ (ОПЦИОНАЛЬНО)
@@ -135,12 +115,12 @@ showStats = input.bool(false, title="Показать статистику?", gr
 if showStats and barstate.islast
     var table statsTable = table.new(position.top_right, 2, 6, bgcolor=color.white, border_width=1)
     
-    if not na(compMANormalized)
+    if not na(compMA_scaled)
         table.cell(statsTable, 0, 0, "Метрика", text_color=color.black, text_size=size.small)
         table.cell(statsTable, 1, 0, "Значение", text_color=color.black, text_size=size.small)
         
         table.cell(statsTable, 0, 1, "Текущий MA", text_color=color.black, text_size=size.small)
-        table.cell(statsTable, 1, 1, str.tostring(compMANormalized, "#.##"), text_color=color.black, text_size=size.small)
+        table.cell(statsTable, 1, 1, str.tostring(compMA_scaled, "#.##"), text_color=color.black, text_size=size.small)
         
         table.cell(statsTable, 0, 2, "MA Период", text_color=color.black, text_size=size.small)
         table.cell(statsTable, 1, 2, str.tostring(maLen), text_color=color.black, text_size=size.small)
@@ -155,4 +135,28 @@ if showStats and barstate.islast
         
         // Время последнего обновления
         table.cell(statsTable, 0, 5, "Время", text_color=color.black, text_size=size.small)
-        table.cell(statsTable, 1, 5, str.tostring(time, "yyyy-MM-dd HH:mm"), text_color=color.black, text_size=size.small) 
+        table.cell(statsTable, 1, 5, str.tostring(time, "yyyy-MM-dd HH:mm"), text_color=color.black, text_size=size.small)
+
+// ═══════════════════════════════════════════════════════════════════════
+// ЛОГИРОВАНИЕ (реальное время)
+// ═══════════════════════════════════════════════════════════════════════
+
+enableLogs = input.bool(false, title="Enable logs?", group="Debug")
+
+if enableLogs and barstate.islast
+    // Последние значения для контроля
+    log.info("CompMA (last) = " + str.tostring(compMA, "#.##"))
+    if showRaw
+        log.info("CompRaw (last) = " + str.tostring(compRaw, "#.##"))
+    if showBTC
+        log.info("BTC Close (last) = " + str.tostring(btcPrice, "#,###"))
+
+    // Проверим, есть ли NaN
+    if na(compMA)
+        log.warning("CompMA NaN: возможно, данные ещё не проиндексированы Seeds")
+    if showRaw and na(compRaw)
+        log.warning("CompRaw NaN: проверьте файл COMP_RAW.csv")
+
+    // Тестовая ошибка (пример)
+    // if compMA < 0
+    //     log.error("CompMA отрицательный — проверьте CSV") 
