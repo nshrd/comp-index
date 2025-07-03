@@ -249,12 +249,12 @@
         });
 
         function initializeDates() {
-            // Устанавливаем даты по умолчанию: последний год
+            // Устанавливаем даты по умолчанию: с 9 марта 2022 года до сегодня
             const today = new Date();
-            const oneYearAgo = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate());
+            const startDate = new Date('2022-03-09'); // 9 марта 2022 года
             
             toDate = today.toISOString().split('T')[0];
-            fromDate = oneYearAgo.toISOString().split('T')[0];
+            fromDate = startDate.toISOString().split('T')[0];
             
             document.getElementById('fromDate').value = fromDate;
             document.getElementById('toDate').value = toDate;
