@@ -35,7 +35,7 @@ ENV/
 docker-compose.override.yml
 
 # Data files
-data/
+/data/
 btc_data.json
 *.log
 
