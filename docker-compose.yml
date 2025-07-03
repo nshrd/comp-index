@@ -18,7 +18,18 @@ services:
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
     env_file:
       - .env
-    command: ["python", "builder/build_index.py"]
+    command: >
+      bash -c "
+        echo 'Starting CBMA14 Builder...'
+        python builder/build_index.py
+        echo 'Initial build complete. Starting scheduler...'
+        while true; do
+          sleep 3600
+          echo 'Updating index at '$(date)'...'
+          python builder/build_index.py
+          echo 'Index update complete.'
+        done
+      "
     restart: ${DOCKER_RESTART_POLICY:-unless-stopped}
     networks:
       - cbma14_network
@@ -53,7 +64,7 @@ services:
     command: >
       bash -c "
         echo 'Starting UDF Server...'
-        gunicorn --bind 0.0.0.0:\$${UDF_PORT:-8000} --workers 2 --timeout 60 --access-logfile - --error-logfile - src.udf.server:app
+        gunicorn --bind 0.0.0.0:8000 --workers 2 --timeout 60 --access-logfile - --error-logfile - src.udf.server:app
       "
     restart: ${DOCKER_RESTART_POLICY:-unless-stopped}
     depends_on:
@@ -83,9 +94,6 @@ services:
       - UDF_HOST=udf
       - UDF_PORT=${UDF_PORT:-8000}
     restart: ${DOCKER_RESTART_POLICY:-unless-stopped}
-    depends_on:
-      udf:
-        condition: service_healthy
     networks:
       - cbma14_network
     healthcheck:
