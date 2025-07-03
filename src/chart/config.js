@@ -22,7 +22,7 @@ function getApiConfig() {
     
     // VPS развертывание
     if (hostname.match(/^\d+\.\d+\.\d+\.\d+$/)) {
-        const baseUrl = `${protocol}//${hostname}:8000`;
+        const baseUrl = `${protocol}//${hostname}`;
         return {
             UDF_BASE_URL: baseUrl,
             API_BASE_URL: `${baseUrl}/api`,
