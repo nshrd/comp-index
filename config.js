@@ -35,8 +35,19 @@ function getApiConfig() {
     // GitHub Pages или другие хостинги
     if (hostname.includes('github.io') || hostname.includes('github.com')) {
         return {
-            UDF_BASE_URL: 'https://64.226.108.150', // VPS без порта для HTTPS
-            API_BASE_URL: 'https://64.226.108.150/api',
+            UDF_BASE_URL: 'https://charts.expert', // Используем наш домен с SSL
+            API_BASE_URL: 'https://charts.expert/api',
+            UDF_ENDPOINT: '/api',
+            IS_DEVELOPMENT: false,
+            CORS_ENABLED: true
+        };
+    }
+    
+    // Основной домен charts.expert
+    if (hostname.includes('charts.expert')) {
+        return {
+            UDF_BASE_URL: `${protocol}//${hostname}`,
+            API_BASE_URL: `${protocol}//${hostname}/api`,
             UDF_ENDPOINT: '/api',
             IS_DEVELOPMENT: false,
             CORS_ENABLED: true
