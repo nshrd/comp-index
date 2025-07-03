@@ -13,6 +13,12 @@ BLUE='\033[0;34m'
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
+# Массивы для отслеживания проблем
+ERRORS=()
+WARNINGS=()
+SUCCESSES=()
+TOTAL_CHECKS=0
+
 # Функции для цветного вывода
 print_header() {
     echo -e "${BLUE}================================${NC}"
@@ -22,14 +28,20 @@ print_header() {
 
 print_status() {
     echo -e "${GREEN}[✓]${NC} $1"
+    SUCCESSES+=("$1")
+    ((TOTAL_CHECKS++))
 }
 
 print_warning() {
     echo -e "${YELLOW}[!]${NC} $1"
+    WARNINGS+=("$1")
+    ((TOTAL_CHECKS++))
 }
 
 print_error() {
     echo -e "${RED}[✗]${NC} $1"
+    ERRORS+=("$1")
+    ((TOTAL_CHECKS++))
 }
 
 print_info() {
@@ -277,43 +289,164 @@ check_nginx_config() {
     fi
 }
 
+# Подведение итогов диагностики
+show_summary() {
+    print_header "ИТОГОВЫЙ ОТЧЕТ"
+    
+    # Статистика
+    local error_count=${#ERRORS[@]}
+    local warning_count=${#WARNINGS[@]}
+    local success_count=${#SUCCESSES[@]}
+    
+    echo -e "${CYAN}Общая статистика:${NC}"
+    echo "  Всего проверок: $TOTAL_CHECKS"
+    echo -e "  ${GREEN}✓ Успешно: $success_count${NC}"
+    echo -e "  ${YELLOW}! Предупреждения: $warning_count${NC}"
+    echo -e "  ${RED}✗ Ошибки: $error_count${NC}"
+    echo ""
+    
+    # Статус системы
+    if [ $error_count -eq 0 ] && [ $warning_count -eq 0 ]; then
+        echo -e "${GREEN}🎉 СИСТЕМА РАБОТАЕТ ОТЛИЧНО!${NC}"
+        echo "Все проверки прошли успешно. CBMA14 Index готов к работе."
+    elif [ $error_count -eq 0 ] && [ $warning_count -gt 0 ]; then
+        echo -e "${YELLOW}⚠️  СИСТЕМА РАБОТАЕТ С ПРЕДУПРЕЖДЕНИЯМИ${NC}"
+        echo "Основная функциональность работает, но есть рекомендации для улучшения."
+    elif [ $error_count -gt 0 ]; then
+        echo -e "${RED}🚨 ОБНАРУЖЕНЫ КРИТИЧЕСКИЕ ПРОБЛЕМЫ!${NC}"
+        echo "Система может работать некорректно. Требуется вмешательство."
+    fi
+    
+    echo ""
+    
+    # Детальный список ошибок
+    if [ $error_count -gt 0 ]; then
+        echo -e "${RED}🔴 КРИТИЧЕСКИЕ ОШИБКИ:${NC}"
+        for i in "${!ERRORS[@]}"; do
+            echo -e "  $((i+1)). ${RED}${ERRORS[i]}${NC}"
+        done
+        echo ""
+    fi
+    
+    # Детальный список предупреждений
+    if [ $warning_count -gt 0 ]; then
+        echo -e "${YELLOW}🟡 ПРЕДУПРЕЖДЕНИЯ:${NC}"
+        for i in "${!WARNINGS[@]}"; do
+            echo -e "  $((i+1)). ${YELLOW}${WARNINGS[i]}${NC}"
+        done
+        echo ""
+    fi
+    
+    # Приоритетные действия
+    if [ $error_count -gt 0 ] || [ $warning_count -gt 0 ]; then
+        echo -e "${BLUE}🔧 ПРИОРИТЕТНЫЕ ДЕЙСТВИЯ:${NC}"
+        
+        # Анализ типов ошибок и специфичные рекомендации
+        local port_issues=false
+        local docker_issues=false
+        local ssl_issues=false
+        local api_issues=false
+        
+        for error in "${ERRORS[@]}"; do
+            if [[ "$error" == *"порт"* ]] || [[ "$error" == *"недоступен"* ]]; then
+                port_issues=true
+            fi
+            if [[ "$error" == *"контейнер"* ]] || [[ "$error" == *"Docker"* ]]; then
+                docker_issues=true
+            fi
+            if [[ "$error" == *"SSL"* ]] || [[ "$error" == *"сертификат"* ]]; then
+                ssl_issues=true
+            fi
+            if [[ "$error" == *"API"* ]] || [[ "$error" == *"UDF"* ]]; then
+                api_issues=true
+            fi
+        done
+        
+        local priority=1
+        
+        if [ "$docker_issues" = true ]; then
+            echo "  $priority. Перезапустить Docker контейнеры:"
+            echo "     docker compose down && docker compose up -d --build"
+            ((priority++))
+        fi
+        
+        if [ "$port_issues" = true ]; then
+            echo "  $priority. Проверить firewall и порты:"
+            echo "     ufw allow 80/tcp && ufw allow 443/tcp"
+            echo "     netstat -tlnp | grep -E ':80|:443'"
+            ((priority++))
+        fi
+        
+        if [ "$ssl_issues" = true ]; then
+            echo "  $priority. Проверить SSL сертификаты:"
+            echo "     ls -la /etc/ssl/certs/charts.expert.crt"
+            echo "     ls -la /etc/ssl/private/charts.expert.key"
+            ((priority++))
+        fi
+        
+        if [ "$api_issues" = true ]; then
+            echo "  $priority. Проверить API и данные:"
+            echo "     docker compose logs udf"
+            echo "     curl -I http://localhost:8000/api/status"
+            ((priority++))
+        fi
+        
+        echo "  $priority. Посмотреть логи для диагностики:"
+        echo "     docker compose logs -f"
+        echo ""
+    fi
+}
+
 # Рекомендации по исправлению
 show_recommendations() {
-    print_header "Рекомендации по исправлению"
+    print_header "Общие рекомендации"
     
-    echo -e "${YELLOW}Если обнаружены проблемы, попробуйте:${NC}"
+    echo -e "${YELLOW}Дополнительные команды для устранения проблем:${NC}"
     echo ""
-    echo "1. Перезапуск контейнеров:"
+    echo "1. Перезапуск всей системы:"
     echo "   docker compose down && docker compose up -d --build"
     echo ""
-    echo "2. Проверка логов:"
+    echo "2. Просмотр всех логов:"
     echo "   docker compose logs -f"
     echo ""
-    echo "3. Проверка firewall:"
-    echo "   ufw allow 80/tcp && ufw allow 443/tcp"
+    echo "3. Проверка состояния контейнеров:"
+    echo "   docker compose ps"
+    echo "   docker stats"
     echo ""
-    echo "4. Проверка SSL сертификатов:"
-    echo "   ls -la /etc/ssl/certs/charts.expert.crt"
-    echo "   ls -la /etc/ssl/private/charts.expert.key"
-    echo ""
-    echo "5. Тестирование API:"
+    echo "4. Тестирование подключений:"
     echo "   curl -I http://localhost:8000/api/status"
-    echo ""
-    echo "6. Проверка доступности сайта:"
     echo "   curl -I http://64.226.108.150"
     echo "   curl -I http://charts.expert"
     echo ""
-    echo "7. Обновление системы:"
+    echo "5. Обновление до последней версии:"
     echo "   cd /opt/cbma14 && git pull origin main"
     echo ""
-    echo "8. Полная переустановка:"
+    echo "6. Полная переустановка:"
     echo "   ./deploy.sh"
+    echo ""
+    echo "7. Повторная диагностика:"
+    echo "   ./diagnose.sh"
 }
 
 # Основная функция
 main() {
-    print_header "CBMA14 Index - Диагностика"
-    print_info "Время начала: $(date)"
+    local quiet_mode=false
+    
+    # Проверка аргументов
+    if [[ "$1" == "--quiet" ]] || [[ "$1" == "-q" ]]; then
+        quiet_mode=true
+    elif [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]]; then
+        echo "Использование: $0 [опции]"
+        echo "Опции:"
+        echo "  -q, --quiet    Показать только итоговый отчет"
+        echo "  -h, --help     Показать эту справку"
+        exit 0
+    fi
+    
+    if [ "$quiet_mode" = false ]; then
+        print_header "CBMA14 Index - Диагностика"
+        print_info "Время начала: $(date)"
+    fi
     
     # Проверка, что скрипт запущен в правильной директории
     if [ ! -f "docker-compose.yml" ]; then
@@ -322,30 +455,63 @@ main() {
     fi
     
     # Выполнение всех проверок
-    check_system_info
-    echo ""
-    check_docker_containers
-    echo ""
-    check_logs
-    echo ""
-    check_network_ports
-    echo ""
-    check_firewall
-    echo ""
-    check_ssl_certificates
-    echo ""
-    check_data_files
-    echo ""
-    check_dns
-    echo ""
-    check_api
-    echo ""
-    check_nginx_config
-    echo ""
-    show_recommendations
+    if [ "$quiet_mode" = false ]; then
+        check_system_info
+        echo ""
+        check_docker_containers
+        echo ""
+        check_logs
+        echo ""
+        check_network_ports
+        echo ""
+        check_firewall
+        echo ""
+        check_ssl_certificates
+        echo ""
+        check_data_files
+        echo ""
+        check_dns
+        echo ""
+        check_api
+        echo ""
+        check_nginx_config
+        echo ""
+    else
+        # В тихом режиме выполняем проверки без вывода
+        check_system_info >/dev/null 2>&1
+        check_docker_containers >/dev/null 2>&1
+        check_logs >/dev/null 2>&1
+        check_network_ports >/dev/null 2>&1
+        check_firewall >/dev/null 2>&1
+        check_ssl_certificates >/dev/null 2>&1
+        check_data_files >/dev/null 2>&1
+        check_dns >/dev/null 2>&1
+        check_api >/dev/null 2>&1
+        check_nginx_config >/dev/null 2>&1
+    fi
     
-    print_info "Время окончания: $(date)"
-    print_header "Диагностика завершена"
+    # Всегда показываем итоговый отчет
+    show_summary
+    
+    if [ "$quiet_mode" = false ]; then
+        echo ""
+        show_recommendations
+        print_info "Время окончания: $(date)"
+    fi
+    
+    # Финальный статус
+    local error_count=${#ERRORS[@]}
+    if [ $error_count -eq 0 ]; then
+        if [ "$quiet_mode" = false ]; then
+            print_header "✅ ДИАГНОСТИКА ЗАВЕРШЕНА УСПЕШНО"
+        fi
+        exit 0
+    else
+        if [ "$quiet_mode" = false ]; then
+            print_header "❌ ДИАГНОСТИКА ВЫЯВИЛА $error_count ОШИБОК"
+        fi
+        exit 1
+    fi
 }
 
 # Запуск
