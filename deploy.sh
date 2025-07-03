@@ -212,18 +212,18 @@ start_application() {
     
     # Остановка существующих контейнеров
     print_status "Остановка существующих контейнеров..."
-    docker compose -f docker-compose.prod.yml down 2>/dev/null || true
+    docker compose -f docker-compose.yml down 2>/dev/null || true
     
     # Запуск в production режиме
     print_status "Запуск в production режиме..."
-    docker compose --env-file .env -f docker-compose.prod.yml up -d --build
+    docker compose --env-file .env -f docker-compose.yml up -d --build
     
     # Ожидание запуска
     print_status "Ожидание запуска сервисов..."
     sleep 10
     
     # Проверка статуса
-    docker compose -f docker-compose.prod.yml ps
+    docker compose -f docker-compose.yml ps
 }
 
 # Настройка SSL (опционально)
@@ -258,7 +258,7 @@ setup_ssl() {
         sed -i "s/your-domain.com/$DOMAIN/g" nginx/prod.conf
         
         # Перезапуск nginx
-        docker compose -f docker-compose.prod.yml restart nginx
+        docker compose -f docker-compose.yml restart nginx
         
         print_status "SSL сертификат установлен для $DOMAIN"
     fi
@@ -298,8 +298,8 @@ cd $INSTALL_DIR
 git pull origin main
 
 # Обновление контейнеров
-docker compose -f docker-compose.prod.yml pull
-docker compose -f docker-compose.prod.yml up -d --build
+docker compose -f docker-compose.yml pull
+docker compose -f docker-compose.yml up -d --build
 
 # Очистка старых образов
 docker image prune -f
@@ -314,13 +314,13 @@ INSTALL_DIR="/opt/cbma14"
 cd $INSTALL_DIR
 
 echo "=== CBMA14 Index Status ==="
-docker compose -f docker-compose.prod.yml ps
+docker compose -f docker-compose.yml ps
 echo ""
 echo "=== Resource Usage ==="
 docker stats --no-stream
 echo ""
 echo "=== Logs (last 20 lines) ==="
-docker compose -f docker-compose.prod.yml logs --tail=20
+docker compose -f docker-compose.yml logs --tail=20
 EOF
     
     # Права выполнения
@@ -349,8 +349,8 @@ show_deployment_info() {
     echo "   🔒 HTTPS: https://$IP (если SSL настроен)"
     echo ""
     echo "🔧 Полезные команды:"
-    echo "   docker compose -f docker-compose.prod.yml ps    # Статус"
-    echo "   docker compose -f docker-compose.prod.yml logs  # Логи"
+    echo "   docker compose -f docker-compose.yml ps    # Статус"
+    echo "   docker compose -f docker-compose.yml logs  # Логи"
     echo "   cbma14-status                                   # Быстрый статус"
     echo "   cbma14-backup                                   # Бэкап"
     echo "   cbma14-update                                   # Обновление"
