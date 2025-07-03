@@ -1,99 +1,78 @@
-# Python
+
 __pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-pip-wheel-metadata/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-
-# Virtual environments
-venv/
-env/
-ENV/
-
-# Environment variables
-.env
-*.env
-
-# Docker
-docker-compose.override.yml
-
-# Data files
-/data/
-btc_data.json
-*.log
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-
-# OS
 .DS_Store
-Thumbs.db
-
-# Node modules (если будут)
-node_modules/
-
-# Workspace files
-*.code-workspace
-
-# Archive and temp files
-archive/
-app-rank/
-*.tmp
+.eggs/
+.env
+.idea/
+.installed.cfg
+.Python
+.vscode/
 *.bak
-
-# Логи и временные файлы
+*.bak 
+*.code-workspace
+*.egg
+*.egg-info/
+*.env
 *.log
-logs/
+*.py[cod]
+*.so
+*.swo
+*.swp
+*.tmp
+*.zip
+*~
+*$py.class
+/data/
+# Временные файлы
+# Тестовые файлы
+# Браузер и драйверы
+# Логи и временные файлы
+# Устаревшие файлы сессии (используем data/tradingview_session.json)
+# Временные Pine-скрипты
+# Archive and temp files
+# Data files
+# Docker
+# Environment variables
+# IDE
+# IDE и редакторы
+# macOS
+# Node modules (если будут)
+# OS
+# Python
+# Virtual environments
+# Workspace files
+app-rank/
+archive/
+btc_data.json
+build/
+chromedriver*
+cookies.json
 debug_*.html
 debug_*.png
-
-# IDE и редакторы
-.vscode/
-.idea/
-
-# macOS
-.DS_Store
-
-# Временные Pine-скрипты
-temp_*.pine
+develop-eggs/
+dist/
+docker-compose.override.yml
+downloads/
+eggs/
+env/
+ENV/
 generated_*.pine
-test_*.pine
-
-# Браузер и драйверы
-chromedriver*
-*.zip
-
-# Тестовые файлы
-test_*.py
+lib/
+lib64/
+local.json
+logs/
+node_modules/
+parts/
+pip-wheel-metadata/
 quick_test.py
 run_test.py
-
-# Устаревшие файлы сессии (используем data/tradingview_session.json)
-cookies.json
-local.json
+sdist/
+share/python-wheels/
+temp_*.pine
+test_*.pine
+test_*.py
+Thumbs.db
 user_agent.txt
-
-# Временные файлы
-*.tmp
-*.bak 
+var/
+venv/
+wheels/

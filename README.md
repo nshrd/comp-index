@@ -1,660 +1,331 @@
-# 📊 Композитный Индекс Рейтингов для TradingView
+# 📊 CBMA14 Index - Cryptocurrency Composite Index
 
-Система автоматического создания и обновления композитного индикатора рейтингов приложений для TradingView.
-
-## 🎯 Обзор
-
-Этот проект позволяет:
-- **Собирать данные** рейтингов приложений из разных категорий (Coin, Moon, Phantom) через ваш API
-- **Рассчитывать композитный индекс** с применением скользящего среднего
-- **Автоматически публиковать** индикатор с обновлёнными данными на TradingView
-- **Отображать индикатор** в TradingView с возможностью сравнения с ценой BTC
-
-## 📊 Текущая схема: встроенные данные (embedded)
-
-## 🏗️ Архитектура
-
-```mermaid
-graph TB
-    A[API с рейтингами] --> B[Python обработчик]
-    B --> C[Композитный индекс + MA]
-    C --> D[CSV файлы]
-    D --> E[TradingView Pine Script]
-    F --> G[Индикатор на графике]
-    
-    H[Cron/GitHub Actions] --> B
-    I[Пользователь] --> G
-```
-
-## 📋 Требования
-
-### Системные требования
-- Python 3.8+
-- Git
-- Bash (для автоматизации)
-
-### Python зависимости
-```bash
-pip install -r requirements.txt
-```
-
-### Дополнительные требования
-- **TradingView аккаунт** для публикации индикатора
-- **API доступ** к данным рейтингов
-
-## 🚀 Быстрый старт
-
-### 1. Клонирование и настройка
-
-```bash
-git clone <your-repo-url>
-cd index
-cp config.env.example .env
-```
-
-### 2. Настройка конфигурации
-
-Отредактируйте `.env` файл:
-
-```bash
-# API настройки
-APP_RANKINGS_API_KEY=your_actual_api_key
-API_BASE_URL=https://your-api-domain.com
-
-# Остальные настройки...
-```
-
-### 3. Первый запуск
-
-```bash
-# Установка зависимостей
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-
-# Запуск обработки данных
-chmod +x run_updater.sh
-./run_updater.sh
-```
-
-### 4. Настройка автоматизации
-
-#### Вариант A: Cron (локальный сервер)
-
-```bash
-crontab -e
-```
-
-Добавьте строку для запуска каждые 6 часов:
-
-```bash
-0 */6 * * * /path/to/your/project/run_updater.sh >> /path/to/your/project/cron.log 2>&1
-```
-
-#### Вариант B: GitHub Actions (рекомендуется)
-
-1. Добавьте secrets в GitHub репозиторий:
-   - `APP_RANKINGS_API_KEY`
-   - `API_BASE_URL`
-
-2. Workflow уже настроен в `.github/workflows/update-index.yml`
-
-### 5. Настройка индикатора в TradingView
-
-1. Откройте **Pine Editor** в TradingView
-2. Скопируйте код из `tradingview_indicator.pine`
-3. Сохраните и добавьте на график
-
-## 📊 Структура данных
-
-### Формат API ответа
-
-Ваш API должен возвращать данные в формате:
-
-```json
-[
-  {
-    "date": "2024-01-15",
-    "rank": 156.5,
-    "app_name": "Example App"
-  },
-  // ...
-]
-```
-
-### Создаваемые CSV файлы
-
-#### `data/COMP_MA.csv`
-```csv
-time,open,high,low,close,volume
-2024-01-15,234.5,234.5,234.5,234.5,1000
-2024-01-16,236.1,236.1,236.1,236.1,1000
-```
-
-#### `data/COMP_RAW.csv`
-```csv
-time,open,high,low,close,volume
-2024-01-15,245.2,245.2,245.2,245.2,1000
-2024-01-16,241.8,241.8,241.8,241.8,1000
-```
-
-## ⚙️ Конфигурация
-
-### Параметры Python скрипта
-
-В `data_processor.py` можно настроить:
-
-```python
-# Эндпоинты API
-endpoints = {
-    'coin': '/api/rankings/coin',
-    'moon': '/api/rankings/moon', 
-    'phantom': '/api/rankings/phantom'
-}
-
-# Период скользящего среднего
-MA_LENGTH = 30
-
-# Максимальное значение ранга для нормализации
-maxRank = 600.0
-```
-
-### Параметры Pine Script индикатора
-
-В TradingView индикаторе доступны настройки:
-
-- **Длина MA**: Период скользящего среднего (по умолчанию 30)
-- **Показать сырой ранг**: Отображать ли исходные данные
-- **Показать цену BTC**: Сравнение с BTC
-- **Цвета и стили**: Настройка внешнего вида
-
-## 🔧 Расширенная настройка
-
-### Кастомные веса для категорий
-
-Измените в `calculate_composite_rank()`:
-
-```python
-# Взвешенное среднее вместо простого
-weights = {'coin': 0.4, 'moon': 0.3, 'phantom': 0.3}
-composite_df['rank_composite'] = (
-    composite_df['rank_coin'] * weights['coin'] +
-    composite_df['rank_moon'] * weights['moon'] +
-    composite_df['rank_phantom'] * weights['phantom']
-)
-```
-
-### Дополнительные индикаторы
-
-В Pine Script можно добавить:
-
-```pinescript
-// RSI композитного ранга
-rsi_period = input.int(14, "RSI Period")
-rank_rsi = ta.rsi(compMANormalized, rsi_period)
-plot(rank_rsi, title="Composite RSI")
-
-// Полосы Боллинджера
-bb_length = input.int(20, "BB Length")
-bb_mult = input.float(2.0, "BB Multiplier")
-[bb_middle, bb_upper, bb_lower] = ta.bb(compMANormalized, bb_length, bb_mult)
-```
-
-### Уведомления
-
-Добавьте в `data_processor.py`:
-
-```python
-import requests
-
-def send_telegram_notification(message):
-    token = os.getenv('TELEGRAM_BOT_TOKEN')
-    chat_id = os.getenv('TELEGRAM_CHAT_ID')
-    if token and chat_id:
-        url = f"https://api.telegram.org/bot{token}/sendMessage"
-        requests.post(url, data={'chat_id': chat_id, 'text': message})
-```
-
-## 🎯 Алерты в TradingView
-
-Индикатор поддерживает алерты:
-
-1. **Пересечение верхней зоны** - композитный ранг выше порогового значения
-2. **Пересечение нижней зоны** - композитный ранг ниже порогового значения
-3. **Пересечение с BTC** - корреляция с движением цены Bitcoin
-
-Настройте алерты в TradingView: `Правый клик на график → Add Alert`
-
-## 📈 Мониторинг и логирование
-
-### Логи процесса
-
-Все операции логируются в `updater.log`:
-
-```bash
-tail -f updater.log  # Просмотр логов в реальном времени
-```
-
-### Мониторинг через GitHub Actions
-
-В GitHub репозитории: `Actions` → `Update Index` → посмотреть статус выполнения
-
-### Статистика
-
-Скрипт выводит статистику после обработки:
-
-```
-📊 Статистика:
-   Период данных: 2024-01-01 - 2024-01-20
-   Всего записей: 20
-   Композитный ранг: 145.2 - 298.7
-   MA(30): 156.8 - 287.1
-```
-
-## 🐛 Устранение неполадок
-
-### Проблема: Не загружаются данные из API
-
-**Решение:**
-1. Проверьте `APP_RANKINGS_API_KEY` в `.env`
-2. Убедитесь, что API доступен: `curl -H "Authorization: Bearer $API_KEY" $API_URL/api/rankings/coin`
-3. Проверьте формат ответа API
-
-## 📝 Часто задаваемые вопросы
-
-**Q: Как часто обновляются данные в TradingView?**  
-A: Для более частых обновлений нужен другой подход.
-
-**Q: Можно ли добавить больше категорий рейтингов?**  
-A: Да, измените массив `endpoints` в `data_processor.py` и логику расчета композитного индекса.
-
-**Q: Как изменить период скользящего среднего?**  
-A: Измените `MA_LENGTH` в скрипте или используйте параметр в TradingView индикаторе.
-
-## 🤝 Вклад в проект
-
-1. Fork репозитория
-2. Создайте feature branch: `git checkout -b feature/amazing-feature`
-3. Commit изменения: `git commit -m 'Add amazing feature'`
-4. Push в branch: `git push origin feature/amazing-feature`
-5. Создайте Pull Request
-
-## 📄 Лицензия
-
-Этот проект распространяется под лицензией MIT. См. файл `LICENSE` для деталей.
-
-## 🔗 Полезные ссылки
-
-- [TradingView Pine Script Documentation](https://www.tradingview.com/pine-script-docs/)
-- [GitHub Actions Documentation](https://docs.github.com/en/actions)
-- [pandas Documentation](https://pandas.pydata.org/docs/)
-
----
-
-**Удачного трейдинга! 📈** 
-
-## 🚀 Альтернативный вариант: Charting Library + UDF (профессиональное)
-
-## Настройка переменных окружения
-
-Скопируйте `config.env.example` в `.env` и заполните:
-
-```bash
-# Авторизация TradingView для публикации скриптов
-TV_EMAIL=your_email@example.com
-TV_PASSWORD=your_password
-TV_SCRIPT_URL=https://www.tradingview.com/pine-editor/YOUR_SCRIPT_ID/
-
-# Настройки браузера
-TV_HEADLESS=true  # false для отображения окна браузера
-```
-
-**Важно**: Публикация скриптов теперь происходит через веб-интерфейс TradingView с помощью Firefox WebDriver, так как TradingView больше не предоставляет API для публикации.
-
-# CBMA14 Index - Cryptocurrency Composite Index
-
-![CBMA14 Logo](https://img.shields.io/badge/CBMA14-Crypto%20Index-blue.svg)
+![CBMA14](https://img.shields.io/badge/CBMA14-Crypto%20Index-2962FF.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
-![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live-success.svg)
+![Docker](https://img.shields.io/badge/docker-ready-blue.svg)
+![Cross Platform](https://img.shields.io/badge/cross--platform-✓-success.svg)
 
-## 🚀 Live Demo
-
-**[Открыть CBMA14 Index Dashboard](https://username.github.io/repository-name/)**
-
-## 📊 О проекте
+## 🚀 О проекте
 
 **CBMA14** (Coinbase Composite Moving Average 14-day Index) - это композитный индекс криптовалютного рынка, основанный на 14-дневной скользящей средней рейтингов криптовалют с биржи Coinbase.
 
 ### ✨ Особенности
 
-- 📈 **Красивый интерактивный график** с использованием Lightweight Charts
-- 🔄 **Инвертированная шкала** - низкие значения означают сильный рынок
-- ⚡ **Реальное время** - данные обновляются автоматически
-- 📱 **Адаптивный дизайн** - работает на всех устройствах
-- 🎨 **Современный UI** - градиенты, анимации, glassmorphism эффекты
-- 📊 **Многопериодность** - поддержка MA 7, 14, 30 дней
+- 📈 **Интерактивные графики** с Lightweight Charts
+- 🔄 **Инвертированная шкала** - низкие значения = сильный рынок
+- ⚡ **Real-time данные** через Coinglass API
+- 📱 **Адаптивный дизайн** для всех устройств
+- 🐳 **Docker-ready** с полной автоматизацией
+- 🌐 **Кроссплатформенность** (Linux, macOS, Windows)
+- 🔧 **Простое развертывание** одной командой
 
-## 🖥️ Технологии
+## 🎯 Быстрый старт
 
-- **Frontend**: HTML5, CSS3, JavaScript (ES6+)
-- **Charts**: TradingView Lightweight Charts
-- **Backend**: Python Flask (UDF Server)
-- **Data**: Coinbase API, Coinglass API
-- **Deployment**: GitHub Pages
-
-## 🎯 Структура проекта
-
-```
-├── index.html              # Главная страница для GitHub Pages
-├── src/                   # Исходный код проекта
-│   ├── chart/            # Графический интерфейс
-│   ├── data/             # Обработка данных
-│   └── udf/              # UDF сервер
-├── config.py             # Конфигурация
-├── docker-compose.udf.yml # Docker setup
-└── README.md             # Документация
-```
-
-## 🚀 Быстрый старт для GitHub Pages
-
-### 1. Форк репозитория
-
-Нажмите **Fork** в правом верхнем углу этой страницы.
-
-### 2. Включите GitHub Pages
-
-1. Перейдите в **Settings** вашего форка
-2. Прокрутите до раздела **Pages**
-3. В **Source** выберите **Deploy from a branch**
-4. Выберите ветку **main** и папку **/ (root)**
-5. Нажмите **Save**
-
-### 3. Настройте UDF сервер (опционально)
-
-Для получения реальных данных настройте собственный UDF сервер:
-
-#### Вариант A: Heroku Deployment
+### 🐳 Docker (рекомендуется)
 
 ```bash
-# Клонируйте репозиторий
-git clone https://github.com/your-username/cbma14-index.git
-cd cbma14-index
+# 1. Клонируем репозиторий
+git clone <repository-url>
+cd index
 
-# Создайте Heroku приложение
-heroku create your-udf-server
+# 2. Настраиваем окружение
+cp env.example .env
+nano .env  # Добавьте COINGLASS_API_KEY
 
-# Установите переменные окружения
-heroku config:set COINGLASS_API_KEY=your_api_key
+# 3. Запускаем систему
+./deploy.sh              # Только API
+./deploy.sh --nginx      # С веб-интерфейсом
 
-# Деплой
-git push heroku main
+# 4. Открываем в браузере
+# http://localhost:8000 - API сервер
+# http://localhost:8080 - Веб-интерфейс (с nginx)
 ```
 
-#### Вариант B: Railway Deployment
-
-1. Подключите GitHub репозиторий к [Railway](https://railway.app)
-2. Добавьте переменную `COINGLASS_API_KEY`
-3. Деплой произойдет автоматически
-
-#### Вариант C: Docker Deployment
+### 💻 Локальная разработка
 
 ```bash
-# Локальный запуск
-docker-compose -f docker-compose.udf.yml up --build
-
-# Доступ к UDF серверу
-# http://localhost:8000
-```
-
-### 4. Обновите конфигурацию
-
-Отредактируйте `index.html` и замените:
-
-```javascript
-UDF_BASE_URL: 'https://your-udf-server.herokuapp.com'
-```
-
-На URL вашего UDF сервера.
-
-### 5. Обновите ссылки
-
-В `index.html` замените:
-
-```html
-<a href="https://github.com/USERNAME/REPOSITORY" class="github-link">
-```
-
-На ссылку на ваш репозиторий.
-
-## 🛠️ Локальная разработка
-
-### Требования
-
-- Python 3.8+
-- Docker (опционально)
-- Node.js (для dev сервера)
-
-### Установка
-
-```bash
-# Клонируйте репозиторий
-git clone https://github.com/your-username/cbma14-index.git
-cd cbma14-index
-
-# Создайте виртуальное окружение
+# Создаем виртуальное окружение
 python -m venv venv
-source venv/bin/activate  # Linux/Mac
-# или
-venv\Scripts\activate     # Windows
+source venv/bin/activate
 
-# Установите зависимости
+# Устанавливаем зависимости
 pip install -r requirements.txt
 
-# Создайте .env файл
-cp .env.example .env
-# Добавьте ваш COINGLASS_API_KEY
+# Настраиваем переменные окружения
+cp env.example .env
 
-# Запустите UDF сервер
-python src/udf/server.py
+# Запускаем UDF сервер
+python -m src.udf.server
+
+# Открываем http://localhost:8000
 ```
 
-### Dev сервер для фронтенда
+## 🏗️ Архитектура
+
+```mermaid
+graph TB
+    A[Coinglass API] --> B[Builder Service]
+    B --> C[CBMA14.json]
+    C --> D[UDF Server]
+    D --> E[Web Interface]
+    F[Nginx] --> E
+    G[Docker Compose] --> B
+    G --> D
+    G --> F
+```
+
+### Компоненты
+
+- **Builder Service** - Генерирует CBMA14 индекс из исходных данных
+- **UDF Server** - Flask API сервер с UDF endpoints
+- **Web Interface** - Интерактивный frontend с графиками
+- **Nginx** - Веб-сервер и reverse proxy (опционально)
+
+## 📊 API Endpoints
+
+### UDF Server (порт 8000)
 
 ```bash
-# Простой HTTP сервер
-python -m http.server 8080
+GET /api/status          # Статус сервера
+GET /api/config          # Конфигурация UDF
+GET /api/symbols         # Информация о символах
+GET /api/history         # Исторические данные
+GET /api/search          # Поиск символов
+GET /api/crypto/ohlcv    # Данные криптовалют
+```
 
-# Или с Node.js
-npx serve .
+### Примеры запросов
+
+```bash
+# Статус сервера
+curl http://localhost:8000/api/status
+
+# Данные BTC
+curl "http://localhost:8000/api/crypto/ohlcv?symbol=BTCUSDT&days=30"
+
+# История CBMA14
+curl "http://localhost:8000/api/history?symbol=CBMA14&from=1640995200&to=1672531200"
 ```
 
 ## 🔧 Конфигурация
 
-### UDF Сервер
+### Переменные окружения (.env)
 
-Основные настройки в `config.py`:
+```bash
+# API ключи
+COINGLASS_API_KEY=your_api_key_here
 
-```python
-@dataclass
-class UDFConfig:
-    host: str = "0.0.0.0"
-    port: int = 8888
-    data_file: Path = Path("data/CBMA14.json")
-    cbma14_symbol: str = "CBMA14"
+# Сервер
+UDF_HOST=0.0.0.0
+UDF_PORT=8000
+UDF_DEBUG=false
+FLASK_ENV=production
+
+# Builder
+BUILDER_UPDATE_INTERVAL=3600
+BUILDER_MA_PERIOD=14
+
+# Frontend
+FRONTEND_API_URL=http://localhost:8000
+
+# Docker
+COMPOSE_PROJECT_NAME=cbma14
+DOCKER_RESTART_POLICY=unless-stopped
 ```
 
-### GitHub Pages
+### Кроссплатформенная конфигурация
 
-Настройки в `index.html`:
+Система автоматически определяет окружение:
+- **Локальная разработка** - `localhost:8000`
+- **VPS** - `http://YOUR_IP:8000`
+- **GitHub Pages** - `https://YOUR_IP:8443`
 
-```javascript
-const CONFIG = {
-    UDF_BASE_URL: 'https://your-server.com',
-    DEFAULT_MA_PERIOD: 14
-};
+## 🚀 Развертывание
+
+### 🐳 Docker Compose
+
+```bash
+# Только API сервер
+docker compose up builder udf
+
+# С веб-интерфейсом
+docker compose --profile nginx up
+
+# В фоне
+docker compose up -d
+
+# Просмотр логов
+docker compose logs -f udf
+
+# Остановка
+docker compose down
 ```
 
-## 📊 API Endpoints
-
-### UDF Server
-
-- `GET /config` - Конфигурация UDF
-- `GET /history` - Исторические данные CBMA14
-- `GET /btc/ohlcv` - OHLCV данные Bitcoin
-- `GET /crypto/search` - Поиск криптовалют
-- `GET /status` - Статус сервера
-
-### Пример запроса
-
-```javascript
-// Получение данных CBMA14
-fetch('/history?symbol=CBMA14&resolution=D&from=0&to=1640995200&ma_period=14')
-  .then(response => response.json())
-  .then(data => console.log(data));
-```
-
-## 🎨 Кастомизация
-
-### Цвета и темы
-
-Основные цвета в CSS:
-
-```css
-:root {
-  --primary-color: #2962FF;
-  --secondary-color: #667eea;
-  --success-color: #00D4AA;
-  --error-color: #FF4976;
-}
-```
-
-### График
-
-Настройки Lightweight Charts:
-
-```javascript
-chart = LightweightCharts.createChart(container, {
-    layout: {
-        background: { type: 'gradient', topColor: '#f8fafc', bottomColor: '#ffffff' },
-        textColor: '#1a202c',
-    },
-    // ... другие настройки
-});
-```
-
-## 🔄 Обновление данных
-
-### Автоматическое обновление
-
-```javascript
-// Обновление каждые 5 минут
-setInterval(loadData, 5 * 60 * 1000);
-```
-
-### Ручное обновление
-
-```javascript
-// Кнопка обновления
-document.getElementById('refreshBtn').addEventListener('click', loadData);
-```
-
-## 📱 Мобильная версия
-
-Проект полностью адаптирован для мобильных устройств:
-
-- Responsive дизайн
-- Touch поддержка для графика
-- Оптимизированные размеры элементов
-- Hamburger меню (при необходимости)
-
-## 🚀 Деплой в продакшн
-
-### GitHub Actions (автоматический деплой)
-
-Создайте `.github/workflows/deploy.yml`:
-
-```yaml
-name: Deploy to GitHub Pages
-
-on:
-  push:
-    branches: [ main ]
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '16'
-    
-    - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./
-```
-
-## 🐛 Устранение неполадок
-
-### Частые проблемы
-
-1. **CORS ошибки**
-   - Убедитесь, что UDF сервер настроен правильно
-   - Проверьте заголовки CORS
-
-2. **Данные не загружаются**
-   - Проверьте URL UDF сервера
-   - Убедитесь, что API ключ действительный
-
-3. **График не отображается**
-   - Проверьте консоль браузера на ошибки
-   - Убедитесь, что Lightweight Charts загружается
-
-## 📈 Метрики и аналитика
-
-### Google Analytics
-
-Добавьте в `index.html`:
-
-```html
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=GA_TRACKING_ID"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'GA_TRACKING_ID');
-</script>
-```
-
-## 🤝 Вклад в проект
+### 📱 GitHub Pages
 
 1. Форкните репозиторий
-2. Создайте ветку для новой функции
-3. Внесите изменения
-4. Создайте Pull Request
+2. Включите GitHub Pages в настройках
+3. Обновите `FRONTEND_API_URL` в `.env`
+4. Сайт будет доступен по адресу `https://username.github.io/repository-name/`
+
+### 🖥️ VPS
+
+```bash
+# Автоматическое развертывание
+./deploy.sh --nginx --clean
+
+# Ручная настройка
+scp -r . user@your-vps:/path/to/cbma14/
+ssh user@your-vps
+cd /path/to/cbma14
+./deploy.sh --nginx
+```
+
+## 🛠️ Управление
+
+### Основные команды
+
+```bash
+# Статус системы
+docker compose ps
+
+# Логи
+docker compose logs -f
+
+# Перезапуск
+docker compose restart
+
+# Обновление
+git pull
+docker compose build --no-cache
+docker compose up -d
+
+# Очистка
+docker compose down --volumes --remove-orphans
+docker system prune -f
+```
+
+### Мониторинг
+
+```bash
+# Статус API
+curl http://localhost:8000/api/status
+
+# Проверка данных
+curl http://localhost:8000/api/crypto/ohlcv?symbol=BTCUSDT | jq
+
+# Healthcheck
+docker compose ps --format "table {{.Name}}\t{{.Status}}"
+```
+
+## 🧪 Тестирование
+
+```bash
+# Полное тестирование системы
+python test_system.py
+
+# Проверка конфигурации
+python -c "from config import config; print(config.udf.port)"
+
+# Тестирование импортов
+python -c "from src.udf.server import create_app; print('OK')"
+
+# Проверка Docker
+docker compose config --quiet
+```
+
+## 📁 Структура проекта
+
+```
+index/
+├── config.py                 # Главная конфигурация
+├── docker-compose.yml        # Docker конфигурация  
+├── deploy.sh                 # Скрипт развертывания
+├── env.example              # Пример переменных окружения
+├── requirements.txt          # Python зависимости
+├── test_system.py           # Тестовый скрипт
+├── src/
+│   ├── chart/
+│   │   ├── index.html       # Web интерфейс
+│   │   └── config.js        # Frontend конфигурация
+│   ├── data/
+│   │   ├── coinglass_client.py    # API клиент
+│   │   ├── cbma14_provider.py     # CBMA14 провайдер
+│   │   └── cbma14_calculator.py   # Калькулятор индекса
+│   └── udf/
+│       └── server.py        # UDF API сервер
+├── builder/
+│   └── build_index.py       # Генератор индекса
+├── nginx/
+│   └── nginx.conf          # Nginx конфигурация
+├── data/                   # Данные (монтируется в Docker)
+├── logs/                   # Логи
+└── README.md               # Этот файл
+```
+
+## 🐛 Решение проблем
+
+### Проблемы с портами
+
+```bash
+# Проверка занятых портов
+netstat -tlnp | grep :8000
+
+# Изменение порта
+echo "UDF_PORT=8001" >> .env
+docker compose up -d
+```
+
+### Проблемы с Docker
+
+```bash
+# Очистка и пересборка
+docker compose down
+docker system prune -f
+docker compose build --no-cache
+docker compose up -d
+```
+
+### Проблемы с API
+
+```bash
+# Проверка API ключа
+echo $COINGLASS_API_KEY
+
+# Тестирование API
+curl -H "Authorization: Bearer $COINGLASS_API_KEY" \
+     "https://open-api.coinglass.com/public/v2/funding_usd_history"
+```
+
+## 📚 Документация
+
+- **[Руководство по рефакторингу](REFACTORING_GUIDE.md)** - Техническая документация
+- **[Coinglass API](https://coinglass.github.io/API-Reference/)** - API документация
+- **[Lightweight Charts](https://tradingview.github.io/lightweight-charts/)** - График библиотека
+- **[Docker Compose](https://docs.docker.com/compose/)** - Docker документация
+
+## 🤝 Участие в разработке
+
+1. Форкните репозиторий
+2. Создайте feature branch: `git checkout -b feature/amazing-feature`
+3. Внесите изменения и добавьте тесты
+4. Коммит: `git commit -m 'Add amazing feature'`
+5. Push: `git push origin feature/amazing-feature`
+6. Создайте Pull Request
 
 ## 📄 Лицензия
 
-MIT License - смотрите [LICENSE](LICENSE) файл.
-
-## 🔗 Полезные ссылки
-
-- [TradingView Lightweight Charts](https://tradingview.github.io/lightweight-charts/)
-- [Coinbase API](https://docs.cloud.coinbase.com/)
-- [GitHub Pages Documentation](https://docs.github.com/en/pages)
-- [Heroku Deployment](https://devcenter.heroku.com/articles/getting-started-with-python)
+Этот проект распространяется под лицензией MIT. См. файл [LICENSE](LICENSE) для деталей.
 
 ## 📞 Поддержка
 
-- 📧 Email: support@example.com
-- 💬 Telegram: [@your_username](https://t.me/your_username)
-- 🐛 Issues: [GitHub Issues](https://github.com/USERNAME/REPOSITORY/issues)
+Если у вас есть вопросы или проблемы:
+
+1. Проверьте [решение проблем](#-решение-проблем)
+2. Посмотрите логи: `docker compose logs -f`
+3. Запустите тесты: `python test_system.py`
+4. Создайте [issue](../../issues) в GitHub
 
 ---
 
-Made with ❤️ by [Your Name](https://github.com/username)
+**Удачного трейдинга! 📈**

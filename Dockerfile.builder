@@ -1,26 +1,40 @@
 FROM python:3.11-slim
 
+# Устанавливаем системные зависимости
+RUN apt-get update && apt-get install -y \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Устанавливаем рабочую директорию
 WORKDIR /app
 
-# Копируем requirements и устанавливаем зависимости
-COPY requirements.txt /app/
+# Копируем requirements.txt для кэширования слоев
+COPY requirements.txt .
+
+# Устанавливаем Python зависимости
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Копируем исходные файлы
-COPY builder/build_index.py /app/
-COPY src/ /app/src/
-COPY config.py /app/
+# Создаем необходимые директории
+RUN mkdir -p /app/src/data /app/builder /app/data /app/logs
 
-# Создаем директории и __init__.py файлы для Python пакетов
-RUN mkdir -p /app/src/data /app/src/udf
-RUN touch /app/__init__.py
-RUN touch /app/src/__init__.py
-RUN touch /app/src/data/__init__.py
+# Копируем исходный код
+COPY config.py .
+COPY src/__init__.py src/
+COPY src/data/__init__.py src/data/
+COPY src/data/*.py src/data/
+COPY builder/build_index.py builder/
 
-# Добавляем /app в PYTHONPATH
+# Устанавливаем переменные окружения
 ENV PYTHONPATH=/app
+ENV PYTHONUNBUFFERED=1
 
-# Создаем директорию для данных
-RUN mkdir -p /data
+# Создаем пользователя для безопасности
+RUN useradd -m -u 1000 cbma14 && chown -R cbma14:cbma14 /app
+USER cbma14
 
-CMD ["python", "build_index.py"] 
+# Проверка здоровья
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+  CMD test -f /app/data/CBMA14.json || exit 1
+
+# Команда по умолчанию
+CMD ["python", "builder/build_index.py"] 

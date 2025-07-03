@@ -6,7 +6,10 @@ import logging
 from pathlib import Path
 from typing import Dict, List, Any, Optional
 
-from .cbma14_calculator import CBMA14Calculator
+try:
+    from .cbma14_calculator import CBMA14Calculator
+except ImportError:
+    from cbma14_calculator import CBMA14Calculator
 
 logger = logging.getLogger(__name__)
 

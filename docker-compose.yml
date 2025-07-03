@@ -1,0 +1,116 @@
+services:
+  # Builder сервис - генерирует CBMA14.json
+  builder:
+    build:
+      context: .
+      dockerfile: Dockerfile.builder
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONPATH=/app
+      - COINGLASS_API_KEY=${COINGLASS_API_KEY}
+      - BUILDER_UPDATE_INTERVAL=${BUILDER_UPDATE_INTERVAL:-3600}
+      - BUILDER_MA_PERIOD=${BUILDER_MA_PERIOD:-14}
+      - DATA_INPUT_FILE=${DATA_INPUT_FILE:-data/data.json}
+      - DATA_OUTPUT_FILE=${DATA_OUTPUT_FILE:-data/CBMA14.json}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    env_file:
+      - .env
+    command: >
+      bash -c "
+        echo 'Starting CBMA14 Builder...'
+        python builder/build_index.py
+        echo 'Initial build complete. Starting scheduler...'
+        while true; do
+          sleep ${BUILDER_UPDATE_INTERVAL:-3600}
+          echo 'Updating index at $(date)...'
+          python builder/build_index.py
+          echo 'Index update complete.'
+        done
+      "
+    restart: ${DOCKER_RESTART_POLICY:-unless-stopped}
+    networks:
+      - cbma14_network
+    healthcheck:
+      test: ["CMD", "test", "-f", "/app/data/CBMA14.json"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # UDF API сервер
+  udf:
+    build:
+      context: .
+      dockerfile: Dockerfile.udf
+    volumes:
+      - ./data:/app/data:ro
+      - ./logs:/app/logs
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONPATH=/app
+      - FLASK_ENV=${FLASK_ENV:-production}
+      - UDF_HOST=${UDF_HOST:-0.0.0.0}
+      - UDF_PORT=${UDF_PORT:-8000}
+      - UDF_DEBUG=${UDF_DEBUG:-false}
+      - COINGLASS_API_KEY=${COINGLASS_API_KEY}
+      - DATA_OUTPUT_FILE=${DATA_OUTPUT_FILE:-data/CBMA14.json}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    env_file:
+      - .env
+    ports:
+      - "${UDF_PORT:-8000}:${UDF_PORT:-8000}"
+    command: >
+      bash -c "
+        echo 'Starting UDF Server...'
+        gunicorn --bind 0.0.0.0:${UDF_PORT:-8000} --workers 2 --timeout 60 --access-logfile - --error-logfile - src.udf.server:app
+      "
+    restart: ${DOCKER_RESTART_POLICY:-unless-stopped}
+    depends_on:
+      builder:
+        condition: service_healthy
+    networks:
+      - cbma14_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${UDF_PORT:-8000}/api/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Nginx веб-сервер (опционально)
+  nginx:
+    image: nginx:1.25-alpine
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./src/chart:/usr/share/nginx/html:ro
+      - ./logs/nginx:/var/log/nginx
+    ports:
+      - "${NGINX_PORT:-8080}:80"
+      - "${NGINX_SSL_PORT:-8443}:443"
+    environment:
+      - UDF_HOST=udf
+      - UDF_PORT=${UDF_PORT:-8000}
+    restart: ${DOCKER_RESTART_POLICY:-unless-stopped}
+    depends_on:
+      udf:
+        condition: service_healthy
+    networks:
+      - cbma14_network
+    profiles:
+      - nginx
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  data:
+    driver: local
+  logs:
+    driver: local
+
+networks:
+  cbma14_network:
+    driver: bridge 
