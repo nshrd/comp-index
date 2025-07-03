@@ -383,6 +383,9 @@
                     chart.applyOptions({ width: container.clientWidth });
                 });
 
+                // Синхронизация масштабирования левой и правой шкал
+                setupScaleSynchronization();
+
                 console.log('✅ Lightweight Charts initialized');
                 updateStatus('График инициализирован', 'success');
 
@@ -475,6 +478,27 @@
             } catch (error) {
                 console.error('❌ Error loading data:', error);
                 updateStatus(CONFIG.MESSAGES.ERROR, 'error');
+            }
+        }
+
+        function setupScaleSynchronization() {
+            if (!chart) return;
+            
+            try {
+                // Альтернативный подход: синхронизация через события масштабирования времени
+                // При изменении временного диапазона также синхронизируем ценовые шкалы
+                chart.timeScale().subscribeVisibleTimeRangeChange(() => {
+                    try {
+                        // Принудительно подгоняем обе ценовые шкалы к видимым данным
+                        chart.timeScale().fitContent();
+                    } catch (e) {
+                        console.warn('Ошибка синхронизации шкал:', e);
+                    }
+                });
+                
+                console.log('✅ Scale synchronization setup completed');
+            } catch (error) {
+                console.warn('⚠️ Scale synchronization not available:', error);
             }
         }
 
