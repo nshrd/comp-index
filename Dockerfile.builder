@@ -11,7 +11,8 @@ COPY builder/build_index.py /app/
 COPY src/ /app/src/
 COPY config.py /app/
 
-# Создаем __init__.py файлы для Python пакетов
+# Создаем директории и __init__.py файлы для Python пакетов
+RUN mkdir -p /app/src/data /app/src/udf
 RUN touch /app/__init__.py
 RUN touch /app/src/__init__.py
 RUN touch /app/src/data/__init__.py
