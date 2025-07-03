@@ -26,6 +26,9 @@ COPY src/udf/__init__.py src/udf/
 COPY src/udf/*.py src/udf/
 COPY src/chart/ src/chart/
 
+# Копируем тесты
+COPY tests/ tests/
+
 # Устанавливаем переменные окружения
 ENV PYTHONPATH=/app
 ENV PYTHONUNBUFFERED=1

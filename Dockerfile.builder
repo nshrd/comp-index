@@ -24,6 +24,9 @@ COPY src/data/__init__.py src/data/
 COPY src/data/*.py src/data/
 COPY builder/ builder/
 
+# Копируем тесты
+COPY tests/ tests/
+
 # Устанавливаем переменные окружения
 ENV PYTHONPATH=/app
 ENV PYTHONUNBUFFERED=1
