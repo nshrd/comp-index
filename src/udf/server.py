@@ -95,29 +95,50 @@ class UDFServer:
         self.app.route("/time", methods=["GET"])(self.time_endpoint)
         self.app.route("/search", methods=["GET"])(self.search_endpoint)
         self.app.route("/status", methods=["GET"])(self.status_endpoint)
+        
+        # HTML страницы
+        self.app.route("/btc-cbma14", methods=["GET"])(self.btc_cbma14_page)
+        self.app.route("/crypto-search", methods=["GET"])(self.crypto_search_page)
+        self.app.route("/charts", methods=["GET"])(self.charts_page)
+        
+        # Статические файлы
+        self.app.route("/<path:filename>", methods=["GET"])(self.static_files)
     
     def index_page(self):
-        """Главная страница с информацией о сервере"""
-        return jsonify({
-            "server": "CBMA14 Index UDF Server",
-            "version": "2.1.0",
-            "status": "running",
-            "endpoints": {
-                "config": "/api/config",
-                "symbols": "/api/symbols",
-                "history": "/api/history",
-                "time": "/api/time",
-                "search": "/api/search",
-                "status": "/api/status",
-                "crypto_symbols": "/api/crypto/symbols",
-                "crypto_ohlcv": "/api/crypto/ohlcv"
-            },
-            "example_requests": {
-                "btc_data": "/api/crypto/ohlcv?symbol=BTCUSDT&days=30",
-                "cbma14_data": "/api/history?symbol=CBMA14&from=1640995200&to=1672531200",
-                "search": "/api/search?query=BTC"
-            }
-        })
+        """Главная страница - интерактивный chart"""
+        try:
+            # Путь к HTML файлу
+            chart_dir = Path(__file__).parent.parent / "chart"
+            html_file = chart_dir / "index.html"
+            
+            if html_file.exists():
+                return send_from_directory(str(chart_dir), "index.html")
+            else:
+                # Fallback - отдаем JSON с информацией
+                return jsonify({
+                    "server": "CBMA14 Index UDF Server",
+                    "version": "2.1.0",
+                    "status": "running",
+                    "message": "HTML interface not found",
+                    "api_endpoints": {
+                        "config": "/api/config",
+                        "symbols": "/api/symbols", 
+                        "history": "/api/history",
+                        "time": "/api/time",
+                        "search": "/api/search",
+                        "status": "/api/status",
+                        "crypto_symbols": "/api/crypto/symbols",
+                        "crypto_ohlcv": "/api/crypto/ohlcv"
+                    },
+                    "chart_pages": {
+                        "main": "/btc-cbma14",
+                        "search": "/crypto-search",
+                        "full": "/charts"
+                    }
+                })
+        except Exception as e:
+            logger.error(f"Error serving index page: {e}")
+            return f"Error loading page: {e}", 500
     
     def config_endpoint(self):
         """Конфигурация UDF сервера"""
@@ -333,6 +354,47 @@ class UDFServer:
                 "/api/search", "/api/status", "/api/crypto/symbols", "/api/crypto/ohlcv"
             ]
         })
+    
+    def btc_cbma14_page(self):
+        """Страница с графиком BTC + CBMA14"""
+        try:
+            chart_dir = Path(__file__).parent.parent / "chart"
+            return send_from_directory(str(chart_dir), "index.html")
+        except Exception as e:
+            logger.error(f"Error serving BTC-CBMA14 page: {e}")
+            return f"Error loading page: {e}", 500
+    
+    def crypto_search_page(self):
+        """Страница поиска криптовалют"""
+        try:
+            chart_dir = Path(__file__).parent.parent / "chart"
+            return send_from_directory(str(chart_dir), "index.html")
+        except Exception as e:
+            logger.error(f"Error serving crypto search page: {e}")
+            return f"Error loading page: {e}", 500
+    
+    def charts_page(self):
+        """Полная страница с графиками"""
+        try:
+            chart_dir = Path(__file__).parent.parent / "chart"
+            return send_from_directory(str(chart_dir), "index.html")
+        except Exception as e:
+            logger.error(f"Error serving charts page: {e}")
+            return f"Error loading page: {e}", 500
+    
+    def static_files(self, filename):
+        """Обслуживание статических файлов"""
+        try:
+            # Попробуем найти файл в chart директории
+            chart_dir = Path(__file__).parent.parent / "chart"
+            if (chart_dir / filename).exists():
+                return send_from_directory(str(chart_dir), filename)
+            
+            # Если не найден, вернем 404
+            return f"File not found: {filename}", 404
+        except Exception as e:
+            logger.error(f"Error serving static file {filename}: {e}")
+            return f"Error loading file: {e}", 500
     
     def run(self):
         """Запустить сервер"""
