@@ -9,7 +9,15 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Копируем весь проект для доступа к модулям
 COPY src/ /app/src/
 COPY config.py /app/
-COPY .env /app/.env
+
+# Создаем __init__.py файлы для Python пакетов
+RUN touch /app/__init__.py
+RUN touch /app/src/__init__.py
+RUN touch /app/src/data/__init__.py
+RUN touch /app/src/udf/__init__.py
+
+# Добавляем /app в PYTHONPATH
+ENV PYTHONPATH=/app
 
 # Создаем директорию для данных
 RUN mkdir -p /data
@@ -17,4 +25,4 @@ RUN mkdir -p /data
 EXPOSE 8000
 
 # Используем новый сервер из src/udf/server.py
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "2", "--timeout", "30", "src.udf.server:create_app()"] 
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "2", "--timeout", "30", "src.udf.server:app"] 

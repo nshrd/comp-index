@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
   # Builder - генерирует CBMA14.json из data.json
   builder:
@@ -6,19 +8,25 @@ services:
       dockerfile: Dockerfile.builder
     volumes:
       - ./data:/data
+      - ./logs:/app/logs
     environment:
       - PYTHONUNBUFFERED=1
+      - COINGLASS_API_KEY=${COINGLASS_API_KEY}
+    env_file:
+      - .env
     command: |
       bash -c "
         python /app/build_index.py
-        echo 'Initial build complete. Sleeping...'
+        echo 'Initial build complete. Starting hourly scheduler...'
         while true; do
           sleep 3600
           python /app/build_index.py
-          echo 'Updated at $(date)'
+          echo 'Index updated at $(date)'
         done
       "
     restart: unless-stopped
+    networks:
+      - cbma14_network
 
   # UDF сервер на Flask
   udf:
@@ -27,29 +35,43 @@ services:
       dockerfile: Dockerfile.udf
     volumes:
       - ./data:/data:ro
+      - ./logs:/app/logs
     environment:
       - PYTHONUNBUFFERED=1
       - FLASK_ENV=production
       - COINGLASS_API_KEY=${COINGLASS_API_KEY}
+    env_file:
+      - .env
     expose:
       - "8000"
     command: gunicorn --bind 0.0.0.0:8000 --workers 2 --timeout 30 src.udf.server:app
     restart: unless-stopped
     depends_on:
       - builder
+    networks:
+      - cbma14_network
 
-  # Nginx - проксирование и кэширование
+  # Nginx - веб сервер и reverse proxy
   nginx:
     image: nginx:1.25-alpine
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - ./src/chart:/usr/share/nginx/html:ro
+      - ./logs/nginx:/var/log/nginx
     ports:
       - "8080:80"
     restart: unless-stopped
     depends_on:
       - udf
+    networks:
+      - cbma14_network
+
+volumes:
+  data:
+    driver: local
+  logs:
+    driver: local
 
 networks:
-  default:
-    name: udf_network 
+  cbma14_network:
+    driver: bridge 
