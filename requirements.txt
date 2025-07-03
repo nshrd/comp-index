@@ -9,4 +9,7 @@ python-dotenv>=1.0.0       # Для переменных окружения
 # Flask и веб-сервер
 flask>=3.0.0               # UDF API сервер
 flask-cors>=4.0.0          # CORS поддержка
-gunicorn>=21.2.0           # WSGI сервер для production 
+gunicorn>=21.2.0           # WSGI сервер для production
+
+# Тестирование
+pytest>=6.0.0             # Для Docker интеграционных тестов 

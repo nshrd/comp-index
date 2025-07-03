@@ -1,4442 +1,3332 @@
 {
   "2022-06-17": {
-    "Finance": 21,
     "Overall": 300
   },
   "2022-06-18": {
-    "Finance": 22,
     "Overall": 342
   },
   "2022-06-19": {
-    "Finance": 21,
     "Overall": 306
   },
   "2022-06-20": {
-    "Finance": 19,
     "Overall": 290
   },
   "2022-06-21": {
-    "Finance": 22,
     "Overall": 322
   },
   "2022-06-22": {
-    "Finance": 23,
     "Overall": 335
   },
   "2022-06-23": {
-    "Finance": 22,
     "Overall": 337
   },
   "2022-06-24": {
-    "Finance": 24,
     "Overall": 341
   },
   "2022-06-25": {
-    "Finance": 24,
     "Overall": 343
   },
   "2022-06-26": {
-    "Finance": 22,
     "Overall": 361
   },
   "2022-06-27": {
-    "Finance": 22,
     "Overall": 376
   },
   "2022-06-28": {
-    "Finance": 23,
     "Overall": 371
   },
   "2022-06-29": {
-    "Finance": 24,
     "Overall": 355
   },
   "2022-06-30": {
-    "Finance": 23,
     "Overall": 369
   },
   "2022-01-07": {
-    "Finance": 24,
     "Overall": 355
   },
   "2022-02-07": {
-    "Finance": 26,
     "Overall": 368
   },
   "2022-03-07": {
-    "Finance": 26,
     "Overall": 398
   },
   "2022-04-07": {
-    "Finance": 24,
     "Overall": 401
   },
   "2022-05-07": {
-    "Finance": 20,
     "Overall": 387
   },
   "2022-06-07": {
-    "Finance": 25,
     "Overall": 386
   },
   "2022-07-07": {
-    "Finance": 21,
     "Overall": 332
   },
   "2022-08-07": {
-    "Finance": 21,
     "Overall": 268
   },
   "2022-09-07": {
-    "Finance": 21,
     "Overall": 298
   },
   "2022-10-07": {
-    "Finance": 22,
     "Overall": 352
   },
   "2022-11-07": {
-    "Finance": 22,
     "Overall": 385
   },
   "2022-12-07": {
-    "Finance": 25,
     "Overall": 388
   },
   "2022-07-13": {
-    "Finance": 28,
     "Overall": 391
   },
   "2022-07-14": {
-    "Finance": 26,
     "Overall": 374
   },
   "2022-07-15": {
-    "Finance": 24,
     "Overall": 369
   },
   "2022-07-16": {
-    "Finance": 25,
     "Overall": 380
   },
   "2022-07-17": {
-    "Finance": 24,
     "Overall": 398
   },
   "2022-07-18": {
-    "Finance": 23,
     "Overall": 398
   },
   "2022-07-19": {
-    "Finance": 23,
     "Overall": 330
   },
   "2022-07-20": {
-    "Finance": 24,
     "Overall": 318
   },
   "2022-07-21": {
-    "Finance": 24,
     "Overall": 317
   },
   "2022-07-22": {
-    "Finance": 22,
     "Overall": 326
   },
   "2022-07-23": {
-    "Finance": 23,
     "Overall": 348
   },
   "2022-07-24": {
-    "Finance": 23,
     "Overall": 367
   },
   "2022-07-25": {
-    "Finance": 23,
     "Overall": 383
   },
   "2022-07-26": {
-    "Finance": 26,
     "Overall": 376
   },
   "2022-07-27": {
-    "Finance": 26,
     "Overall": 393
   },
   "2022-07-28": {
-    "Finance": 26,
     "Overall": 358
   },
   "2022-07-29": {
-    "Finance": 25,
     "Overall": 349
   },
   "2022-07-30": {
-    "Finance": 25,
     "Overall": 358
   },
   "2022-07-31": {
-    "Finance": 24,
     "Overall": 392
   },
   "2022-01-08": {
-    "Finance": 23,
     "Overall": 421
   },
   "2022-02-08": {
-    "Finance": 27,
     "Overall": 412
   },
   "2022-03-08": {
-    "Finance": 25,
     "Overall": 411
   },
   "2022-04-08": {
-    "Finance": 25,
     "Overall": 390
   },
   "2022-05-08": {
-    "Finance": 24,
     "Overall": 380
   },
   "2022-06-08": {
-    "Finance": 25,
     "Overall": 389
   },
   "2022-07-08": {
-    "Finance": 24,
     "Overall": 393
   },
   "2022-08-08": {
-    "Finance": 24,
     "Overall": 408
   },
   "2022-09-08": {
-    "Finance": 26,
     "Overall": 404
   },
   "2022-10-08": {
-    "Finance": 24,
     "Overall": 403
   },
   "2022-11-08": {
-    "Finance": 24,
     "Overall": 367
   },
   "2022-12-08": {
-    "Finance": 23,
     "Overall": 365
   },
   "2022-08-13": {
-    "Finance": 25,
     "Overall": 368
   },
   "2022-08-14": {
-    "Finance": 24,
     "Overall": 377
   },
   "2022-08-15": {
-    "Finance": 21,
     "Overall": 373
   },
   "2022-08-16": {
-    "Finance": 26,
     "Overall": 399
   },
   "2022-08-17": {
-    "Finance": 27,
     "Overall": 414
   },
   "2022-08-18": {
-    "Finance": 26,
     "Overall": 413
   },
   "2022-08-19": {
-    "Finance": 25,
     "Overall": 406
   },
   "2022-08-20": {
-    "Finance": 26,
     "Overall": 429
   },
   "2022-08-21": {
-    "Finance": 26,
     "Overall": 459
   },
   "2022-08-22": {
-    "Finance": 28,
     "Overall": 501
   },
   "2022-08-23": {
-    "Finance": 31,
     "Overall": 501
   },
   "2022-08-24": {
-    "Finance": 33,
     "Overall": 493
   },
   "2022-08-25": {
-    "Finance": 33,
     "Overall": 478
   },
   "2022-08-26": {
-    "Finance": 27,
     "Overall": 437
   },
   "2022-08-27": {
-    "Finance": 26,
     "Overall": 446
   },
   "2022-08-28": {
-    "Finance": 26,
     "Overall": 467
   },
   "2022-08-29": {
-    "Finance": 25,
     "Overall": 481
   },
   "2022-08-30": {
-    "Finance": 25,
     "Overall": 416
   },
   "2022-08-31": {
-    "Finance": 22,
     "Overall": 366
   },
   "2022-01-09": {
-    "Finance": 22,
     "Overall": 384
   },
   "2022-02-09": {
-    "Finance": 23,
     "Overall": 403
   },
   "2022-03-09": {
-    "Finance": 27,
     "Overall": 458
   },
   "2022-04-09": {
-    "Finance": 27,
     "Overall": 458
   },
   "2022-05-09": {
-    "Finance": 27,
     "Overall": 478
   },
   "2022-06-09": {
-    "Finance": 27,
     "Overall": 461
   },
   "2022-07-09": {
-    "Finance": 28,
     "Overall": 440
   },
   "2022-08-09": {
-    "Finance": 30,
     "Overall": 419
   },
   "2022-09-09": {
-    "Finance": 26,
     "Overall": 399
   },
   "2022-10-09": {
-    "Finance": 25,
     "Overall": 392
   },
   "2022-11-09": {
-    "Finance": 26,
     "Overall": 434
   },
   "2022-12-09": {
-    "Finance": 23,
     "Overall": 418
   },
   "2022-09-13": {
-    "Finance": 23,
     "Overall": 397
   },
   "2022-09-14": {
-    "Finance": 26,
     "Overall": 403
   },
   "2022-09-15": {
-    "Finance": 25,
     "Overall": 401
   },
   "2022-09-16": {
-    "Finance": 27,
     "Overall": 437
   },
   "2022-09-17": {
-    "Finance": 21,
     "Overall": 353
   },
   "2022-09-18": {
-    "Finance": 22,
     "Overall": 403
   },
   "2022-09-19": {
-    "Finance": 21,
     "Overall": 421
   },
   "2022-09-20": {
-    "Finance": 24,
     "Overall": 402
   },
   "2022-09-21": {
-    "Finance": 27,
     "Overall": 387
   },
   "2022-09-22": {
-    "Finance": 25,
     "Overall": 424
   },
   "2022-09-23": {
-    "Finance": 25,
     "Overall": 382
   },
   "2022-09-24": {
-    "Finance": 27,
     "Overall": 410
   },
   "2022-09-25": {
-    "Finance": 25,
     "Overall": 446
   },
   "2022-09-26": {
-    "Finance": 28,
     "Overall": 471
   },
   "2022-09-27": {
-    "Finance": 28,
     "Overall": 459
   },
   "2022-09-28": {
-    "Finance": 27,
     "Overall": 422
   },
   "2022-09-29": {
-    "Finance": 26,
     "Overall": 435
   },
   "2022-09-30": {
-    "Finance": 25,
     "Overall": 453
   },
   "2022-01-10": {
-    "Finance": 28,
     "Overall": 452
   },
   "2022-02-10": {
-    "Finance": 29,
     "Overall": 490
   },
   "2022-03-10": {
-    "Finance": 28,
     "Overall": 501
   },
   "2022-04-10": {
-    "Finance": 30,
     "Overall": 450
   },
   "2022-05-10": {
-    "Finance": 29,
     "Overall": 430
   },
   "2022-06-10": {
-    "Finance": 27,
     "Overall": 395
   },
   "2022-07-10": {
-    "Finance": 28,
     "Overall": 426
   },
   "2022-08-10": {
-    "Finance": 31,
     "Overall": 453
   },
   "2022-09-10": {
-    "Finance": 31,
     "Overall": 478
   },
   "2022-10-10": {
-    "Finance": 27,
     "Overall": 493
   },
   "2022-11-10": {
-    "Finance": 30,
     "Overall": 438
   },
   "2022-12-10": {
-    "Finance": 27,
     "Overall": 410
   },
   "2022-10-13": {
-    "Finance": 29,
     "Overall": 410
   },
   "2022-10-14": {
-    "Finance": 28,
     "Overall": 421
   },
   "2022-10-15": {
-    "Finance": 28,
     "Overall": 410
   },
   "2022-10-16": {
-    "Finance": 27,
     "Overall": 444
   },
   "2022-10-17": {
-    "Finance": 25,
     "Overall": 476
   },
   "2022-10-18": {
-    "Finance": 29,
     "Overall": 443
   },
   "2022-10-19": {
-    "Finance": 26,
     "Overall": 457
   },
   "2022-10-20": {
-    "Finance": 25,
     "Overall": 429
   },
   "2022-10-21": {
-    "Finance": 25,
     "Overall": 423
   },
   "2022-10-22": {
-    "Finance": 28,
     "Overall": 422
   },
   "2022-10-23": {
-    "Finance": 26,
     "Overall": 457
   },
   "2022-10-24": {
-    "Finance": 28,
     "Overall": 490
   },
   "2022-10-25": {
-    "Finance": 27,
     "Overall": 434
   },
   "2022-10-26": {
-    "Finance": 26,
     "Overall": 385
   },
   "2022-10-27": {
-    "Finance": 25,
     "Overall": 365
   },
   "2022-10-28": {
-    "Finance": 23,
     "Overall": 351
   },
   "2022-10-29": {
-    "Finance": 26,
     "Overall": 376
   },
   "2022-10-30": {
-    "Finance": 19,
     "Overall": 354
   },
   "2022-10-31": {
-    "Finance": 20,
     "Overall": 387
   },
   "2022-01-11": {
-    "Finance": 23,
     "Overall": 360
   },
   "2022-02-11": {
-    "Finance": 25,
     "Overall": 364
   },
   "2022-03-11": {
-    "Finance": 23,
     "Overall": 364
   },
   "2022-04-11": {
-    "Finance": 23,
     "Overall": 376
   },
   "2022-05-11": {
-    "Finance": 25,
     "Overall": 367
   },
   "2022-06-11": {
-    "Finance": 23,
     "Overall": 393
   },
   "2022-07-11": {
-    "Finance": 24,
     "Overall": 415
   },
   "2022-08-11": {
-    "Finance": 26,
     "Overall": 397
   },
   "2022-09-11": {
-    "Finance": 27,
     "Overall": 411
   },
   "2022-10-11": {
-    "Finance": 25,
     "Overall": 343
   },
   "2022-11-11": {
-    "Finance": 25,
     "Overall": 347
   },
   "2022-12-11": {
-    "Finance": 25,
     "Overall": 383
   },
   "2022-11-13": {
-    "Finance": 26,
     "Overall": 438
   },
   "2022-11-14": {
-    "Finance": 22,
     "Overall": 451
   },
   "2022-11-15": {
-    "Finance": 29,
     "Overall": 437
   },
   "2022-11-16": {
-    "Finance": 30,
     "Overall": 423
   },
   "2022-11-17": {
-    "Finance": 29,
     "Overall": 427
   },
   "2022-11-18": {
-    "Finance": 32,
     "Overall": 476
   },
   "2022-11-19": {
-    "Finance": 38,
     "Overall": 501
   },
   "2022-11-20": {
-    "Finance": 35,
     "Overall": 501
   },
   "2022-11-21": {
-    "Finance": 32,
     "Overall": 501
   },
   "2022-11-22": {
-    "Finance": 38,
     "Overall": 501
   },
   "2022-11-23": {
-    "Finance": 38,
     "Overall": 501
   },
   "2022-11-24": {
-    "Finance": 34,
     "Overall": 501
   },
   "2022-11-25": {
-    "Finance": 26,
     "Overall": 501
   },
   "2022-11-26": {
-    "Finance": 34,
     "Overall": 501
   },
   "2022-11-27": {
-    "Finance": 34,
     "Overall": 501
   },
   "2022-11-28": {
-    "Finance": 36,
     "Overall": 501
   },
   "2022-11-29": {
-    "Finance": 37,
     "Overall": 501
   },
   "2022-11-30": {
-    "Finance": 29,
     "Overall": 456
   },
   "2022-01-12": {
-    "Finance": 26,
     "Overall": 399
   },
   "2022-02-12": {
-    "Finance": 26,
     "Overall": 406
   },
   "2022-03-12": {
-    "Finance": 27,
     "Overall": 406
   },
   "2022-04-12": {
-    "Finance": 28,
     "Overall": 455
   },
   "2022-05-12": {
-    "Finance": 27,
     "Overall": 493
   },
   "2022-06-12": {
-    "Finance": 27,
     "Overall": 451
   },
   "2022-07-12": {
-    "Finance": 29,
     "Overall": 451
   },
   "2022-08-12": {
-    "Finance": 31,
     "Overall": 448
   },
   "2022-09-12": {
-    "Finance": 31,
     "Overall": 448
   },
   "2022-10-12": {
-    "Finance": 32,
     "Overall": 479
   },
   "2022-11-12": {
-    "Finance": 33,
     "Overall": 501
   },
   "2022-12-12": {
-    "Finance": 30,
     "Overall": 501
   },
   "2022-12-13": {
-    "Finance": 34,
     "Overall": 501
   },
   "2022-12-14": {
-    "Finance": 31,
     "Overall": 462
   },
   "2022-12-15": {
-    "Finance": 31,
     "Overall": 457
   },
   "2022-12-16": {
-    "Finance": 28,
     "Overall": 442
   },
   "2022-12-17": {
-    "Finance": 31,
     "Overall": 458
   },
   "2022-12-18": {
-    "Finance": 31,
     "Overall": 501
   },
   "2022-12-19": {
-    "Finance": 33,
     "Overall": 501
   },
   "2022-12-20": {
-    "Finance": 33,
     "Overall": 501
   },
   "2022-12-21": {
-    "Finance": 34,
     "Overall": 501
   },
   "2022-12-22": {
-    "Finance": 34,
     "Overall": 501
   },
   "2022-12-23": {
-    "Finance": 31,
     "Overall": 501
   },
   "2022-12-24": {
-    "Finance": 29,
     "Overall": 501
   },
   "2022-12-25": {
-    "Finance": 29,
     "Overall": 501
   },
   "2022-12-26": {
-    "Finance": 26,
     "Overall": 501
   },
   "2022-12-27": {
-    "Finance": 30,
     "Overall": 501
   },
   "2022-12-28": {
-    "Finance": 32,
     "Overall": 501
   },
   "2022-12-29": {
-    "Finance": 33,
     "Overall": 501
   },
   "2022-12-30": {
-    "Finance": 35,
     "Overall": 501
   },
   "2022-12-31": {
-    "Finance": 37,
     "Overall": 501
   },
   "2023-01-01": {
-    "Finance": 33,
     "Overall": 501
   },
   "2023-02-01": {
-    "Finance": 35,
     "Overall": 501
   },
   "2023-03-01": {
-    "Finance": 39,
     "Overall": 501
   },
   "2023-04-01": {
-    "Finance": 40,
     "Overall": 501
   },
   "2023-05-01": {
-    "Finance": 39,
     "Overall": 501
   },
   "2023-06-01": {
-    "Finance": 37,
     "Overall": 501
   },
   "2023-07-01": {
-    "Finance": 37,
     "Overall": 501
   },
   "2023-08-01": {
-    "Finance": 34,
     "Overall": 501
   },
   "2023-09-01": {
-    "Finance": 33,
     "Overall": 501
   },
   "2023-10-01": {
-    "Finance": 33,
     "Overall": 501
   },
   "2023-11-01": {
-    "Finance": 36,
     "Overall": 501
   },
   "2023-12-01": {
-    "Finance": 34,
     "Overall": 501
   },
   "2023-01-13": {
-    "Finance": 35,
     "Overall": 480
   },
   "2023-01-14": {
-    "Finance": 25,
     "Overall": 399
   },
   "2023-01-15": {
-    "Finance": 25,
     "Overall": 424
   },
   "2023-01-16": {
-    "Finance": 26,
     "Overall": 496
   },
   "2023-01-17": {
-    "Finance": 30,
     "Overall": 501
   },
   "2023-01-18": {
-    "Finance": 34,
     "Overall": 488
   },
   "2023-01-19": {
-    "Finance": 34,
     "Overall": 483
   },
   "2023-01-20": {
-    "Finance": 36,
     "Overall": 483
   },
   "2023-01-21": {
-    "Finance": 34,
     "Overall": 456
   },
   "2023-01-22": {
-    "Finance": 33,
     "Overall": 498
   },
   "2023-01-23": {
-    "Finance": 37,
     "Overall": 501
   },
   "2023-01-24": {
-    "Finance": 42,
     "Overall": 501
   },
   "2023-01-25": {
-    "Finance": 38,
     "Overall": 493
   },
   "2023-01-26": {
-    "Finance": 33,
     "Overall": 437
   },
   "2023-01-27": {
-    "Finance": 33,
     "Overall": 451
   },
   "2023-01-28": {
-    "Finance": 41,
     "Overall": 497
   },
   "2023-01-29": {
-    "Finance": 39,
     "Overall": 501
   },
   "2023-01-30": {
-    "Finance": 35,
     "Overall": 501
   },
   "2023-01-31": {
-    "Finance": 39,
     "Overall": 501
   },
   "2023-01-02": {
-    "Finance": 40,
     "Overall": 501
   },
   "2023-02-02": {
-    "Finance": 35,
     "Overall": 449
   },
   "2023-03-02": {
-    "Finance": 35,
     "Overall": 450
   },
   "2023-04-02": {
-    "Finance": 38,
     "Overall": 467
   },
   "2023-05-02": {
-    "Finance": 34,
     "Overall": 478
   },
   "2023-06-02": {
-    "Finance": 34,
     "Overall": 501
   },
   "2023-07-02": {
-    "Finance": 35,
     "Overall": 496
   },
   "2023-08-02": {
-    "Finance": 39,
     "Overall": 501
   },
   "2023-09-02": {
-    "Finance": 36,
     "Overall": 500
   },
   "2023-10-02": {
-    "Finance": 40,
     "Overall": 501
   },
   "2023-11-02": {
-    "Finance": 40,
     "Overall": 501
   },
   "2023-12-02": {
-    "Finance": 39,
     "Overall": 501
   },
   "2023-02-13": {
-    "Finance": 36,
     "Overall": 501
   },
   "2023-02-14": {
-    "Finance": 40,
     "Overall": 501
   },
   "2023-02-15": {
-    "Finance": 42,
     "Overall": 501
   },
   "2023-02-16": {
-    "Finance": 33,
     "Overall": 459
   },
   "2023-02-17": {
-    "Finance": 35,
     "Overall": 479
   },
   "2023-02-18": {
-    "Finance": 41,
     "Overall": 501
   },
   "2023-02-19": {
-    "Finance": 34,
     "Overall": 501
   },
   "2023-02-20": {
-    "Finance": 34,
     "Overall": 501
   },
   "2023-02-21": {
-    "Finance": 36,
     "Overall": 501
   },
   "2023-02-22": {
-    "Finance": 36,
     "Overall": 501
   },
   "2023-02-23": {
-    "Finance": 40,
     "Overall": 501
   },
   "2023-02-24": {
-    "Finance": 37,
     "Overall": 501
   },
   "2023-02-25": {
-    "Finance": 41,
     "Overall": 501
   },
   "2023-02-26": {
-    "Finance": 40,
     "Overall": 501
   },
   "2023-02-27": {
-    "Finance": 38,
     "Overall": 501
   },
   "2023-02-28": {
-    "Finance": 38,
     "Overall": 501
   },
   "2023-01-03": {
-    "Finance": 40,
     "Overall": 501
   },
   "2023-02-03": {
-    "Finance": 37,
     "Overall": 501
   },
   "2023-03-03": {
-    "Finance": 38,
     "Overall": 501
   },
   "2023-04-03": {
-    "Finance": 40,
     "Overall": 501
   },
   "2023-05-03": {
-    "Finance": 39,
     "Overall": 501
   },
   "2023-06-03": {
-    "Finance": 35,
     "Overall": 501
   },
   "2023-07-03": {
-    "Finance": 41,
     "Overall": 501
   },
   "2023-08-03": {
-    "Finance": 42,
     "Overall": 501
   },
   "2023-09-03": {
-    "Finance": 43,
     "Overall": 501
   },
   "2023-10-03": {
-    "Finance": 37,
     "Overall": 501
   },
   "2023-11-03": {
-    "Finance": 37,
     "Overall": 501
   },
   "2023-12-03": {
-    "Finance": 33,
     "Overall": 501
   },
   "2023-03-13": {
-    "Finance": 31,
     "Overall": 501
   },
   "2023-03-14": {
-    "Finance": 30,
     "Overall": 479
   },
   "2023-03-15": {
-    "Finance": 29,
     "Overall": 450
   },
   "2023-03-16": {
-    "Finance": 31,
     "Overall": 466
   },
   "2023-03-17": {
-    "Finance": 32,
     "Overall": 481
   },
   "2023-03-18": {
-    "Finance": 31,
     "Overall": 448
   },
   "2023-03-19": {
-    "Finance": 29,
     "Overall": 479
   },
   "2023-03-20": {
-    "Finance": 27,
     "Overall": 453
   },
   "2023-03-21": {
-    "Finance": 31,
     "Overall": 444
   },
   "2023-03-22": {
-    "Finance": 28,
     "Overall": 442
   },
   "2023-03-23": {
-    "Finance": 28,
     "Overall": 429
   },
   "2023-03-24": {
-    "Finance": 30,
     "Overall": 455
   },
   "2023-03-25": {
-    "Finance": 31,
     "Overall": 501
   },
   "2023-03-26": {
-    "Finance": 32,
     "Overall": 501
   },
   "2023-03-27": {
-    "Finance": 33,
     "Overall": 501
   },
   "2023-03-28": {
-    "Finance": 32,
     "Overall": 501
   },
   "2023-03-29": {
-    "Finance": 32,
     "Overall": 498
   },
   "2023-03-30": {
-    "Finance": 28,
     "Overall": 421
   },
   "2023-03-31": {
-    "Finance": 29,
     "Overall": 416
   },
   "2023-01-04": {
-    "Finance": 31,
     "Overall": 456
   },
   "2023-02-04": {
-    "Finance": 30,
     "Overall": 501
   },
   "2023-03-04": {
-    "Finance": 30,
     "Overall": 500
   },
   "2023-04-04": {
-    "Finance": 30,
     "Overall": 439
   },
   "2023-05-04": {
-    "Finance": 28,
     "Overall": 404
   },
   "2023-06-04": {
-    "Finance": 29,
     "Overall": 412
   },
   "2023-07-04": {
-    "Finance": 28,
     "Overall": 439
   },
   "2023-08-04": {
-    "Finance": 29,
     "Overall": 476
   },
   "2023-09-04": {
-    "Finance": 30,
     "Overall": 501
   },
   "2023-10-04": {
-    "Finance": 29,
     "Overall": 501
   },
   "2023-11-04": {
-    "Finance": 29,
     "Overall": 430
   },
   "2023-12-04": {
-    "Finance": 28,
     "Overall": 413
   },
   "2023-04-13": {
-    "Finance": 28,
     "Overall": 417
   },
   "2023-04-14": {
-    "Finance": 31,
     "Overall": 398
   },
   "2023-04-15": {
-    "Finance": 32,
     "Overall": 417
   },
   "2023-04-16": {
-    "Finance": 30,
     "Overall": 472
   },
   "2023-04-17": {
-    "Finance": 30,
     "Overall": 500
   },
   "2023-04-18": {
-    "Finance": 33,
     "Overall": 465
   },
   "2023-04-19": {
-    "Finance": 34,
     "Overall": 460
   },
   "2023-04-20": {
-    "Finance": 34,
     "Overall": 463
   },
   "2023-04-21": {
-    "Finance": 34,
     "Overall": 485
   },
   "2023-04-22": {
-    "Finance": 39,
     "Overall": 501
   },
   "2023-04-23": {
-    "Finance": 34,
     "Overall": 501
   },
   "2023-04-24": {
-    "Finance": 31,
     "Overall": 501
   },
   "2023-04-25": {
-    "Finance": 35,
     "Overall": 501
   },
   "2023-04-26": {
-    "Finance": 38,
     "Overall": 501
   },
   "2023-04-27": {
-    "Finance": 34,
     "Overall": 497
   },
   "2023-04-28": {
-    "Finance": 35,
     "Overall": 501
   },
   "2023-04-29": {
-    "Finance": 42,
     "Overall": 501
   },
   "2023-04-30": {
-    "Finance": 36,
     "Overall": 501
   },
   "2023-01-05": {
-    "Finance": 34,
     "Overall": 501
   },
   "2023-02-05": {
-    "Finance": 39,
     "Overall": 501
   },
   "2023-03-05": {
-    "Finance": 36,
     "Overall": 498
   },
   "2023-04-05": {
-    "Finance": 36,
     "Overall": 490
   },
   "2023-05-05": {
-    "Finance": 35,
     "Overall": 470
   },
   "2023-06-05": {
-    "Finance": 34,
     "Overall": 470
   },
   "2023-07-05": {
-    "Finance": 32,
     "Overall": 501
   },
   "2023-08-05": {
-    "Finance": 33,
     "Overall": 501
   },
   "2023-09-05": {
-    "Finance": 34,
     "Overall": 485
   },
   "2023-10-05": {
-    "Finance": 39,
     "Overall": 501
   },
   "2023-11-05": {
-    "Finance": 36,
     "Overall": 501
   },
   "2023-12-05": {
-    "Finance": 39,
     "Overall": 501
   },
   "2023-05-13": {
-    "Finance": 38,
     "Overall": 501
   },
   "2023-05-14": {
-    "Finance": 37,
     "Overall": 501
   },
   "2023-05-15": {
-    "Finance": 35,
     "Overall": 501
   },
   "2023-05-16": {
-    "Finance": 41,
     "Overall": 501
   },
   "2023-05-17": {
-    "Finance": 44,
     "Overall": 501
   },
   "2023-05-18": {
-    "Finance": 43,
     "Overall": 501
   },
   "2023-05-19": {
-    "Finance": 43,
     "Overall": 501
   },
   "2023-05-20": {
-    "Finance": 43,
     "Overall": 501
   },
   "2023-05-21": {
-    "Finance": 40,
     "Overall": 501
   },
   "2023-05-22": {
-    "Finance": 42,
     "Overall": 501
   },
   "2023-05-23": {
-    "Finance": 44,
     "Overall": 501
   },
   "2023-05-24": {
-    "Finance": 44,
     "Overall": 501
   },
   "2023-05-25": {
-    "Finance": 46,
     "Overall": 501
   },
   "2023-05-26": {
-    "Finance": 46,
     "Overall": 501
   },
   "2023-05-27": {
-    "Finance": 47,
     "Overall": 501
   },
   "2023-05-28": {
-    "Finance": 43,
     "Overall": 501
   },
   "2023-05-29": {
-    "Finance": 41,
     "Overall": 501
   },
   "2023-05-30": {
-    "Finance": 40,
     "Overall": 501
   },
   "2023-05-31": {
-    "Finance": 42,
     "Overall": 501
   },
   "2023-01-06": {
-    "Finance": 46,
     "Overall": 501
   },
   "2023-02-06": {
-    "Finance": 50,
     "Overall": 501
   },
   "2023-03-06": {
-    "Finance": 50,
     "Overall": 501
   },
   "2023-04-06": {
-    "Finance": 45,
     "Overall": 501
   },
   "2023-05-06": {
-    "Finance": 49,
     "Overall": 501
   },
   "2023-06-06": {
-    "Finance": 54,
     "Overall": 501
   },
   "2023-07-06": {
-    "Finance": 54,
     "Overall": 501
   },
   "2023-08-06": {
-    "Finance": 53,
     "Overall": 501
   },
   "2023-09-06": {
-    "Finance": 51,
     "Overall": 501
   },
   "2023-10-06": {
-    "Finance": 46,
     "Overall": 501
   },
   "2023-11-06": {
-    "Finance": 44,
     "Overall": 501
   },
   "2023-12-06": {
-    "Finance": 42,
     "Overall": 501
   },
   "2023-06-13": {
-    "Finance": 45,
     "Overall": 501
   },
   "2023-06-14": {
-    "Finance": 50,
     "Overall": 501
   },
   "2023-06-15": {
-    "Finance": 49,
     "Overall": 501
   },
   "2023-06-16": {
-    "Finance": 49,
     "Overall": 501
   },
   "2023-06-17": {
-    "Finance": 44,
     "Overall": 501
   },
   "2023-06-18": {
-    "Finance": 41,
     "Overall": 501
   },
   "2023-06-19": {
-    "Finance": 40,
     "Overall": 501
   },
   "2023-06-20": {
-    "Finance": 40,
     "Overall": 501
   },
   "2023-06-21": {
-    "Finance": 43,
     "Overall": 501
   },
   "2023-06-22": {
-    "Finance": 37,
     "Overall": 501
   },
   "2023-06-23": {
-    "Finance": 38,
     "Overall": 501
   },
   "2023-06-24": {
-    "Finance": 32,
     "Overall": 435
   },
   "2023-06-25": {
-    "Finance": 29,
     "Overall": 465
   },
   "2023-06-26": {
-    "Finance": 30,
     "Overall": 501
   },
   "2023-06-27": {
-    "Finance": 33,
     "Overall": 501
   },
   "2023-06-28": {
-    "Finance": 38,
     "Overall": 501
   },
   "2023-06-29": {
-    "Finance": 36,
     "Overall": 501
   },
   "2023-06-30": {
-    "Finance": 34,
     "Overall": 501
   },
   "2023-01-07": {
-    "Finance": 38,
     "Overall": 501
   },
   "2023-02-07": {
-    "Finance": 42,
     "Overall": 501
   },
   "2023-03-07": {
-    "Finance": 35,
     "Overall": 501
   },
   "2023-04-07": {
-    "Finance": 40,
     "Overall": 501
   },
   "2023-05-07": {
-    "Finance": 38,
     "Overall": 501
   },
   "2023-06-07": {
-    "Finance": 41,
     "Overall": 501
   },
   "2023-07-07": {
-    "Finance": 40,
     "Overall": 501
   },
   "2023-08-07": {
-    "Finance": 41,
     "Overall": 501
   },
   "2023-09-07": {
-    "Finance": 37,
     "Overall": 501
   },
   "2023-10-07": {
-    "Finance": 36,
     "Overall": 501
   },
   "2023-11-07": {
-    "Finance": 38,
     "Overall": 501
   },
   "2023-12-07": {
-    "Finance": 40,
     "Overall": 501
   },
   "2023-07-13": {
-    "Finance": 35,
     "Overall": 491
   },
   "2023-07-14": {
-    "Finance": 17,
     "Overall": 247
   },
   "2023-07-15": {
-    "Finance": 19,
     "Overall": 287
   },
   "2023-07-16": {
-    "Finance": 21,
     "Overall": 365
   },
   "2023-07-17": {
-    "Finance": 21,
     "Overall": 411
   },
   "2023-07-18": {
-    "Finance": 25,
     "Overall": 390
   },
   "2023-07-19": {
-    "Finance": 23,
     "Overall": 361
   },
   "2023-07-20": {
-    "Finance": 23,
     "Overall": 350
   },
   "2023-07-21": {
-    "Finance": 23,
     "Overall": 362
   },
   "2023-07-22": {
-    "Finance": 26,
     "Overall": 411
   },
   "2023-07-23": {
-    "Finance": 29,
     "Overall": 493
   },
   "2023-07-24": {
-    "Finance": 29,
     "Overall": 498
   },
   "2023-07-25": {
-    "Finance": 32,
     "Overall": 480
   },
   "2023-07-26": {
-    "Finance": 37,
     "Overall": 499
   },
   "2023-07-27": {
-    "Finance": 36,
     "Overall": 479
   },
   "2023-07-28": {
-    "Finance": 38,
     "Overall": 501
   },
   "2023-07-29": {
-    "Finance": 37,
     "Overall": 501
   },
   "2023-07-30": {
-    "Finance": 34,
     "Overall": 501
   },
   "2023-07-31": {
-    "Finance": 32,
     "Overall": 501
   },
   "2023-01-08": {
-    "Finance": 40,
     "Overall": 501
   },
   "2023-02-08": {
-    "Finance": 41,
     "Overall": 501
   },
   "2023-03-08": {
-    "Finance": 37,
     "Overall": 501
   },
   "2023-04-08": {
-    "Finance": 40,
     "Overall": 501
   },
   "2023-05-08": {
-    "Finance": 38,
     "Overall": 501
   },
   "2023-06-08": {
-    "Finance": 30,
     "Overall": 501
   },
   "2023-07-08": {
-    "Finance": 32,
     "Overall": 501
   },
   "2023-08-08": {
-    "Finance": 42,
     "Overall": 501
   },
   "2023-09-08": {
-    "Finance": 42,
     "Overall": 501
   },
   "2023-10-08": {
-    "Finance": 43,
     "Overall": 501
   },
   "2023-11-08": {
-    "Finance": 43,
     "Overall": 501
   },
   "2023-12-08": {
-    "Finance": 43,
     "Overall": 501
   },
   "2023-08-13": {
-    "Finance": 32,
     "Overall": 501
   },
   "2023-08-14": {
-    "Finance": 32,
     "Overall": 501
   },
   "2023-08-15": {
-    "Finance": 39,
     "Overall": 501
   },
   "2023-08-16": {
-    "Finance": 44,
     "Overall": 501
   },
   "2023-08-17": {
-    "Finance": 42,
     "Overall": 501
   },
   "2023-08-18": {
-    "Finance": 32,
     "Overall": 501
   },
   "2023-08-19": {
-    "Finance": 36,
     "Overall": 501
   },
   "2023-08-20": {
-    "Finance": 35,
     "Overall": 501
   },
   "2023-08-21": {
-    "Finance": 39,
     "Overall": 501
   },
   "2023-08-22": {
-    "Finance": 41,
     "Overall": 501
   },
   "2023-08-23": {
-    "Finance": 39,
     "Overall": 501
   },
   "2023-08-24": {
-    "Finance": 38,
     "Overall": 501
   },
   "2023-08-25": {
-    "Finance": 38,
     "Overall": 501
   },
   "2023-08-26": {
-    "Finance": 45,
     "Overall": 501
   },
   "2023-08-27": {
-    "Finance": 48,
     "Overall": 501
   },
   "2023-08-28": {
-    "Finance": 44,
     "Overall": 501
   },
   "2023-08-29": {
-    "Finance": 44,
     "Overall": 501
   },
   "2023-08-30": {
-    "Finance": 44,
     "Overall": 501
   },
   "2023-08-31": {
-    "Finance": 36,
     "Overall": 501
   },
   "2023-01-09": {
-    "Finance": 45,
     "Overall": 501
   },
   "2023-02-09": {
-    "Finance": 47,
     "Overall": 501
   },
   "2023-03-09": {
-    "Finance": 44,
     "Overall": 501
   },
   "2023-04-09": {
-    "Finance": 41,
     "Overall": 501
   },
   "2023-05-09": {
-    "Finance": 39,
     "Overall": 501
   },
   "2023-06-09": {
-    "Finance": 45,
     "Overall": 501
   },
   "2023-07-09": {
-    "Finance": 47,
     "Overall": 501
   },
   "2023-08-09": {
-    "Finance": 42,
     "Overall": 501
   },
   "2023-09-09": {
-    "Finance": 48,
     "Overall": 501
   },
   "2023-10-09": {
-    "Finance": 45,
     "Overall": 501
   },
   "2023-11-09": {
-    "Finance": 46,
     "Overall": 501
   },
   "2023-12-09": {
-    "Finance": 47,
     "Overall": 501
   },
   "2023-09-13": {
-    "Finance": 52,
     "Overall": 501
   },
   "2023-09-14": {
-    "Finance": 53,
     "Overall": 501
   },
   "2023-09-15": {
-    "Finance": 50,
     "Overall": 501
   },
   "2023-09-16": {
-    "Finance": 49,
     "Overall": 501
   },
   "2023-09-17": {
-    "Finance": 47,
     "Overall": 501
   },
   "2023-09-18": {
-    "Finance": 43,
     "Overall": 501
   },
   "2023-09-19": {
-    "Finance": 48,
     "Overall": 501
   },
   "2023-09-20": {
-    "Finance": 52,
     "Overall": 501
   },
   "2023-09-21": {
-    "Finance": 52,
     "Overall": 501
   },
   "2023-09-22": {
-    "Finance": 48,
     "Overall": 501
   },
   "2023-09-23": {
-    "Finance": 49,
     "Overall": 501
   },
   "2023-09-24": {
-    "Finance": 43,
     "Overall": 501
   },
   "2023-09-25": {
-    "Finance": 38,
     "Overall": 501
   },
   "2023-09-26": {
-    "Finance": 42,
     "Overall": 501
   },
   "2023-09-27": {
-    "Finance": 46,
     "Overall": 501
   },
   "2023-09-28": {
-    "Finance": 47,
     "Overall": 501
   },
   "2023-09-29": {
-    "Finance": 50,
     "Overall": 501
   },
   "2023-09-30": {
-    "Finance": 51,
     "Overall": 501
   },
   "2023-01-10": {
-    "Finance": 51,
     "Overall": 501
   },
   "2023-02-10": {
-    "Finance": 43,
     "Overall": 501
   },
   "2023-03-10": {
-    "Finance": 46,
     "Overall": 501
   },
   "2023-04-10": {
-    "Finance": 52,
     "Overall": 501
   },
   "2023-05-10": {
-    "Finance": 50,
     "Overall": 501
   },
   "2023-06-10": {
-    "Finance": 49,
     "Overall": 501
   },
   "2023-07-10": {
-    "Finance": 51,
     "Overall": 501
   },
   "2023-08-10": {
-    "Finance": 48,
     "Overall": 501
   },
   "2023-09-10": {
-    "Finance": 39,
     "Overall": 501
   },
   "2023-10-10": {
-    "Finance": 49,
     "Overall": 501
   },
   "2023-11-10": {
-    "Finance": 54,
     "Overall": 501
   },
   "2023-12-10": {
-    "Finance": 51,
     "Overall": 501
   },
   "2023-10-13": {
-    "Finance": 51,
     "Overall": 501
   },
   "2023-10-14": {
-    "Finance": 52,
     "Overall": 501
   },
   "2023-10-15": {
-    "Finance": 47,
     "Overall": 501
   },
   "2023-10-16": {
-    "Finance": 44,
     "Overall": 501
   },
   "2023-10-17": {
-    "Finance": 48,
     "Overall": 501
   },
   "2023-10-18": {
-    "Finance": 51,
     "Overall": 501
   },
   "2023-10-19": {
-    "Finance": 53,
     "Overall": 501
   },
   "2023-10-20": {
-    "Finance": 50,
     "Overall": 501
   },
   "2023-10-21": {
-    "Finance": 47,
     "Overall": 501
   },
   "2023-10-22": {
-    "Finance": 42,
     "Overall": 501
   },
   "2023-10-23": {
-    "Finance": 36,
     "Overall": 501
   },
   "2023-10-24": {
-    "Finance": 26,
     "Overall": 417
   },
   "2023-10-25": {
-    "Finance": 29,
     "Overall": 423
   },
   "2023-10-26": {
-    "Finance": 29,
     "Overall": 430
   },
   "2023-10-27": {
-    "Finance": 35,
     "Overall": 489
   },
   "2023-10-28": {
-    "Finance": 40,
     "Overall": 501
   },
   "2023-10-29": {
-    "Finance": 43,
     "Overall": 501
   },
   "2023-10-30": {
-    "Finance": 41,
     "Overall": 501
   },
   "2023-10-31": {
-    "Finance": 42,
     "Overall": 501
   },
   "2023-01-11": {
-    "Finance": 501,
     "Overall": 501
   },
   "2023-02-11": {
-    "Finance": 501,
     "Overall": 501
   },
   "2023-03-11": {
-    "Finance": 501,
     "Overall": 501
   },
   "2023-04-11": {
-    "Finance": 501,
     "Overall": 501
   },
   "2023-05-11": {
-    "Finance": 501,
     "Overall": 501
   },
   "2023-06-11": {
-    "Finance": 501,
     "Overall": 501
   },
   "2023-07-11": {
-    "Finance": 501,
     "Overall": 501
   },
   "2023-08-11": {
-    "Finance": 501,
     "Overall": 501
   },
   "2023-09-11": {
-    "Finance": 34,
     "Overall": 470
   },
   "2023-10-11": {
-    "Finance": 29,
     "Overall": 384
   },
   "2023-11-11": {
-    "Finance": 30,
     "Overall": 432
   },
   "2023-12-11": {
-    "Finance": 29,
     "Overall": 493
   },
   "2023-11-13": {
-    "Finance": 30,
     "Overall": 501
   },
   "2023-11-14": {
-    "Finance": 36,
     "Overall": 501
   },
   "2023-11-15": {
-    "Finance": 41,
     "Overall": 501
   },
   "2023-11-16": {
-    "Finance": 38,
     "Overall": 461
   },
   "2023-11-17": {
-    "Finance": 36,
     "Overall": 460
   },
   "2023-11-18": {
-    "Finance": 41,
     "Overall": 501
   },
   "2023-11-19": {
-    "Finance": 41,
     "Overall": 501
   },
   "2023-11-20": {
-    "Finance": 39,
     "Overall": 501
   },
   "2023-11-21": {
-    "Finance": 38,
     "Overall": 501
   },
   "2023-11-22": {
-    "Finance": 38,
     "Overall": 501
   },
   "2023-11-23": {
-    "Finance": 35,
     "Overall": 501
   },
   "2023-11-24": {
-    "Finance": 28,
     "Overall": 483
   },
   "2023-11-25": {
-    "Finance": 31,
     "Overall": 501
   },
   "2023-11-26": {
-    "Finance": 36,
     "Overall": 501
   },
   "2023-11-27": {
-    "Finance": 38,
     "Overall": 501
   },
   "2023-11-28": {
-    "Finance": 41,
     "Overall": 501
   },
   "2023-11-29": {
-    "Finance": 43,
     "Overall": 501
   },
   "2023-11-30": {
-    "Finance": 43,
     "Overall": 501
   },
   "2023-01-12": {
-    "Finance": 42,
     "Overall": 501
   },
   "2023-02-12": {
-    "Finance": 44,
     "Overall": 501
   },
   "2023-03-12": {
-    "Finance": 37,
     "Overall": 501
   },
   "2023-04-12": {
-    "Finance": 27,
     "Overall": 455
   },
   "2023-05-12": {
-    "Finance": 25,
     "Overall": 367
   },
   "2023-06-12": {
-    "Finance": 21,
     "Overall": 316
   },
   "2023-07-12": {
-    "Finance": 22,
     "Overall": 331
   },
   "2023-08-12": {
-    "Finance": 501,
     "Overall": 365
   },
   "2023-09-12": {
-    "Finance": 501,
     "Overall": 501
   },
   "2023-10-12": {
-    "Finance": 20,
     "Overall": 369
   },
   "2023-11-12": {
-    "Finance": 21,
     "Overall": 390
   },
   "2023-12-12": {
-    "Finance": 26,
     "Overall": 413
   },
   "2023-12-13": {
-    "Finance": 30,
     "Overall": 414
   },
   "2023-12-14": {
-    "Finance": 31,
     "Overall": 410
   },
   "2023-12-15": {
-    "Finance": 31,
     "Overall": 385
   },
   "2023-12-16": {
-    "Finance": 30,
     "Overall": 392
   },
   "2023-12-17": {
-    "Finance": 30,
     "Overall": 419
   },
   "2023-12-18": {
-    "Finance": 32,
     "Overall": 475
   },
   "2023-12-19": {
-    "Finance": 33,
     "Overall": 441
   },
   "2023-12-20": {
-    "Finance": 30,
     "Overall": 404
   },
   "2023-12-21": {
-    "Finance": 25,
     "Overall": 366
   },
   "2023-12-22": {
-    "Finance": 23,
     "Overall": 357
   },
   "2023-12-23": {
-    "Finance": 24,
     "Overall": 385
   },
   "2023-12-24": {
-    "Finance": 22,
     "Overall": 393
   },
   "2023-12-25": {
-    "Finance": 18,
     "Overall": 420
   },
   "2023-12-26": {
-    "Finance": 13,
     "Overall": 478
   },
   "2023-12-27": {
-    "Finance": 23,
     "Overall": 491
   },
   "2023-12-28": {
-    "Finance": 23,
     "Overall": 418
   },
   "2023-12-29": {
-    "Finance": 24,
     "Overall": 426
   },
   "2023-12-30": {
-    "Finance": 25,
     "Overall": 436
   },
   "2023-12-31": {
-    "Finance": 26,
     "Overall": 470
   },
   "2024-01-01": {
-    "Finance": 21,
     "Overall": 501
   },
   "2024-02-01": {
-    "Finance": 21,
     "Overall": 406
   },
   "2024-03-01": {
-    "Finance": 26,
     "Overall": 396
   },
   "2024-04-01": {
-    "Finance": 31,
     "Overall": 421
   },
   "2024-05-01": {
-    "Finance": 31,
     "Overall": 424
   },
   "2024-06-01": {
-    "Finance": 31,
     "Overall": 439
   },
   "2024-07-01": {
-    "Finance": 30,
     "Overall": 486
   },
   "2024-08-01": {
-    "Finance": 30,
     "Overall": 501
   },
   "2024-09-01": {
-    "Finance": 26,
     "Overall": 422
   },
   "2024-10-01": {
-    "Finance": 27,
     "Overall": 414
   },
   "2024-11-01": {
-    "Finance": 25,
     "Overall": 330
   },
   "2024-12-01": {
-    "Finance": 25,
     "Overall": 323
   },
   "2024-01-13": {
-    "Finance": 26,
     "Overall": 387
   },
   "2024-01-14": {
-    "Finance": 27,
     "Overall": 470
   },
   "2024-01-15": {
-    "Finance": 27,
     "Overall": 501
   },
   "2024-01-16": {
-    "Finance": 30,
     "Overall": 501
   },
   "2024-01-17": {
-    "Finance": 31,
     "Overall": 486
   },
   "2024-01-18": {
-    "Finance": 34,
     "Overall": 459
   },
   "2024-01-19": {
-    "Finance": 34,
     "Overall": 471
   },
   "2024-01-20": {
-    "Finance": 35,
     "Overall": 501
   },
   "2024-01-21": {
-    "Finance": 34,
     "Overall": 501
   },
   "2024-01-22": {
-    "Finance": 35,
     "Overall": 501
   },
   "2024-01-23": {
-    "Finance": 38,
     "Overall": 501
   },
   "2024-01-24": {
-    "Finance": 38,
     "Overall": 501
   },
   "2024-01-25": {
-    "Finance": 39,
     "Overall": 501
   },
   "2024-01-26": {
-    "Finance": 42,
     "Overall": 501
   },
   "2024-01-27": {
-    "Finance": 38,
     "Overall": 501
   },
   "2024-01-28": {
-    "Finance": 38,
     "Overall": 501
   },
   "2024-01-29": {
-    "Finance": 38,
     "Overall": 501
   },
   "2024-01-30": {
-    "Finance": 42,
     "Overall": 501
   },
   "2024-01-31": {
-    "Finance": 45,
     "Overall": 501
   },
   "2024-01-02": {
-    "Finance": 44,
     "Overall": 501
   },
   "2024-02-02": {
-    "Finance": 48,
     "Overall": 501
   },
   "2024-03-02": {
-    "Finance": 47,
     "Overall": 501
   },
   "2024-04-02": {
-    "Finance": 45,
     "Overall": 501
   },
   "2024-05-02": {
-    "Finance": 44,
     "Overall": 501
   },
   "2024-06-02": {
-    "Finance": 46,
     "Overall": 501
   },
   "2024-07-02": {
-    "Finance": 44,
     "Overall": 501
   },
   "2024-08-02": {
-    "Finance": 41,
     "Overall": 501
   },
   "2024-09-02": {
-    "Finance": 40,
     "Overall": 501
   },
   "2024-10-02": {
-    "Finance": 38,
     "Overall": 486
   },
   "2024-11-02": {
-    "Finance": 37,
     "Overall": 501
   },
   "2024-12-02": {
-    "Finance": 36,
     "Overall": 501
   },
   "2024-02-13": {
-    "Finance": 33,
     "Overall": 450
   },
   "2024-02-14": {
-    "Finance": 35,
     "Overall": 447
   },
   "2024-02-15": {
-    "Finance": 29,
     "Overall": 359
   },
   "2024-02-16": {
-    "Finance": 29,
     "Overall": 340
   },
   "2024-02-17": {
-    "Finance": 30,
     "Overall": 371
   },
   "2024-02-18": {
-    "Finance": 32,
     "Overall": 438
   },
   "2024-02-19": {
-    "Finance": 28,
     "Overall": 415
   },
   "2024-02-20": {
-    "Finance": 28,
     "Overall": 384
   },
   "2024-02-21": {
-    "Finance": 31,
     "Overall": 374
   },
   "2024-02-22": {
-    "Finance": 32,
     "Overall": 366
   },
   "2024-02-23": {
-    "Finance": 31,
     "Overall": 351
   },
   "2024-02-24": {
-    "Finance": 32,
     "Overall": 387
   },
   "2024-02-25": {
-    "Finance": 29,
     "Overall": 429
   },
   "2024-02-26": {
-    "Finance": 30,
     "Overall": 448
   },
   "2024-02-27": {
-    "Finance": 25,
     "Overall": 315
   },
   "2024-02-28": {
-    "Finance": 25,
     "Overall": 269
   },
   "2024-02-29": {
-    "Finance": 14,
     "Overall": 143
   },
   "2024-01-03": {
-    "Finance": 14,
     "Overall": 157
   },
   "2024-02-03": {
-    "Finance": 13,
     "Overall": 145
   },
   "2024-03-03": {
-    "Finance": 12,
     "Overall": 153
   },
   "2024-04-03": {
-    "Finance": 11,
     "Overall": 149
   },
   "2024-05-03": {
-    "Finance": 4,
     "Overall": 46
   },
   "2024-06-03": {
-    "Finance": 8,
     "Overall": 69
   },
   "2024-07-03": {
-    "Finance": 8,
     "Overall": 89
   },
   "2024-08-03": {
-    "Finance": 13,
     "Overall": 123
   },
   "2024-09-03": {
-    "Finance": 13,
     "Overall": 131
   },
   "2024-10-03": {
-    "Finance": 12,
     "Overall": 150
   },
   "2024-11-03": {
-    "Finance": 12,
     "Overall": 165
   },
   "2024-12-03": {
-    "Finance": 11,
     "Overall": 126
   },
   "2024-03-13": {
-    "Finance": 12,
     "Overall": 137
   },
   "2024-03-14": {
-    "Finance": 12,
     "Overall": 130
   },
   "2024-03-15": {
-    "Finance": 12,
     "Overall": 143
   },
   "2024-03-16": {
-    "Finance": 14,
     "Overall": 184
   },
   "2024-03-17": {
-    "Finance": 14,
     "Overall": 211
   },
   "2024-03-18": {
-    "Finance": 14,
     "Overall": 208
   },
   "2024-03-19": {
-    "Finance": 18,
     "Overall": 221
   },
   "2024-03-20": {
-    "Finance": 21,
     "Overall": 235
   },
   "2024-03-21": {
-    "Finance": 20,
     "Overall": 226
   },
   "2024-03-22": {
-    "Finance": 20,
     "Overall": 244
   },
   "2024-03-23": {
-    "Finance": 22,
     "Overall": 283
   },
   "2024-03-24": {
-    "Finance": 21,
     "Overall": 315
   },
   "2024-03-25": {
-    "Finance": 19,
     "Overall": 306
   },
   "2024-03-26": {
-    "Finance": 19,
     "Overall": 242
   },
   "2024-03-27": {
-    "Finance": 18,
     "Overall": 225
   },
   "2024-03-28": {
-    "Finance": 21,
     "Overall": 234
   },
   "2024-03-29": {
-    "Finance": 22,
     "Overall": 226
   },
   "2024-03-30": {
-    "Finance": 24,
     "Overall": 252
   },
   "2024-03-31": {
-    "Finance": 20,
     "Overall": 280
   },
   "2024-01-04": {
-    "Finance": 18,
     "Overall": 271
   },
   "2024-02-04": {
-    "Finance": 24,
     "Overall": 291
   },
   "2024-03-04": {
-    "Finance": 23,
     "Overall": 291
   },
   "2024-04-04": {
-    "Finance": 23,
     "Overall": 301
   },
   "2024-05-04": {
-    "Finance": 24,
     "Overall": 297
   },
   "2024-06-04": {
-    "Finance": 24,
     "Overall": 321
   },
   "2024-07-04": {
-    "Finance": 21,
     "Overall": 332
   },
   "2024-08-04": {
-    "Finance": 21,
     "Overall": 336
   },
   "2024-09-04": {
-    "Finance": 21,
     "Overall": 300
   },
   "2024-10-04": {
-    "Finance": 25,
     "Overall": 320
   },
   "2024-11-04": {
-    "Finance": 24,
     "Overall": 285
   },
   "2024-12-04": {
-    "Finance": 23,
     "Overall": 281
   },
   "2024-04-13": {
-    "Finance": 23,
     "Overall": 282
   },
   "2024-04-14": {
-    "Finance": 16,
     "Overall": 273
   },
   "2024-04-15": {
-    "Finance": 20,
     "Overall": 290
   },
   "2024-04-16": {
-    "Finance": 23,
     "Overall": 273
   },
   "2024-04-17": {
-    "Finance": 23,
     "Overall": 267
   },
   "2024-04-18": {
-    "Finance": 22,
     "Overall": 266
   },
   "2024-04-19": {
-    "Finance": 20,
     "Overall": 250
   },
   "2024-04-20": {
-    "Finance": 15,
     "Overall": 213
   },
   "2024-04-21": {
-    "Finance": 13,
     "Overall": 248
   },
   "2024-04-22": {
-    "Finance": 14,
     "Overall": 270
   },
   "2024-04-23": {
-    "Finance": 20,
     "Overall": 291
   },
   "2024-04-24": {
-    "Finance": 21,
     "Overall": 296
   },
   "2024-04-25": {
-    "Finance": 15,
     "Overall": 227
   },
   "2024-04-26": {
-    "Finance": 16,
     "Overall": 249
   },
   "2024-04-27": {
-    "Finance": 19,
     "Overall": 278
   },
   "2024-04-28": {
-    "Finance": 15,
     "Overall": 280
   },
   "2024-04-29": {
-    "Finance": 12,
     "Overall": 250
   },
   "2024-04-30": {
-    "Finance": 19,
     "Overall": 265
   },
   "2024-01-05": {
-    "Finance": 22,
     "Overall": 264
   },
   "2024-02-05": {
-    "Finance": 21,
     "Overall": 254
   },
   "2024-03-05": {
-    "Finance": 21,
     "Overall": 274
   },
   "2024-04-05": {
-    "Finance": 19,
     "Overall": 284
   },
   "2024-05-05": {
-    "Finance": 17,
     "Overall": 311
   },
   "2024-06-05": {
-    "Finance": 17,
     "Overall": 302
   },
   "2024-07-05": {
-    "Finance": 18,
     "Overall": 278
   },
   "2024-08-05": {
-    "Finance": 19,
     "Overall": 276
   },
   "2024-09-05": {
-    "Finance": 21,
     "Overall": 286
   },
   "2024-10-05": {
-    "Finance": 22,
     "Overall": 300
   },
   "2024-11-05": {
-    "Finance": 24,
     "Overall": 342
   },
   "2024-12-05": {
-    "Finance": 24,
     "Overall": 399
   },
   "2024-05-13": {
-    "Finance": 21,
     "Overall": 373
   },
   "2024-05-14": {
-    "Finance": 23,
     "Overall": 314
   },
   "2024-05-15": {
-    "Finance": 23,
     "Overall": 292
   },
   "2024-05-16": {
-    "Finance": 23,
     "Overall": 289
   },
   "2024-05-17": {
-    "Finance": 23,
     "Overall": 283
   },
   "2024-05-18": {
-    "Finance": 21,
     "Overall": 279
   },
   "2024-05-19": {
-    "Finance": 16,
     "Overall": 265
   },
   "2024-05-20": {
-    "Finance": 13,
     "Overall": 250
   },
   "2024-05-21": {
-    "Finance": 15,
     "Overall": 219
   },
   "2024-05-22": {
-    "Finance": 15,
     "Overall": 217
   },
   "2024-05-23": {
-    "Finance": 16,
     "Overall": 235
   },
   "2024-05-24": {
-    "Finance": 16,
     "Overall": 224
   },
   "2024-05-25": {
-    "Finance": 15,
     "Overall": 220
   },
   "2024-05-26": {
-    "Finance": 12,
     "Overall": 213
   },
   "2024-05-27": {
-    "Finance": 10,
     "Overall": 199
   },
   "2024-05-28": {
-    "Finance": 12,
     "Overall": 176
   },
   "2024-05-29": {
-    "Finance": 13,
     "Overall": 184
   },
   "2024-05-30": {
-    "Finance": 15,
     "Overall": 190
   },
   "2024-05-31": {
-    "Finance": 15,
     "Overall": 216
   },
   "2024-01-06": {
-    "Finance": 14,
     "Overall": 213
   },
   "2024-02-06": {
-    "Finance": 11,
     "Overall": 208
   },
   "2024-03-06": {
-    "Finance": 11,
     "Overall": 184
   },
   "2024-04-06": {
-    "Finance": 14,
     "Overall": 192
   },
   "2024-05-06": {
-    "Finance": 16,
     "Overall": 188
   },
   "2024-06-06": {
-    "Finance": 15,
     "Overall": 181
   },
   "2024-07-06": {
-    "Finance": 20,
     "Overall": 256
   },
   "2024-08-06": {
-    "Finance": 19,
     "Overall": 243
   },
   "2024-09-06": {
-    "Finance": 17,
     "Overall": 255
   },
   "2024-10-06": {
-    "Finance": 15,
     "Overall": 265
   },
   "2024-11-06": {
-    "Finance": 22,
     "Overall": 295
   },
   "2024-12-06": {
-    "Finance": 23,
     "Overall": 304
   },
   "2024-06-13": {
-    "Finance": 23,
     "Overall": 279
   },
   "2024-06-14": {
-    "Finance": 23,
     "Overall": 279
   },
   "2024-06-15": {
-    "Finance": 23,
     "Overall": 304
   },
   "2024-06-16": {
-    "Finance": 19,
     "Overall": 319
   },
   "2024-06-17": {
-    "Finance": 16,
     "Overall": 310
   },
   "2024-06-18": {
-    "Finance": 22,
     "Overall": 305
   },
   "2024-06-19": {
-    "Finance": 23,
     "Overall": 315
   },
   "2024-06-20": {
-    "Finance": 22,
     "Overall": 328
   },
   "2024-06-21": {
-    "Finance": 23,
     "Overall": 314
   },
   "2024-06-22": {
-    "Finance": 21,
     "Overall": 317
   },
   "2024-06-23": {
-    "Finance": 19,
     "Overall": 318
   },
   "2024-06-24": {
-    "Finance": 19,
     "Overall": 345
   },
   "2024-06-25": {
-    "Finance": 18,
     "Overall": 255
   },
   "2024-06-26": {
-    "Finance": 19,
     "Overall": 251
   },
   "2024-06-27": {
-    "Finance": 17,
     "Overall": 238
   },
   "2024-06-28": {
-    "Finance": 17,
     "Overall": 238
   },
   "2024-06-29": {
-    "Finance": 18,
     "Overall": 241
   },
   "2024-06-30": {
-    "Finance": 15,
     "Overall": 261
   },
   "2024-01-07": {
-    "Finance": 13,
     "Overall": 259
   },
   "2024-02-07": {
-    "Finance": 20,
     "Overall": 273
   },
   "2024-03-07": {
-    "Finance": 21,
     "Overall": 265
   },
   "2024-04-07": {
-    "Finance": 19,
     "Overall": 244
   },
   "2024-05-07": {
-    "Finance": 11,
     "Overall": 205
   },
   "2024-06-07": {
-    "Finance": 14,
     "Overall": 222
   },
   "2024-07-07": {
-    "Finance": 13,
     "Overall": 221
   },
   "2024-08-07": {
-    "Finance": 12,
     "Overall": 231
   },
   "2024-09-07": {
-    "Finance": 22,
     "Overall": 284
   },
   "2024-10-07": {
-    "Finance": 22,
     "Overall": 287
   },
   "2024-11-07": {
-    "Finance": 22,
     "Overall": 263
   },
   "2024-12-07": {
-    "Finance": 15,
     "Overall": 222
   },
   "2024-07-13": {
-    "Finance": 15,
     "Overall": 200
   },
   "2024-07-14": {
-    "Finance": 12,
     "Overall": 182
   },
   "2024-07-15": {
-    "Finance": 9,
     "Overall": 152
   },
   "2024-07-16": {
-    "Finance": 9,
     "Overall": 131
   },
   "2024-07-17": {
-    "Finance": 10,
     "Overall": 130
   },
   "2024-07-18": {
-    "Finance": 10,
     "Overall": 131
   },
   "2024-07-19": {
-    "Finance": 12,
     "Overall": 137
   },
   "2024-07-20": {
-    "Finance": 11,
     "Overall": 145
   },
   "2024-07-21": {
-    "Finance": 11,
     "Overall": 140
   },
   "2024-07-22": {
-    "Finance": 9,
     "Overall": 132
   },
   "2024-07-23": {
-    "Finance": 12,
     "Overall": 145
   },
   "2024-07-24": {
-    "Finance": 12,
     "Overall": 153
   },
   "2024-07-25": {
-    "Finance": 13,
     "Overall": 189
   },
   "2024-07-26": {
-    "Finance": 13,
     "Overall": 194
   },
   "2024-07-27": {
-    "Finance": 15,
     "Overall": 216
   },
   "2024-07-28": {
-    "Finance": 13,
     "Overall": 219
   },
   "2024-07-29": {
-    "Finance": 12,
     "Overall": 221
   },
   "2024-07-30": {
-    "Finance": 18,
     "Overall": 228
   },
   "2024-07-31": {
-    "Finance": 17,
     "Overall": 225
   },
   "2024-01-08": {
-    "Finance": 16,
     "Overall": 214
   },
   "2024-02-08": {
-    "Finance": 17,
     "Overall": 232
   },
   "2024-03-08": {
-    "Finance": 16,
     "Overall": 226
   },
   "2024-04-08": {
-    "Finance": 15,
     "Overall": 216
   },
   "2024-05-08": {
-    "Finance": 11,
     "Overall": 146
   },
   "2024-06-08": {
-    "Finance": 18,
     "Overall": 218
   },
   "2024-07-08": {
-    "Finance": 25,
     "Overall": 296
   },
   "2024-08-08": {
-    "Finance": 25,
     "Overall": 299
   },
   "2024-09-08": {
-    "Finance": 24,
     "Overall": 305
   },
   "2024-10-08": {
-    "Finance": 29,
     "Overall": 359
   },
   "2024-11-08": {
-    "Finance": 31,
     "Overall": 401
   },
   "2024-12-08": {
-    "Finance": 30,
     "Overall": 424
   },
   "2024-08-13": {
-    "Finance": 34,
     "Overall": 462
   },
   "2024-08-14": {
-    "Finance": 37,
     "Overall": 493
   },
   "2024-08-15": {
-    "Finance": 32,
     "Overall": 415
   },
   "2024-08-16": {
-    "Finance": 34,
     "Overall": 401
   },
   "2024-08-17": {
-    "Finance": 34,
     "Overall": 403
   },
   "2024-08-18": {
-    "Finance": 32,
     "Overall": 426
   },
   "2024-08-19": {
-    "Finance": 29,
     "Overall": 425
   },
   "2024-08-20": {
-    "Finance": 501,
     "Overall": 501
   },
   "2024-08-21": {
-    "Finance": 501,
     "Overall": 385
   },
   "2024-08-22": {
-    "Finance": 501,
     "Overall": 501
   },
   "2024-08-23": {
-    "Finance": 26,
     "Overall": 501
   },
   "2024-08-24": {
-    "Finance": 26,
     "Overall": 342
   },
   "2024-08-25": {
-    "Finance": 26,
     "Overall": 368
   },
   "2024-08-26": {
-    "Finance": 29,
     "Overall": 417
   },
   "2024-08-27": {
-    "Finance": 31,
     "Overall": 417
   },
   "2024-08-28": {
-    "Finance": 29,
     "Overall": 398
   },
   "2024-08-29": {
-    "Finance": 30,
     "Overall": 401
   },
   "2024-08-30": {
-    "Finance": 31,
     "Overall": 418
   },
   "2024-08-31": {
-    "Finance": 32,
     "Overall": 424
   },
   "2024-01-09": {
-    "Finance": 32,
     "Overall": 461
   },
   "2024-02-09": {
-    "Finance": 31,
     "Overall": 460
   },
   "2024-03-09": {
-    "Finance": 31,
     "Overall": 424
   },
   "2024-04-09": {
-    "Finance": 35,
     "Overall": 403
   },
   "2024-05-09": {
-    "Finance": 40,
     "Overall": 474
   },
   "2024-06-09": {
-    "Finance": 39,
     "Overall": 493
   },
   "2024-07-09": {
-    "Finance": 38,
     "Overall": 501
   },
   "2024-08-09": {
-    "Finance": 38,
     "Overall": 501
   },
   "2024-09-09": {
-    "Finance": 35,
     "Overall": 501
   },
   "2024-10-09": {
-    "Finance": 34,
     "Overall": 501
   },
   "2024-11-09": {
-    "Finance": 36,
     "Overall": 501
   },
   "2024-12-09": {
-    "Finance": 38,
     "Overall": 501
   },
   "2024-09-13": {
-    "Finance": 40,
     "Overall": 501
   },
   "2024-09-14": {
-    "Finance": 36,
     "Overall": 461
   },
   "2024-09-15": {
-    "Finance": 34,
     "Overall": 501
   },
   "2024-09-16": {
-    "Finance": 33,
     "Overall": 501
   },
   "2024-09-17": {
-    "Finance": 36,
     "Overall": 499
   },
   "2024-09-18": {
-    "Finance": 38,
     "Overall": 476
   },
   "2024-09-19": {
-    "Finance": 34,
     "Overall": 437
   },
   "2024-09-20": {
-    "Finance": 34,
     "Overall": 418
   },
   "2024-09-21": {
-    "Finance": 36,
     "Overall": 428
   },
   "2024-09-22": {
-    "Finance": 34,
     "Overall": 488
   },
   "2024-09-23": {
-    "Finance": 33,
     "Overall": 499
   },
   "2024-09-24": {
-    "Finance": 40,
     "Overall": 501
   },
   "2024-09-25": {
-    "Finance": 38,
     "Overall": 478
   },
   "2024-09-26": {
-    "Finance": 35,
     "Overall": 433
   },
   "2024-09-27": {
-    "Finance": 35,
     "Overall": 412
   },
   "2024-09-28": {
-    "Finance": 32,
     "Overall": 408
   },
   "2024-09-29": {
-    "Finance": 30,
     "Overall": 424
   },
   "2024-09-30": {
-    "Finance": 27,
     "Overall": 425
   },
   "2024-01-10": {
-    "Finance": 34,
     "Overall": 437
   },
   "2024-02-10": {
-    "Finance": 36,
     "Overall": 418
   },
   "2024-03-10": {
-    "Finance": 39,
     "Overall": 423
   },
   "2024-04-10": {
-    "Finance": 501,
     "Overall": 441
   },
   "2024-05-10": {
-    "Finance": 38,
     "Overall": 457
   },
   "2024-06-10": {
-    "Finance": 501,
     "Overall": 501
   },
   "2024-07-10": {
-    "Finance": 501,
     "Overall": 501
   },
   "2024-08-10": {
-    "Finance": 36,
     "Overall": 501
   },
   "2024-09-10": {
-    "Finance": 35,
     "Overall": 487
   },
   "2024-10-10": {
-    "Finance": 35,
     "Overall": 501
   },
   "2024-11-10": {
-    "Finance": 38,
     "Overall": 501
   },
   "2024-12-10": {
-    "Finance": 31,
     "Overall": 491
   },
   "2024-10-13": {
-    "Finance": 36,
     "Overall": 501
   },
   "2024-10-14": {
-    "Finance": 36,
     "Overall": 501
   },
   "2024-10-15": {
-    "Finance": 30,
     "Overall": 457
   },
   "2024-10-16": {
-    "Finance": 38,
     "Overall": 446
   },
   "2024-10-17": {
-    "Finance": 36,
     "Overall": 416
   },
   "2024-10-18": {
-    "Finance": 35,
     "Overall": 432
   },
   "2024-10-19": {
-    "Finance": 36,
     "Overall": 437
   },
   "2024-10-20": {
-    "Finance": 34,
     "Overall": 485
   },
   "2024-10-21": {
-    "Finance": 32,
     "Overall": 493
   },
   "2024-10-22": {
-    "Finance": 33,
     "Overall": 455
   },
   "2024-10-23": {
-    "Finance": 36,
     "Overall": 446
   },
   "2024-10-24": {
-    "Finance": 35,
     "Overall": 431
   },
   "2024-10-25": {
-    "Finance": 38,
     "Overall": 420
   },
   "2024-10-26": {
-    "Finance": 34,
     "Overall": 456
   },
   "2024-10-27": {
-    "Finance": 33,
     "Overall": 501
   },
   "2024-10-28": {
-    "Finance": 32,
     "Overall": 501
   },
   "2024-10-29": {
-    "Finance": 31,
     "Overall": 395
   },
   "2024-10-30": {
-    "Finance": 25,
     "Overall": 310
   },
   "2024-10-31": {
-    "Finance": 24,
     "Overall": 314
   },
   "2024-01-11": {
-    "Finance": 29,
     "Overall": 345
   },
   "2024-02-11": {
-    "Finance": 34,
     "Overall": 393
   },
   "2024-03-11": {
-    "Finance": 33,
     "Overall": 445
   },
   "2024-04-11": {
-    "Finance": 32,
     "Overall": 473
   },
   "2024-05-11": {
-    "Finance": 30,
     "Overall": 412
   },
   "2024-06-11": {
-    "Finance": 24,
     "Overall": 310
   },
   "2024-07-11": {
-    "Finance": 11,
     "Overall": 108
   },
   "2024-08-11": {
-    "Finance": 13,
     "Overall": 127
   },
   "2024-09-11": {
-    "Finance": 12,
     "Overall": 144
   },
   "2024-10-11": {
-    "Finance": 11,
     "Overall": 132
   },
   "2024-11-11": {
-    "Finance": 4,
     "Overall": 501
   },
   "2024-12-11": {
-    "Finance": 2,
     "Overall": 17
   },
   "2024-11-13": {
-    "Finance": 1,
     "Overall": 13
   },
   "2024-11-14": {
-    "Finance": 1,
     "Overall": 8
   },
   "2024-11-15": {
-    "Finance": 1,
     "Overall": 27
   },
   "2024-11-16": {
-    "Finance": 3,
     "Overall": 46
   },
   "2024-11-17": {
-    "Finance": 3,
     "Overall": 56
   },
   "2024-11-18": {
-    "Finance": 6,
     "Overall": 76
   },
   "2024-11-19": {
-    "Finance": 6,
     "Overall": 70
   },
   "2024-11-20": {
-    "Finance": 5,
     "Overall": 53
   },
   "2024-11-21": {
-    "Finance": 1,
     "Overall": 27
   },
   "2024-11-22": {
-    "Finance": 4,
     "Overall": 52
   },
   "2024-11-23": {
-    "Finance": 4,
     "Overall": 52
   },
   "2024-11-24": {
-    "Finance": 4,
     "Overall": 52
   },
   "2024-11-25": {
-    "Finance": 12,
     "Overall": 247
   },
   "2024-11-26": {
-    "Finance": 5,
     "Overall": 54
   },
   "2024-11-27": {
-    "Finance": 7,
     "Overall": 68
   },
   "2024-11-28": {
-    "Finance": 7,
     "Overall": 69
   },
   "2024-11-29": {
-    "Finance": 4,
     "Overall": 66
   },
   "2024-11-30": {
-    "Finance": 4,
     "Overall": 69
   },
   "2024-01-12": {
-    "Finance": 4,
     "Overall": 65
   },
   "2024-02-12": {
-    "Finance": 1,
     "Overall": 20
   },
   "2024-03-12": {
-    "Finance": 1,
     "Overall": 14
   },
   "2024-04-12": {
-    "Finance": 1,
     "Overall": 10
   },
   "2024-05-12": {
-    "Finance": 1,
     "Overall": 14
   },
   "2024-06-12": {
-    "Finance": 1,
     "Overall": 15
   },
   "2024-07-12": {
-    "Finance": 1,
     "Overall": 27
   },
   "2024-08-12": {
-    "Finance": 2,
     "Overall": 30
   },
   "2024-09-12": {
-    "Finance": 2,
     "Overall": 39
   },
   "2024-10-12": {
-    "Finance": 4,
     "Overall": 48
   },
   "2024-11-12": {
-    "Finance": 5,
     "Overall": 57
   },
   "2024-12-12": {
-    "Finance": 4,
     "Overall": 58
   },
   "2024-12-13": {
-    "Finance": 6,
     "Overall": 63
   },
   "2024-12-14": {
-    "Finance": 8,
     "Overall": 75
   },
   "2024-12-15": {
-    "Finance": 7,
     "Overall": 88
   },
   "2024-12-16": {
-    "Finance": 7,
     "Overall": 88
   },
   "2024-12-17": {
-    "Finance": 7,
     "Overall": 77
   },
   "2024-12-18": {
-    "Finance": 7,
     "Overall": 64
   },
   "2024-12-19": {
-    "Finance": 7,
     "Overall": 67
   },
   "2024-12-20": {
-    "Finance": 9,
     "Overall": 80
   },
   "2024-12-21": {
-    "Finance": 10,
     "Overall": 106
   },
   "2024-12-22": {
-    "Finance": 10,
     "Overall": 133
   },
   "2024-12-23": {
-    "Finance": 9,
     "Overall": 138
   },
   "2024-12-24": {
-    "Finance": 14,
     "Overall": 157
   },
   "2024-12-25": {
-    "Finance": 9,
     "Overall": 136
   },
   "2024-12-26": {
-    "Finance": 9,
     "Overall": 183
   },
   "2024-12-27": {
-    "Finance": 12,
     "Overall": 180
   },
   "2024-12-28": {
-    "Finance": 13,
     "Overall": 184
   },
   "2024-12-29": {
-    "Finance": 14,
     "Overall": 180
   },
   "2024-12-30": {
-    "Finance": 11,
     "Overall": 185
   },
   "2024-12-31": {
-    "Finance": 15,
     "Overall": 194
   },
   "2025-01-01": {
-    "Finance": 14,
     "Overall": 201
   },
   "2025-02-01": {
-    "Finance": 12,
     "Overall": 154
   },
   "2025-03-01": {
-    "Finance": 15,
     "Overall": 161
   },
   "2025-04-01": {
-    "Finance": 15,
     "Overall": 148
   },
   "2025-05-01": {
-    "Finance": 14,
     "Overall": 158
   },
   "2025-06-01": {
-    "Finance": 11,
     "Overall": 167
   },
   "2025-07-01": {
-    "Finance": 15,
     "Overall": 161
   },
   "2025-08-01": {
-    "Finance": 15,
     "Overall": 161
   },
   "2025-09-01": {
-    "Finance": 14,
     "Overall": 166
   },
   "2025-10-01": {
-    "Finance": 16,
     "Overall": 184
   },
   "2025-11-01": {
-    "Finance": 17,
     "Overall": 198
   },
   "2025-12-01": {
-    "Finance": 14,
     "Overall": 192
   },
   "2025-01-13": {
-    "Finance": 12,
     "Overall": 180
   },
   "2025-01-14": {
-    "Finance": 13,
     "Overall": 151
   },
   "2025-01-15": {
-    "Finance": 9,
     "Overall": 103
   },
   "2025-01-16": {
-    "Finance": 4,
     "Overall": 54
   },
   "2025-01-17": {
-    "Finance": 3,
     "Overall": 30
   },
   "2025-01-18": {
-    "Finance": 5,
     "Overall": 38
   },
   "2025-01-19": {
-    "Finance": 2,
     "Overall": 43
   },
   "2025-01-20": {
-    "Finance": 4,
     "Overall": 21
   },
   "2025-01-21": {
-    "Finance": 3,
     "Overall": 16
   },
   "2025-01-22": {
-    "Finance": 3,
     "Overall": 18
   },
   "2025-01-23": {
-    "Finance": 3,
     "Overall": 22
   },
   "2025-01-24": {
-    "Finance": 3,
     "Overall": 29
   },
   "2025-01-25": {
-    "Finance": 6,
     "Overall": 52
   },
   "2025-01-26": {
-    "Finance": 7,
     "Overall": 67
   },
   "2025-01-27": {
-    "Finance": 6,
     "Overall": 71
   },
   "2025-01-28": {
-    "Finance": 8,
     "Overall": 72
   },
   "2025-01-29": {
-    "Finance": 9,
     "Overall": 88
   },
   "2025-01-30": {
-    "Finance": 11,
     "Overall": 105
   },
   "2025-01-31": {
-    "Finance": 13,
     "Overall": 112
   },
   "2025-01-02": {
-    "Finance": 12,
     "Overall": 125
   },
   "2025-02-02": {
-    "Finance": 12,
     "Overall": 147
   },
   "2025-03-02": {
-    "Finance": 9,
     "Overall": 102
   },
   "2025-04-02": {
-    "Finance": 10,
     "Overall": 103
   },
   "2025-05-02": {
-    "Finance": 12,
     "Overall": 125
   },
   "2025-06-02": {
-    "Finance": 14,
     "Overall": 149
   },
   "2025-07-02": {
-    "Finance": 15,
     "Overall": 161
   },
   "2025-08-02": {
-    "Finance": 15,
     "Overall": 168
   },
   "2025-09-02": {
-    "Finance": 13,
     "Overall": 181
   },
   "2025-10-02": {
-    "Finance": 11,
     "Overall": 180
   },
   "2025-11-02": {
-    "Finance": 16,
     "Overall": 197
   },
   "2025-12-02": {
-    "Finance": 16,
     "Overall": 194
   },
   "2025-02-13": {
-    "Finance": 17,
     "Overall": 190
   },
   "2025-02-14": {
-    "Finance": 16,
     "Overall": 188
   },
   "2025-02-15": {
-    "Finance": 15,
     "Overall": 185
   },
   "2025-02-16": {
-    "Finance": 14,
     "Overall": 194
   },
   "2025-02-17": {
-    "Finance": 13,
     "Overall": 170
   },
   "2025-02-18": {
-    "Finance": 12,
     "Overall": 171
   },
   "2025-02-19": {
-    "Finance": 15,
     "Overall": 168
   },
   "2025-02-20": {
-    "Finance": 15,
     "Overall": 158
   },
   "2025-02-21": {
-    "Finance": 14,
     "Overall": 157
   },
   "2025-02-22": {
-    "Finance": 14,
     "Overall": 162
   },
   "2025-02-23": {
-    "Finance": 14,
     "Overall": 169
   },
   "2025-02-24": {
-    "Finance": 13,
     "Overall": 174
   },
   "2025-02-25": {
-    "Finance": 15,
     "Overall": 174
   },
   "2025-02-26": {
-    "Finance": 15,
     "Overall": 172
   },
   "2025-02-27": {
-    "Finance": 16,
     "Overall": 177
   },
   "2025-02-28": {
-    "Finance": 17,
     "Overall": 183
   },
   "2025-01-03": {
-    "Finance": 18,
     "Overall": 206
   },
   "2025-02-03": {
-    "Finance": 19,
     "Overall": 275
   },
   "2025-03-03": {
-    "Finance": 8,
     "Overall": 112
   },
   "2025-04-03": {
-    "Finance": 11,
     "Overall": 126
   },
   "2025-05-03": {
-    "Finance": 12,
     "Overall": 146
   },
   "2025-06-03": {
-    "Finance": 15,
     "Overall": 165
   },
   "2025-07-03": {
-    "Finance": 14,
     "Overall": 163
   },
   "2025-08-03": {
-    "Finance": 13,
     "Overall": 167
   },
   "2025-09-03": {
-    "Finance": 13,
     "Overall": 219
   },
   "2025-10-03": {
-    "Finance": 12,
     "Overall": 191
   },
   "2025-11-03": {
-    "Finance": 14,
     "Overall": 168
   },
   "2025-12-03": {
-    "Finance": 14,
     "Overall": 162
   },
   "2025-03-13": {
-    "Finance": 15,
     "Overall": 178
   },
   "2025-03-14": {
-    "Finance": 14,
     "Overall": 180
   },
   "2025-03-15": {
-    "Finance": 13,
     "Overall": 200
   },
   "2025-03-16": {
-    "Finance": 8,
     "Overall": 110
   },
   "2025-03-17": {
-    "Finance": 9,
     "Overall": 154
   },
   "2025-03-18": {
-    "Finance": 14,
     "Overall": 200
   },
   "2025-03-19": {
-    "Finance": 20,
     "Overall": 243
   },
   "2025-03-20": {
-    "Finance": 17,
     "Overall": 213
   },
   "2025-03-21": {
-    "Finance": 21,
     "Overall": 262
   },
   "2025-03-22": {
-    "Finance": 21,
     "Overall": 294
   },
   "2025-03-23": {
-    "Finance": 22,
     "Overall": 335
   },
   "2025-03-24": {
-    "Finance": 17,
     "Overall": 327
   },
   "2025-03-25": {
-    "Finance": 25,
     "Overall": 295
   },
   "2025-03-26": {
-    "Finance": 24,
     "Overall": 299
   },
   "2025-03-27": {
-    "Finance": 22,
     "Overall": 291
   },
   "2025-03-28": {
-    "Finance": 22,
     "Overall": 318
   },
   "2025-03-29": {
-    "Finance": 25,
     "Overall": 344
   },
   "2025-03-30": {
-    "Finance": 27,
     "Overall": 384
   },
   "2025-03-31": {
-    "Finance": 23,
     "Overall": 368
   },
   "2025-01-04": {
-    "Finance": 27,
     "Overall": 336
   },
   "2025-02-04": {
-    "Finance": 29,
     "Overall": 346
   },
   "2025-03-04": {
-    "Finance": 25,
     "Overall": 339
   },
   "2025-04-04": {
-    "Finance": 23,
     "Overall": 324
   },
   "2025-05-04": {
-    "Finance": 22,
     "Overall": 324
   },
   "2025-06-04": {
-    "Finance": 23,
     "Overall": 357
   },
   "2025-07-04": {
-    "Finance": 17,
     "Overall": 294
   },
   "2025-08-04": {
-    "Finance": 18,
     "Overall": 234
   },
   "2025-09-04": {
-    "Finance": 19,
     "Overall": 237
   },
   "2025-10-04": {
-    "Finance": 16,
     "Overall": 194
   },
   "2025-11-04": {
-    "Finance": 17,
     "Overall": 213
   },
   "2025-12-04": {
-    "Finance": 20,
     "Overall": 270
   },
   "2025-04-13": {
-    "Finance": 22,
     "Overall": 306
   },
   "2025-04-14": {
-    "Finance": 20,
     "Overall": 321
   },
   "2025-04-15": {
-    "Finance": 26,
     "Overall": 326
   },
   "2025-04-16": {
-    "Finance": 28,
     "Overall": 343
   },
   "2025-04-17": {
-    "Finance": 27,
     "Overall": 344
   },
   "2025-04-18": {
-    "Finance": 27,
     "Overall": 354
   },
   "2025-04-19": {
-    "Finance": 27,
     "Overall": 381
   },
   "2025-04-20": {
-    "Finance": 25,
     "Overall": 404
   },
   "2025-04-21": {
-    "Finance": 23,
     "Overall": 391
   },
   "2025-04-22": {
-    "Finance": 26,
     "Overall": 374
   },
   "2025-04-23": {
-    "Finance": 23,
     "Overall": 319
   },
   "2025-04-24": {
-    "Finance": 23,
     "Overall": 315
   },
   "2025-04-25": {
-    "Finance": 22,
     "Overall": 318
   },
   "2025-04-26": {
-    "Finance": 22,
     "Overall": 316
   },
   "2025-04-27": {
-    "Finance": 20,
     "Overall": 367
   },
   "2025-04-28": {
-    "Finance": 18,
     "Overall": 357
   },
   "2025-04-29": {
-    "Finance": 21,
     "Overall": 327
   },
   "2025-04-30": {
-    "Finance": 22,
     "Overall": 333
   },
   "2025-01-05": {
-    "Finance": 24,
     "Overall": 348
   },
   "2025-02-05": {
-    "Finance": 24,
     "Overall": 344
   },
   "2025-03-05": {
-    "Finance": 24,
     "Overall": 354
   },
   "2025-04-05": {
-    "Finance": 22,
     "Overall": 371
   },
   "2025-05-05": {
-    "Finance": 20,
     "Overall": 368
   },
   "2025-06-05": {
-    "Finance": 20,
     "Overall": 297
   },
   "2025-07-05": {
-    "Finance": 22,
     "Overall": 316
   },
   "2025-08-05": {
-    "Finance": 20,
     "Overall": 290
   },
   "2025-09-05": {
-    "Finance": 18,
     "Overall": 245
   },
   "2025-10-05": {
-    "Finance": 16,
     "Overall": 244
   },
   "2025-11-05": {
-    "Finance": 11,
     "Overall": 243
   },
   "2025-12-05": {
-    "Finance": 12,
     "Overall": 258
   },
   "2025-05-13": {
-    "Finance": 15,
     "Overall": 234
   },
   "2025-05-14": {
-    "Finance": 17,
     "Overall": 228
   },
   "2025-05-15": {
-    "Finance": 19,
     "Overall": 244
   },
   "2025-05-16": {
-    "Finance": 21,
     "Overall": 271
   },
   "2025-05-17": {
-    "Finance": 22,
     "Overall": 300
   },
   "2025-05-18": {
-    "Finance": 21,
     "Overall": 340
   },
   "2025-05-19": {
-    "Finance": 14,
     "Overall": 301
   },
   "2025-05-20": {
-    "Finance": 21,
     "Overall": 287
   },
   "2025-05-21": {
-    "Finance": 22,
     "Overall": 304
   },
   "2025-05-22": {
-    "Finance": 18,
     "Overall": 259
   },
   "2025-05-23": {
-    "Finance": 16,
     "Overall": 243
   },
   "2025-05-24": {
-    "Finance": 17,
     "Overall": 273
   },
   "2025-05-25": {
-    "Finance": 16,
     "Overall": 301
   },
   "2025-05-26": {
-    "Finance": 13,
     "Overall": 304
   },
   "2025-05-27": {
-    "Finance": 13,
     "Overall": 308
   },
   "2025-05-28": {
-    "Finance": 22,
     "Overall": 314
   },
   "2025-05-29": {
-    "Finance": 22,
     "Overall": 316
   },
   "2025-05-30": {
-    "Finance": 24,
     "Overall": 314
   },
   "2025-05-31": {
-    "Finance": 25,
     "Overall": 330
   },
   "2025-01-06": {
-    "Finance": 28,
     "Overall": 390
   },
   "2025-02-06": {
-    "Finance": 29,
     "Overall": 410
   },
   "2025-03-06": {
-    "Finance": 29,
     "Overall": 386
   },
   "2025-04-06": {
-    "Finance": 29,
     "Overall": 367
   },
   "2025-05-06": {
-    "Finance": 29,
     "Overall": 357
   },
   "2025-06-06": {
-    "Finance": 25,
     "Overall": 349
   },
   "2025-07-06": {
-    "Finance": 27,
     "Overall": 383
   },
   "2025-08-06": {
-    "Finance": 25,
     "Overall": 416
   },
   "2025-09-06": {
-    "Finance": 24,
     "Overall": 411
   },
   "2025-10-06": {
-    "Finance": 23,
     "Overall": 358
   },
   "2025-11-06": {
-    "Finance": 24,
     "Overall": 369
   },
   "2025-12-06": {
-    "Finance": 22,
     "Overall": 365
   },
   "2025-06-13": {
-    "Finance": 23,
     "Overall": 361
   },
   "2025-06-14": {
-    "Finance": 24,
     "Overall": 405
   },
   "2025-06-15": {
-    "Finance": 25,
     "Overall": 435
   },
   "2025-06-16": {
-    "Finance": 24,
     "Overall": 408
   },
   "2025-06-17": {
-    "Finance": 25,
     "Overall": 375
   },
   "2025-06-18": {
-    "Finance": 26,
     "Overall": 371
   },
   "2025-06-19": {
-    "Finance": 22,
     "Overall": 349
   },
   "2025-06-20": {
-    "Finance": 22,
     "Overall": 348
   },
   "2025-06-21": {
-    "Finance": 25,
     "Overall": 370
   },
   "2025-06-22": {
-    "Finance": 23,
     "Overall": 382
   },
   "2025-06-23": {
-    "Finance": 16,
     "Overall": 344
   },
   "2025-06-24": {
-    "Finance": 23,
     "Overall": 322
   },
   "2025-06-25": {
-    "Finance": 24,
     "Overall": 331
   },
   "2025-06-26": {
-    "Finance": 23,
     "Overall": 334
   },
   "2025-06-27": {
-    "Finance": 24,
     "Overall": 343
   },
   "2025-06-28": {
-    "Finance": 25,
     "Overall": 347
   },
   "2025-06-29": {
-    "Finance": 23,
     "Overall": 380
   },
   "2025-06-30": {
-    "Finance": 19,
     "Overall": 354
   }
 }
