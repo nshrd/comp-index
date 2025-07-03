@@ -22,7 +22,7 @@ COPY config.py .
 COPY src/__init__.py src/
 COPY src/data/__init__.py src/data/
 COPY src/data/*.py src/data/
-COPY builder/build_index.py builder/
+COPY builder/ builder/
 
 # Устанавливаем переменные окружения
 ENV PYTHONPATH=/app

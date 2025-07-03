@@ -65,15 +65,64 @@ class CBMA14Provider:
             return {"s": "error", "errmsg": f"Unknown symbol: {symbol}"}
             
         try:
-            # Получаем данные через калькулятор
             logger.info(f"Getting CBMA14 history: from={from_timestamp}, to={to_timestamp}, ma_period={ma_period}")
+            
+            # Сначала пытаемся прочитать готовый файл данных
+            if self.data_file.exists():
+                logger.info(f"Reading CBMA14 data from {self.data_file}")
+                with open(self.data_file, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                
+                # Проверяем формат данных
+                if isinstance(data, dict) and 's' in data and data['s'] == 'ok':
+                    logger.info(f"Found pre-processed CBMA14 data with {len(data.get('t', []))} points")
+                    
+                    # Фильтруем данные по временному диапазону
+                    if from_timestamp > 0 or to_timestamp > 0:
+                        times = data.get('t', [])
+                        values = data.get('c', [])
+                        
+                        filtered_times = []
+                        filtered_values = []
+                        
+                        for i, timestamp in enumerate(times):
+                            if i < len(values):
+                                # Фильтруем по времени
+                                if (from_timestamp == 0 or timestamp >= from_timestamp) and \
+                                   (to_timestamp == 0 or timestamp <= to_timestamp):
+                                    filtered_times.append(timestamp)
+                                    filtered_values.append(values[i])
+                        
+                        if filtered_times:
+                            result = {
+                                "s": "ok",
+                                "t": filtered_times,
+                                "c": filtered_values,
+                                "o": filtered_values,  # open = close
+                                "h": filtered_values,  # high = close
+                                "l": filtered_values,  # low = close
+                                "v": [0] * len(filtered_values)  # volume = 0
+                            }
+                            logger.info(f"Returned {len(filtered_times)} filtered CBMA14 data points")
+                            return result
+                    else:
+                        # Возвращаем все данные
+                        logger.info(f"Returning all CBMA14 data ({len(data.get('t', []))} points)")
+                        return data
+                else:
+                    logger.warning("Invalid CBMA14 data format in file")
+            else:
+                logger.warning(f"CBMA14 data file not found: {self.data_file}")
+            
+            # Если файл не найден или данных нет, пытаемся получить через калькулятор
+            logger.info("Trying to get CBMA14 data via calculator...")
             history_data = self.calculator.get_cbma14_history(from_timestamp, to_timestamp, ma_period)
             
             if not history_data:
-                logger.warning("No CBMA14 history data returned")
+                logger.warning("No CBMA14 history data returned from calculator")
                 return {"s": "no_data"}
             
-            logger.info(f"Got {len(history_data)} CBMA14 data points")
+            logger.info(f"Got {len(history_data)} CBMA14 data points from calculator")
             
             # Преобразуем в формат UDF с сглаживанием для устранения резких скачков
             times = []
