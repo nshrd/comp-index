@@ -12,8 +12,8 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-SRC = pathlib.Path("/data/data.json")
-DST = pathlib.Path("/data/CBMA14.json")
+SRC = pathlib.Path("/app/data/data.json")
+DST = pathlib.Path("/app/data/CBMA14.json")
 MA = 14
 
 def main():
