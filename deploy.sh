@@ -210,20 +210,32 @@ EOF
 start_application() {
     print_header "Запуск приложения"
     
+    # Определение команды Docker Compose
+    if docker compose version &> /dev/null; then
+        DOCKER_COMPOSE_CMD="docker compose"
+    elif command -v docker-compose &> /dev/null; then
+        DOCKER_COMPOSE_CMD="docker-compose"
+    else
+        print_error "Docker Compose не найден"
+        exit 1
+    fi
+    
+    print_status "Используется команда: $DOCKER_COMPOSE_CMD"
+    
     # Остановка существующих контейнеров
     print_status "Остановка существующих контейнеров..."
-    docker compose -f docker-compose.yml down 2>/dev/null || true
+    $DOCKER_COMPOSE_CMD -f docker-compose.yml down 2>/dev/null || true
     
     # Запуск в production режиме
     print_status "Запуск в production режиме..."
-    docker compose --env-file .env -f docker-compose.yml up -d --build
+    $DOCKER_COMPOSE_CMD --env-file .env -f docker-compose.yml up -d --build
     
     # Ожидание запуска
     print_status "Ожидание запуска сервисов..."
     sleep 10
     
     # Проверка статуса
-    docker compose -f docker-compose.yml ps
+    $DOCKER_COMPOSE_CMD -f docker-compose.yml ps
 }
 
 # Настройка SSL (опционально)
@@ -258,7 +270,7 @@ setup_ssl() {
         sed -i "s/your-domain.com/$DOMAIN/g" nginx/prod.conf
         
         # Перезапуск nginx
-        docker compose -f docker-compose.yml restart nginx
+        $DOCKER_COMPOSE_CMD -f docker-compose.yml restart nginx
         
         print_status "SSL сертификат установлен для $DOMAIN"
     fi
@@ -294,12 +306,22 @@ EOF
 INSTALL_DIR="/opt/cbma14"
 cd $INSTALL_DIR
 
+# Определение команды Docker Compose
+if docker compose version &> /dev/null; then
+    DOCKER_COMPOSE_CMD="docker compose"
+elif command -v docker-compose &> /dev/null; then
+    DOCKER_COMPOSE_CMD="docker-compose"
+else
+    echo "Docker Compose не найден"
+    exit 1
+fi
+
 # Обновление кода
 git pull origin main
 
 # Обновление контейнеров
-docker compose -f docker-compose.yml pull
-docker compose -f docker-compose.yml up -d --build
+$DOCKER_COMPOSE_CMD -f docker-compose.yml pull
+$DOCKER_COMPOSE_CMD -f docker-compose.yml up -d --build
 
 # Очистка старых образов
 docker image prune -f
@@ -313,14 +335,24 @@ EOF
 INSTALL_DIR="/opt/cbma14"
 cd $INSTALL_DIR
 
+# Определение команды Docker Compose
+if docker compose version &> /dev/null; then
+    DOCKER_COMPOSE_CMD="docker compose"
+elif command -v docker-compose &> /dev/null; then
+    DOCKER_COMPOSE_CMD="docker-compose"
+else
+    echo "Docker Compose не найден"
+    exit 1
+fi
+
 echo "=== CBMA14 Index Status ==="
-docker compose -f docker-compose.yml ps
+$DOCKER_COMPOSE_CMD -f docker-compose.yml ps
 echo ""
 echo "=== Resource Usage ==="
 docker stats --no-stream
 echo ""
 echo "=== Logs (last 20 lines) ==="
-docker compose -f docker-compose.yml logs --tail=20
+$DOCKER_COMPOSE_CMD -f docker-compose.yml logs --tail=20
 EOF
     
     # Права выполнения
@@ -349,8 +381,8 @@ show_deployment_info() {
     echo "   🔒 HTTPS: https://$IP (если SSL настроен)"
     echo ""
     echo "🔧 Полезные команды:"
-    echo "   docker compose -f docker-compose.yml ps    # Статус"
-    echo "   docker compose -f docker-compose.yml logs  # Логи"
+    echo "   docker compose -f docker-compose.yml ps    # Статус (или docker-compose)"
+    echo "   docker compose -f docker-compose.yml logs  # Логи (или docker-compose)"
     echo "   cbma14-status                                   # Быстрый статус"
     echo "   cbma14-backup                                   # Бэкап"
     echo "   cbma14-update                                   # Обновление"
