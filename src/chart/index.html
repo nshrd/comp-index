@@ -429,7 +429,7 @@
                     console.log(`✅ Loaded ${candleData.length} BTC candles`);
                 }
 
-                // Загружаем данные CBMA14
+                // Загружаем данные CBMA14 - все данные с начала
                 console.log('📊 Loading CBMA14 data...');
                 const cbma14Response = await fetch(
                     `${CONFIG.API_BASE_URL}/history?symbol=CBMA14&resolution=D&from=0&to=${Math.floor(Date.now()/1000)}&ma_period=${currentMAPeriod}`
