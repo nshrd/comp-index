@@ -1,0 +1,20 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Копируем requirements и устанавливаем зависимости
+COPY requirements.txt /app/
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Копируем весь проект для доступа к модулям
+COPY src/ /app/src/
+COPY config.py /app/
+COPY .env /app/.env
+
+# Создаем директорию для данных
+RUN mkdir -p /data
+
+EXPOSE 8000
+
+# Используем новый сервер из src/udf/server.py
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "2", "--timeout", "30", "src.udf.server:create_app()"] 

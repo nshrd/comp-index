@@ -1,0 +1,48 @@
+# Git и версионность
+.git/
+.gitignore
+*.md
+plan.md
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+venv/
+env/
+.venv/
+.DS_Store
+
+# Логи и временные файлы
+logs/
+*.log
+debug_*.html
+debug_*.png
+temp_*.pine
+
+# Тестовые файлы
+test_*.py
+tests/
+quick_test.py
+run_test.py
+
+# Браузер и драйверы
+chromedriver*
+cookies.json
+local.json
+user_agent.txt
+
+# IDE и редакторы
+.vscode/
+*.code-workspace
+.idea/
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+
+# Прочие временные файлы
+*.zip
+*.tar.gz 
