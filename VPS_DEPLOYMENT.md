@@ -85,7 +85,7 @@ sudo chown -R $USER:$USER .
 Создайте файл `.env.prod`:
 
 ```bash
-nano .env.prod
+nano .env
 ```
 
 ```env

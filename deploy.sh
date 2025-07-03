@@ -91,20 +91,40 @@ install_dependencies() {
     fi
     
     # Установка Docker Compose
-    if ! command -v docker-compose &> /dev/null; then
+    if ! command -v docker-compose &> /dev/null && ! docker compose version &> /dev/null; then
         print_status "Установка Docker Compose..."
         if command -v apt-get &> /dev/null; then
-            apt-get install -y docker-compose-plugin
+            # Пробуем установить новый plugin
+            apt-get install -y docker-compose-plugin 2>/dev/null || {
+                # Если не получается, устанавливаем старый docker-compose
+                print_status "Установка старого docker-compose..."
+                curl -L "https://github.com/docker/compose/releases/download/v2.20.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+                chmod +x /usr/local/bin/docker-compose
+            }
         elif command -v yum &> /dev/null; then
-            yum install -y docker-compose-plugin
+            yum install -y docker-compose-plugin 2>/dev/null || {
+                print_status "Установка старого docker-compose..."
+                curl -L "https://github.com/docker/compose/releases/download/v2.20.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+                chmod +x /usr/local/bin/docker-compose
+            }
         fi
     else
         print_status "Docker Compose уже установлен"
     fi
     
+    # Определение команды Docker Compose
+    if docker compose version &> /dev/null; then
+        DOCKER_COMPOSE_CMD="docker compose"
+    elif command -v docker-compose &> /dev/null; then
+        DOCKER_COMPOSE_CMD="docker-compose"
+    else
+        print_error "Docker Compose не найден"
+        exit 1
+    fi
+    
     # Проверка установки
     docker --version
-    docker compose version
+    $DOCKER_COMPOSE_CMD version
 }
 
 # Настройка firewall
@@ -153,11 +173,11 @@ clone_repository() {
 create_config() {
     print_header "Создание конфигурации"
     
-    # Создание .env.prod
-    if [ ! -f ".env.prod" ]; then
-        print_status "Создание .env.prod..."
-        cat > .env.prod << EOF
-# CBMA14 Index - Production Environment
+    # Создание .env и .env.prod файлов
+    if [ ! -f ".env" ]; then
+        print_status "Создание .env файла..."
+        cat > .env << EOF
+# CBMA14 Index - Environment Variables
 DOMAIN=your-domain.com
 COINGLASS_API_KEY=your_coinglass_api_key_here
 UDF_HOST=0.0.0.0
@@ -172,7 +192,13 @@ WATCHTOWER_CLEANUP=true
 LOG_LEVEL=INFO
 CORS_ORIGINS=*
 EOF
-        print_warning "Отредактируйте .env.prod файл с вашими настройками"
+    fi
+    
+    # Создаем также .env.prod для совместимости
+    if [ ! -f ".env.prod" ]; then
+        print_status "Создание .env.prod файла..."
+        cp .env .env.prod
+        print_warning "Отредактируйте .env файл с вашими настройками (или .env.prod для production)"
     fi
     
     # Создание директорий
@@ -190,7 +216,7 @@ start_application() {
     
     # Запуск в production режиме
     print_status "Запуск в production режиме..."
-    docker compose --env-file .env.prod -f docker-compose.prod.yml up -d --build
+    docker compose --env-file .env -f docker-compose.prod.yml up -d --build
     
     # Ожидание запуска
     print_status "Ожидание запуска сервисов..."
@@ -330,7 +356,7 @@ show_deployment_info() {
     echo "   cbma14-update                                   # Обновление"
     echo ""
     echo "📝 Следующие шаги:"
-    echo "   1. Отредактируйте /opt/cbma14/.env.prod"
+    echo "   1. Отредактируйте /opt/cbma14/.env (добавьте ваш COINGLASS_API_KEY)"
     echo "   2. Настройте ваш домен в DNS"
     echo "   3. Запустите SSL: bash deploy.sh ssl"
     echo "   4. Проверьте работу: curl http://$IP/health"
