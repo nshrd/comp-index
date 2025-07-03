@@ -191,15 +191,21 @@ class CoinglassClient:
             "interval": "1d",
             "start_time": start_time,
             "end_time": end_time,
-            "limit": min(days_since_start + 10, 4500)   # +10 для запаса, максимум 4500
+            "limit": min(days_since_start + 10, 1000)   # Уменьшаем лимит для стабильности
         }
         
         endpoint = "/api/futures/price/history"
+        logger.info(f"Requesting {symbol} data with params: {params}")
         data = self._make_request(endpoint, params)
         
-        logger.info(f"API response for {symbol}: type={type(data)}")
+        logger.info(f"API response for {symbol}: type={type(data)}, length={len(data) if isinstance(data, (list, dict)) else 'N/A'}")
         if data and isinstance(data, list) and len(data) > 0:
             logger.info(f"First element: {data[0]}")
+        elif data and isinstance(data, dict):
+            logger.info(f"Response keys: {list(data.keys())}")
+        else:
+            logger.warning(f"No data received for {symbol}")
+            return None
         
         if data:
             # Преобразуем в удобный формат

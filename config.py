@@ -22,13 +22,15 @@ load_dotenv()
 class CoinglassConfig:
     """Конфигурация для Coinglass API"""
     api_key: Optional[str] = None
-    base_url: str = "https://open-api.coinglass.com/public/v2"
+    base_url: str = "https://open-api-v4.coinglass.com"
     request_delay: float = 0.5  # секунды между запросами
     cache_duration: int = 300   # секунды кэширования
     
     def __post_init__(self):
         if not self.api_key:
             self.api_key = os.getenv('COINGLASS_API_KEY')
+        # Поддержка переменной окружения для базового URL
+        self.base_url = os.getenv('COINGLASS_BASE_URL', self.base_url)
 
 
 @dataclass

@@ -19,8 +19,14 @@ class CBMA14Provider:
     
     def __init__(self, data_file: Path):
         self.data_file = data_file
-        # Используем Docker volume path для исходных данных
-        self.raw_data_file = Path("/data/data.json")  
+        # Определяем путь к исходным данным (data.json)
+        # Пытаемся найти data.json в той же папке, что и CBMA14.json
+        if data_file.parent.exists():
+            self.raw_data_file = data_file.parent / "data.json"
+        else:
+            # Fallback для Docker environment
+            self.raw_data_file = Path("/app/data/data.json")
+            
         self.calculator = CBMA14Calculator(self.raw_data_file)
         self._symbol_info = None
         
@@ -33,7 +39,7 @@ class CBMA14Provider:
             self._symbol_info = {
                 "name": "CBMA14",
                 "ticker": "CBMA14", 
-                "description": "Coinbase MA14 Index (14-period Moving Average)",
+                "description": "Coinbase Moving Average Index (Dynamic MA period)",
                 "type": "index",
                 "session": "24x7",
                 "timezone": "Etc/UTC",
@@ -67,55 +73,8 @@ class CBMA14Provider:
         try:
             logger.info(f"Getting CBMA14 history: from={from_timestamp}, to={to_timestamp}, ma_period={ma_period}")
             
-            # Сначала пытаемся прочитать готовый файл данных
-            if self.data_file.exists():
-                logger.info(f"Reading CBMA14 data from {self.data_file}")
-                with open(self.data_file, 'r', encoding='utf-8') as f:
-                    data = json.load(f)
-                
-                # Проверяем формат данных
-                if isinstance(data, dict) and 's' in data and data['s'] == 'ok':
-                    logger.info(f"Found pre-processed CBMA14 data with {len(data.get('t', []))} points")
-                    
-                    # Фильтруем данные по временному диапазону
-                    if from_timestamp > 0 or to_timestamp > 0:
-                        times = data.get('t', [])
-                        values = data.get('c', [])
-                        
-                        filtered_times = []
-                        filtered_values = []
-                        
-                        for i, timestamp in enumerate(times):
-                            if i < len(values):
-                                # Фильтруем по времени
-                                if (from_timestamp == 0 or timestamp >= from_timestamp) and \
-                                   (to_timestamp == 0 or timestamp <= to_timestamp):
-                                    filtered_times.append(timestamp)
-                                    filtered_values.append(values[i])
-                        
-                        if filtered_times:
-                            result = {
-                                "s": "ok",
-                                "t": filtered_times,
-                                "c": filtered_values,
-                                "o": filtered_values,  # open = close
-                                "h": filtered_values,  # high = close
-                                "l": filtered_values,  # low = close
-                                "v": [0] * len(filtered_values)  # volume = 0
-                            }
-                            logger.info(f"Returned {len(filtered_times)} filtered CBMA14 data points")
-                            return result
-                    else:
-                        # Возвращаем все данные
-                        logger.info(f"Returning all CBMA14 data ({len(data.get('t', []))} points)")
-                        return data
-                else:
-                    logger.warning("Invalid CBMA14 data format in file")
-            else:
-                logger.warning(f"CBMA14 data file not found: {self.data_file}")
-            
-            # Если файл не найден или данных нет, пытаемся получить через калькулятор
-            logger.info("Trying to get CBMA14 data via calculator...")
+            # ВСЕГДА используем калькулятор для динамического расчета MA с нужным периодом
+            logger.info(f"Calculating CBMA14 data dynamically with MA period {ma_period}...")
             history_data = self.calculator.get_cbma14_history(from_timestamp, to_timestamp, ma_period)
             
             if not history_data:
@@ -184,11 +143,11 @@ class CBMA14Provider:
         query = query.upper()
         results = []
         
-        if "CBMA14".startswith(query) or query in "CBMA14" or "MA14" in query or "COINBASE" in query:
+        if "CBMA14".startswith(query) or query in "CBMA14" or "MA" in query or "COINBASE" in query:
             results.append({
                 "symbol": "CBMA14",
                 "full_name": "CBMA14",
-                "description": "Coinbase MA14 Index (14-period Moving Average)",
+                "description": "Coinbase Moving Average Index (Dynamic MA period)",
                 "exchange": "",
                 "ticker": "CBMA14",
                 "type": "index"

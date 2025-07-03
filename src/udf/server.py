@@ -164,7 +164,7 @@ class UDFServer:
             return jsonify({
                 "name": "CBMA14",
                 "ticker": "CBMA14",
-                "description": "Coinbase MA14 Index",
+                "description": "Coinbase Moving Average Index (Dynamic MA)",
                 "type": "index",
                 "session": "24x7",
                 "timezone": "Etc/UTC",
@@ -203,11 +203,12 @@ class UDFServer:
         symbol = request.args.get("symbol", "")
         from_ts = int(request.args.get("from", 0))
         to_ts = int(request.args.get("to", 0))
+        ma_period = int(request.args.get("ma_period", 14))
         
         if not symbol:
             return jsonify({"s": "error", "errmsg": "Symbol parameter is required"})
         
-        logger.info(f"History request: symbol={symbol}, from={from_ts}, to={to_ts}")
+        logger.info(f"History request: symbol={symbol}, from={from_ts}, to={to_ts}, ma_period={ma_period}")
         
         # CBMA14 данные
         if symbol == "CBMA14":
@@ -215,7 +216,7 @@ class UDFServer:
                 return jsonify({"s": "error", "errmsg": "CBMA14 data not available"})
             
             try:
-                result = self.cbma14_provider.get_history(symbol, from_ts, to_ts)
+                result = self.cbma14_provider.get_history(symbol, from_ts, to_ts, ma_period)
                 return jsonify(result)
             except Exception as e:
                 logger.error(f"Error getting CBMA14 history: {e}")
@@ -276,11 +277,11 @@ class UDFServer:
         results = []
         
         # CBMA14
-        if "CBMA14".startswith(query) or "CBMA" in query:
+        if "CBMA14".startswith(query) or "CBMA" in query or "MA" in query:
             results.append({
                 "symbol": "CBMA14",
-                "full_name": "Coinbase MA14 Index",
-                "description": "Coinbase MA14 Index",
+                "full_name": "Coinbase Moving Average Index",
+                "description": "Coinbase Moving Average Index (Dynamic MA)",
                 "type": "index"
             })
         

@@ -95,19 +95,7 @@
             box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
         }
         
-        .search-input {
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            padding: 8px 12px;
-            font-size: 14px;
-            width: 200px;
-        }
-        
-        .search-input:focus {
-            outline: none;
-            border-color: #2196f3;
-            box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
-        }
+
         
         .chart-container {
             width: 100%;
@@ -184,28 +172,16 @@
             <div class="legend">
                 <div class="legend-item">
                     <div class="legend-line legend-cbma14"></div>
-                    <span>Coinbase MA14 (синяя линия)</span>
+                    <span id="cbma-legend">Coinbase MA14 (синяя линия)</span>
                 </div>
                 <div class="legend-item">
                     <div class="legend-line legend-btc"></div>
-                    <span>Криптовалюта (свечи)</span>
+                    <span>Bitcoin (свечи)</span>
                 </div>
             </div>
         </div>
         
         <div class="controls">
-            <div class="control-group">
-                <label for="symbolSelect">Символ:</label>
-                <select id="symbolSelect">
-                    <option value="BTC">Bitcoin (BTC)</option>
-                    <option value="ETH">Ethereum (ETH)</option>
-                    <option value="SOL">Solana (SOL)</option>
-                    <option value="BNB">Binance Coin (BNB)</option>
-                    <option value="ADA">Cardano (ADA)</option>
-                    <option value="XRP">Ripple (XRP)</option>
-                </select>
-            </div>
-            
             <div class="control-group">
                 <label for="maPeriodSelect">MA период:</label>
                 <select id="maPeriodSelect">
@@ -213,10 +189,6 @@
                     <option value="14" selected>14 дней</option>
                     <option value="30">30 дней</option>
                 </select>
-            </div>
-            
-            <div class="control-group">
-                <input type="text" id="searchInput" class="search-input" placeholder="Поиск символов...">
             </div>
         </div>
         
@@ -232,7 +204,6 @@
         let chart = null;
         let candlestickSeries = null;
         let lineSeries = null;
-        let currentSymbol = CONFIG.DEFAULT_SYMBOL;
         let currentMAPeriod = CONFIG.DEFAULT_MA_PERIOD;
 
         // Инициализация при загрузке страницы
@@ -379,34 +350,28 @@
             try {
                 updateStatus(CONFIG.MESSAGES.LOADING, 'info');
 
-                // Загружаем данные BTC (пока только BTC доступен)
-                if (currentSymbol === 'BTC') {
-                    const fromTime = Math.floor((Date.now() - 365 * 24 * 60 * 60 * 1000) / 1000);
-                    const toTime = Math.floor(Date.now() / 1000);
-                    const btcResponse = await fetch(`${CONFIG.API_BASE_URL}/history?symbol=BTCUSDT&resolution=D&from=${fromTime}&to=${toTime}`);
-                    const btcData = await btcResponse.json();
+                // Загружаем данные BTC
+                const fromTime = Math.floor((Date.now() - 365 * 24 * 60 * 60 * 1000) / 1000);
+                const toTime = Math.floor(Date.now() / 1000);
+                const btcResponse = await fetch(`${CONFIG.API_BASE_URL}/history?symbol=BTCUSDT&resolution=D&from=${fromTime}&to=${toTime}`);
+                const btcData = await btcResponse.json();
 
-                    if (btcData.s === 'ok' && btcData.t && btcData.o && btcData.h && btcData.l && btcData.c) {
-                        const candleData = [];
-                        for (let i = 0; i < btcData.t.length; i++) {
-                            if (btcData.t[i] && btcData.o[i] != null && btcData.h[i] != null && 
-                                btcData.l[i] != null && btcData.c[i] != null) {
-                                candleData.push({
-                                    time: btcData.t[i],
-                                    open: parseFloat(btcData.o[i]),
-                                    high: parseFloat(btcData.h[i]),
-                                    low: parseFloat(btcData.l[i]),
-                                    close: parseFloat(btcData.c[i]),
-                                });
-                            }
+                if (btcData.s === 'ok' && btcData.t && btcData.o && btcData.h && btcData.l && btcData.c) {
+                    const candleData = [];
+                    for (let i = 0; i < btcData.t.length; i++) {
+                        if (btcData.t[i] && btcData.o[i] != null && btcData.h[i] != null && 
+                            btcData.l[i] != null && btcData.c[i] != null) {
+                            candleData.push({
+                                time: btcData.t[i],
+                                open: parseFloat(btcData.o[i]),
+                                high: parseFloat(btcData.h[i]),
+                                low: parseFloat(btcData.l[i]),
+                                close: parseFloat(btcData.c[i]),
+                            });
                         }
-                        candlestickSeries.setData(candleData);
-                        console.log(`✅ Loaded ${candleData.length} BTC candles`);
                     }
-                } else {
-                    // Для других символов показываем заглушку
-                    updateStatus(`${CONFIG.MESSAGES.UNSUPPORTED_SYMBOL}. Доступен только BTC.`, 'error');
-                    return;
+                    candlestickSeries.setData(candleData);
+                    console.log(`✅ Loaded ${candleData.length} BTC candles`);
                 }
 
                 // Загружаем данные CBMA14
@@ -451,7 +416,9 @@
                     console.error('❌ Invalid CBMA14 response:', cbma14Data);
                 }
 
-                updateStatus(`${CONFIG.MESSAGES.SUCCESS}: ${currentSymbol} + CBMA14 (MA${currentMAPeriod})`, 'success');
+                // Обновляем легенду
+                updateLegend();
+                updateStatus(`${CONFIG.MESSAGES.SUCCESS}: BTC + CBMA14 (MA${currentMAPeriod})`, 'success');
 
             } catch (error) {
                 console.error('❌ Error loading data:', error);
@@ -460,29 +427,19 @@
         }
 
         function setupEventHandlers() {
-            // Смена символа
-            document.getElementById('symbolSelect').addEventListener('change', (e) => {
-                currentSymbol = e.target.value;
-                if (currentSymbol !== 'BTC') {
-                    updateStatus(`${CONFIG.MESSAGES.UNSUPPORTED_SYMBOL}. Доступен только BTC.`, 'error');
-                    return;
-                }
-                loadData();
-            });
-
             // Смена периода MA
             document.getElementById('maPeriodSelect').addEventListener('change', (e) => {
                 currentMAPeriod = parseInt(e.target.value);
                 loadData();
             });
+        }
 
-            // Поиск символов (пока отключен)
-            document.getElementById('searchInput').addEventListener('input', (e) => {
-                const query = e.target.value.trim();
-                if (query) {
-                    updateStatus(`${CONFIG.MESSAGES.SEARCH_DISABLED}. Доступен только BTC.`, 'info');
-                }
-            });
+        function updateLegend() {
+            // Обновляем текст легенды с текущим периодом MA
+            const legendElement = document.getElementById('cbma-legend');
+            if (legendElement) {
+                legendElement.textContent = `Coinbase MA${currentMAPeriod} (синяя линия)`;
+            }
         }
 
         function updateStatus(message, type = 'info') {
