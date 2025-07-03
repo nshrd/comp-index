@@ -43,7 +43,12 @@ class UDFServer:
         
         self.config = config
         self.app = Flask(__name__)
-        CORS(self.app)
+        # Настройка CORS для работы с GitHub Pages и другими доменами
+        CORS(self.app, 
+             origins=["https://nshrd.github.io", "http://localhost:*", "https://localhost:*"],
+             methods=["GET", "POST", "OPTIONS"],
+             allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
+             supports_credentials=False)
         
         # Инициализируем провайдеры данных
         try:
