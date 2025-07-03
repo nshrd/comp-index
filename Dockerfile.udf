@@ -24,6 +24,7 @@ COPY src/data/__init__.py src/data/
 COPY src/data/*.py src/data/
 COPY src/udf/__init__.py src/udf/
 COPY src/udf/*.py src/udf/
+COPY src/chart/ src/chart/
 
 # Устанавливаем переменные окружения
 ENV PYTHONPATH=/app
