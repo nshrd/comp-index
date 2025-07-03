@@ -473,11 +473,45 @@
 
                 // Обновляем легенду
                 updateLegend();
+                
+                // Устанавливаем видимый диапазон с 9 марта 2022 года
+                setVisibleRangeFromMarch2022();
+                
                 updateStatus(`${CONFIG.MESSAGES.SUCCESS}: BTC + CBMA14 (MA${currentMAPeriod})`, 'success');
 
             } catch (error) {
                 console.error('❌ Error loading data:', error);
                 updateStatus(CONFIG.MESSAGES.ERROR, 'error');
+            }
+        }
+
+        function setVisibleRangeFromMarch2022() {
+            if (!chart) return;
+            
+            try {
+                // Устанавливаем видимый диапазон с 9 марта 2022 года до текущей даты
+                const startDate = new Date('2022-03-09');
+                const endDate = new Date();
+                
+                // Преобразуем в timestamp для Lightweight Charts
+                const startTimestamp = Math.floor(startDate.getTime() / 1000);
+                const endTimestamp = Math.floor(endDate.getTime() / 1000);
+                
+                // Устанавливаем видимый диапазон
+                chart.timeScale().setVisibleRange({
+                    from: startTimestamp,
+                    to: endTimestamp
+                });
+                
+                console.log('✅ Visible range set from March 9, 2022 to today');
+            } catch (error) {
+                console.warn('⚠️ Error setting visible range:', error);
+                // Если не получается установить диапазон, просто подгоняем к содержимому
+                try {
+                    chart.timeScale().fitContent();
+                } catch (e) {
+                    console.warn('⚠️ Error fitting content:', e);
+                }
             }
         }
 
