@@ -35,8 +35,8 @@ function getApiConfig() {
     // GitHub Pages или другие хостинги
     if (hostname.includes('github.io') || hostname.includes('github.com')) {
         return {
-            UDF_BASE_URL: 'https://64.226.108.150:8443', // Fallback к VPS
-            API_BASE_URL: 'https://64.226.108.150:8443/api',
+            UDF_BASE_URL: 'https://64.226.108.150', // VPS без порта для HTTPS
+            API_BASE_URL: 'https://64.226.108.150/api',
             UDF_ENDPOINT: '/api',
             IS_DEVELOPMENT: false,
             CORS_ENABLED: true

@@ -95,6 +95,27 @@
             box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
         }
         
+        .date-input {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 14px;
+            background: white;
+            color: #333;
+            cursor: pointer;
+            min-width: 120px;
+        }
+        
+        .date-input:hover {
+            border-color: #2196f3;
+        }
+        
+        .date-input:focus {
+            outline: none;
+            border-color: #2196f3;
+            box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+        }
+        
 
         
         .chart-container {
@@ -190,6 +211,16 @@
                     <option value="30">30 дней</option>
                 </select>
             </div>
+            
+            <div class="control-group">
+                <label for="fromDate">От:</label>
+                <input type="date" id="fromDate" class="date-input">
+            </div>
+            
+            <div class="control-group">
+                <label for="toDate">До:</label>
+                <input type="date" id="toDate" class="date-input">
+            </div>
         </div>
         
         <div class="status" id="status">Загрузка графиков...</div>
@@ -205,14 +236,29 @@
         let candlestickSeries = null;
         let lineSeries = null;
         let currentMAPeriod = CONFIG.DEFAULT_MA_PERIOD;
+        let fromDate = null;
+        let toDate = null;
 
         // Инициализация при загрузке страницы
         document.addEventListener('DOMContentLoaded', function() {
+            initializeDates();
             initializeChart();
             setupEventHandlers();
             // Небольшая задержка перед загрузкой данных
             setTimeout(loadData, 100);
         });
+
+        function initializeDates() {
+            // Устанавливаем даты по умолчанию: последний год
+            const today = new Date();
+            const oneYearAgo = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate());
+            
+            toDate = today.toISOString().split('T')[0];
+            fromDate = oneYearAgo.toISOString().split('T')[0];
+            
+            document.getElementById('fromDate').value = fromDate;
+            document.getElementById('toDate').value = toDate;
+        }
 
         function initializeChart() {
             try {
@@ -269,7 +315,7 @@
                         visible: true,
                         borderColor: 'rgba(197, 203, 206, 0.8)',
                         textColor: '#2d3748',
-                        invertScale: true,
+                        invertScale: false,
                         scaleMargins: {
                             top: 0.05,
                             bottom: 0.05,
@@ -350,9 +396,15 @@
             try {
                 updateStatus(CONFIG.MESSAGES.LOADING, 'info');
 
+                // Получаем актуальные даты из полей
+                const fromDateValue = document.getElementById('fromDate').value;
+                const toDateValue = document.getElementById('toDate').value;
+                
+                // Преобразуем даты в timestamp
+                const fromTime = fromDateValue ? Math.floor(new Date(fromDateValue).getTime() / 1000) : Math.floor((Date.now() - 365 * 24 * 60 * 60 * 1000) / 1000);
+                const toTime = toDateValue ? Math.floor(new Date(toDateValue + 'T23:59:59').getTime() / 1000) : Math.floor(Date.now() / 1000);
+
                 // Загружаем данные BTC
-                const fromTime = Math.floor((Date.now() - 365 * 24 * 60 * 60 * 1000) / 1000);
-                const toTime = Math.floor(Date.now() / 1000);
                 const btcResponse = await fetch(`${CONFIG.API_BASE_URL}/history?symbol=BTCUSDT&resolution=D&from=${fromTime}&to=${toTime}`);
                 const btcData = await btcResponse.json();
 
@@ -430,6 +482,17 @@
             // Смена периода MA
             document.getElementById('maPeriodSelect').addEventListener('change', (e) => {
                 currentMAPeriod = parseInt(e.target.value);
+                loadData();
+            });
+
+            // Изменение дат
+            document.getElementById('fromDate').addEventListener('change', (e) => {
+                fromDate = e.target.value;
+                loadData();
+            });
+
+            document.getElementById('toDate').addEventListener('change', (e) => {
+                toDate = e.target.value;
                 loadData();
             });
         }
