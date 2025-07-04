@@ -177,12 +177,12 @@ class CoinglassClient:
         if not symbol.endswith('USDT'):
             symbol = symbol.replace('USD', 'USDT')
         
-        # Начинаем с первой доступной даты CBMA14: 2022-03-08 00:00:00 UTC
-        start_date = datetime(2022, 3, 8, 0, 0, 0)
+        # Начинаем с первой доступной даты CBMA14: 2017-05-01 00:00:00 UTC
+        start_date = datetime(2017, 5, 1, 0, 0, 0)
         start_time = int(start_date.timestamp() * 1000)  # В миллисекундах
         end_time = int(time.time() * 1000)  # Текущее время в миллисекундах
         
-        # Рассчитываем количество дней с 2022-03-08
+        # Рассчитываем количество дней с 2017-05-01
         days_since_start = int((end_time - start_time) / (24 * 60 * 60 * 1000))
         
         params = {
@@ -191,11 +191,12 @@ class CoinglassClient:
             "interval": "1d",
             "start_time": start_time,
             "end_time": end_time,
-            "limit": min(days_since_start + 10, 1000)   # Уменьшаем лимит для стабильности
+            "limit": min(days_since_start + 10, 3000)   # Увеличиваем лимит для данных с 2017
         }
         
-        endpoint = "/api/futures/price/history"
-        logger.info(f"Requesting {symbol} data with params: {params}")
+        # Используем spot API для получения точных исторических данных
+        endpoint = "/api/spot/price/history"
+        logger.info(f"Requesting {symbol} data from Coinglass Spot API with params: {params}")
         data = self._make_request(endpoint, params)
         
         logger.info(f"API response for {symbol}: type={type(data)}, length={len(data) if isinstance(data, (list, dict)) else 'N/A'}")

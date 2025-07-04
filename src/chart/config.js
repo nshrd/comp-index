@@ -14,6 +14,7 @@ function getApiConfig() {
         return {
             UDF_BASE_URL: 'http://localhost:8000',
             API_BASE_URL: 'http://localhost:8000/api',
+            COINGLASS_API_URL: 'https://open-api-v4.coinglass.com/api/spot/price/history',
             UDF_ENDPOINT: '/api', // Прямые API вызовы
             IS_DEVELOPMENT: true,
             CORS_ENABLED: true
