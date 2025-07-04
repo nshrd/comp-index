@@ -226,6 +226,15 @@
         
         <div class="controls">
             <div class="control-group">
+                <label for="timeframeSelect">Таймфрейм:</label>
+                <select id="timeframeSelect">
+                    <option value="240">4H</option>
+                    <option value="D">1D</option>
+                    <option value="W" selected>1W</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
                 <label for="maPeriodSelect">MA период:</label>
                 <select id="maPeriodSelect">
                     <option value="7">7 дней</option>
@@ -256,6 +265,7 @@
         <div class="data-info">
             📊 <strong>CBMA14:</strong> данные с мая 2017 года | 
             🪙 <strong>BTC:</strong> данные с августа 2017 года | 
+            🕐 <strong>Таймфреймы:</strong> 4H, 1D, 1W (API поддерживает ≥4H, по умолчанию 1W) | 
             🎛️ <strong>Управление:</strong> перетаскивание временной оси, колесико для масштаба, R - сброс, F - подогнать
         </div>
         
@@ -276,6 +286,7 @@
         let candlestickSeries = null;
         let lineSeries = null;
         let currentMAPeriod = CONFIG.DEFAULT_MA_PERIOD;
+        let currentTimeframe = 'W'; // По умолчанию недельный таймфрейм
         let fromDate = null;
         let toDate = null;
 
@@ -315,6 +326,7 @@
             
             console.log(`📅 Default date range set based on BTC data availability: ${fromDate} to ${toDate}`);
             console.log(`ℹ️ Note: CBMA14 data is available from ${CBMA14_DATA_START_DATE}, BTC from ${BTC_DATA_START_DATE}`);
+            console.log(`🕐 Default timeframe: ${currentTimeframe} (Weekly)`);
         }
 
         function calculateMovingAverage(values, period) {
@@ -330,6 +342,100 @@
             }
             
             return maValues;
+        }
+
+        function aggregateDataByTimeframe(data, timeframe) {
+            // Для CBMA14 данных всегда агрегируем, так как у нас дневные исходные данные
+            if (timeframe === '240') { // 4H - не агрегируем, так как API даст 4H данные
+                return data;
+            } else if (timeframe === 'D') { // 1D - не агрегируем, так как API даст 1D данные
+                return data;
+            } else if (timeframe === 'W') { // 1W - агрегируем из дневных данных
+                return aggregateToWeeks(data);
+            }
+            
+            return data;
+        }
+
+
+
+        function aggregateToWeeks(data) {
+            // Агрегируем дневные данные в недельные (для CBMA14)
+            const weekMap = new Map();
+            
+            data.forEach(item => {
+                const date = new Date(item.time * 1000);
+                // Получаем понедельник недели
+                const monday = new Date(date);
+                monday.setDate(date.getDate() - date.getDay() + 1); // Понедельник
+                monday.setHours(0, 0, 0, 0);
+                
+                const weekKey = Math.floor(monday.getTime() / 1000);
+                
+                if (!weekMap.has(weekKey)) {
+                    weekMap.set(weekKey, []);
+                }
+                weekMap.get(weekKey).push(item.value);
+            });
+            
+            // Преобразуем в массив с усредненными значениями
+            const weeklyData = [];
+            weekMap.forEach((values, weekTime) => {
+                const avgValue = values.reduce((sum, val) => sum + val, 0) / values.length;
+                weeklyData.push({
+                    time: weekTime,
+                    value: avgValue
+                });
+            });
+            
+            // Сортируем по времени
+            weeklyData.sort((a, b) => a.time - b.time);
+            
+            return weeklyData;
+        }
+
+        function aggregateBTCToWeeks(candleData) {
+            // Агрегируем дневные свечи BTC в недельные
+            const weekMap = new Map();
+            
+            candleData.forEach(candle => {
+                const date = new Date(candle.time * 1000);
+                // Получаем понедельник недели
+                const monday = new Date(date);
+                monday.setDate(date.getDate() - date.getDay() + 1); // Понедельник
+                monday.setHours(0, 0, 0, 0);
+                
+                const weekKey = Math.floor(monday.getTime() / 1000);
+                
+                if (!weekMap.has(weekKey)) {
+                    weekMap.set(weekKey, []);
+                }
+                weekMap.get(weekKey).push(candle);
+            });
+            
+            // Преобразуем в недельные свечи
+            const weeklyCandles = [];
+            weekMap.forEach((candles, weekTime) => {
+                if (candles.length > 0) {
+                    // Сортируем свечи по времени
+                    candles.sort((a, b) => a.time - b.time);
+                    
+                    const weeklyCandle = {
+                        time: weekTime,
+                        open: candles[0].open,  // Первая цена открытия недели
+                        high: Math.max(...candles.map(c => c.high)),  // Максимальная цена за неделю
+                        low: Math.min(...candles.map(c => c.low)),    // Минимальная цена за неделю
+                        close: candles[candles.length - 1].close      // Последняя цена закрытия недели
+                    };
+                    
+                    weeklyCandles.push(weeklyCandle);
+                }
+            });
+            
+            // Сортируем по времени
+            weeklyCandles.sort((a, b) => a.time - b.time);
+            
+            return weeklyCandles;
         }
 
         async function loadLocalCBMA14Data() {
@@ -384,7 +490,7 @@
                 console.log(`📊 Calculated MA${currentMAPeriod} for ${maValues.length} points`);
 
                 // Создаём данные для графика (MA начинается с индекса period-1)
-                const maData = [];
+                let maData = [];
                 const startIndex = currentMAPeriod - 1;
                 
                 for (let i = 0; i < maValues.length; i++) {
@@ -396,6 +502,10 @@
                         });
                     }
                 }
+
+                // Агрегируем данные по выбранному таймфрейму
+                maData = aggregateDataByTimeframe(maData, currentTimeframe);
+                console.log(`📊 Aggregated to ${currentTimeframe} timeframe: ${maData.length} points`);
 
                 // Получаем выбранные даты для фильтрации
                 const fromDateValue = document.getElementById('fromDate').value;
@@ -546,8 +656,8 @@
                         secondsVisible: false,
                         borderVisible: true,
                         rightOffset: 12,
-                        barSpacing: 8,
-                        minBarSpacing: 1,        // Уменьшаем минимальное расстояние
+                        barSpacing: 3,           // Уменьшаем расстояние между барами для большей плотности
+                        minBarSpacing: 0.5,      // Еще больше уменьшаем минимальное расстояние
                         fixLeftEdge: false,      // Позволяем свободно прокручивать левый край
                         fixRightEdge: false,     // Позволяем свободно прокручивать правый край
                         lockVisibleTimeRangeOnResize: false,
@@ -659,19 +769,30 @@
                 const fromTime = fromDateValue ? Math.floor(new Date(fromDateValue).getTime() / 1000) : Math.floor((Date.now() - 365 * 24 * 60 * 60 * 1000) / 1000);
                 const toTime = toDateValue ? Math.floor(new Date(toDateValue + 'T23:59:59').getTime() / 1000) : Math.floor(Date.now() / 1000);
 
+                // Получаем выбранный таймфрейм
+                const timeframeSelect = document.getElementById('timeframeSelect');
+                currentTimeframe = timeframeSelect ? timeframeSelect.value : 'W';
+                
+                // Определяем API таймфрейм (API поддерживает только >= 4H)
+                let apiTimeframe = currentTimeframe;
+                if (currentTimeframe === 'W') {
+                    // Для недельного используем дневные данные и агрегируем локально
+                    apiTimeframe = 'D';
+                }
+                
                 // Загружаем данные BTC
                 console.log('📊 Loading BTC data...');
-                console.log(`🔗 BTC API URL: ${CONFIG.API_BASE_URL}/history?symbol=BTCUSDT&resolution=D&from=${fromTime}&to=${toTime}`);
+                console.log(`🔗 BTC API URL: ${CONFIG.API_BASE_URL}/history?symbol=BTCUSDT&resolution=${apiTimeframe}&from=${fromTime}&to=${toTime}`);
                 console.log(`📅 Requested period: ${new Date(fromTime * 1000).toLocaleDateString('ru-RU')} - ${new Date(toTime * 1000).toLocaleDateString('ru-RU')}`);
-                console.log(`⏱️ From timestamp: ${fromTime}, To timestamp: ${toTime}`);
+                console.log(`⏱️ From timestamp: ${fromTime}, To timestamp: ${toTime}, API Timeframe: ${apiTimeframe}, UI Timeframe: ${currentTimeframe}`);
                 
-                const btcResponse = await fetch(`${CONFIG.API_BASE_URL}/history?symbol=BTCUSDT&resolution=D&from=${fromTime}&to=${toTime}`);
+                const btcResponse = await fetch(`${CONFIG.API_BASE_URL}/history?symbol=BTCUSDT&resolution=${apiTimeframe}&from=${fromTime}&to=${toTime}`);
                 const btcData = await btcResponse.json();
                 
                 console.log('📊 BTC API Response:', btcData);
 
                 if (btcData.s === 'ok' && btcData.t && btcData.o && btcData.h && btcData.l && btcData.c) {
-                    const candleData = [];
+                    let candleData = [];
                     for (let i = 0; i < btcData.t.length; i++) {
                         if (btcData.t[i] && btcData.o[i] != null && btcData.h[i] != null && 
                             btcData.l[i] != null && btcData.c[i] != null) {
@@ -684,8 +805,15 @@
                             });
                         }
                     }
+
+                    // Агрегируем BTC данные если нужно
+                    if (currentTimeframe === 'W' && apiTimeframe === 'D') {
+                        candleData = aggregateBTCToWeeks(candleData);
+                        console.log(`📊 BTC data aggregated to weekly: ${candleData.length} candles`);
+                    }
+
                     candlestickSeries.setData(candleData);
-                    console.log(`🔄 BTC chart updated with ${candleData.length} candles`);
+                    console.log(`🔄 BTC chart updated with ${candleData.length} candles (${currentTimeframe})`);
                     
                     // Проверяем диапазон BTC данных
                     if (candleData.length > 0) {
@@ -730,7 +858,9 @@
                     fitAllContent();
                 }, 1200);
                 
-                updateStatus(`${CONFIG.MESSAGES.SUCCESS}: BTC + CBMA14 (MA${currentMAPeriod})`, 'success');
+                const timeframeText = currentTimeframe === '240' ? '4H' : currentTimeframe === 'D' ? '1D' : '1W';
+                const apiInfo = currentTimeframe === 'W' ? ` [API: ${apiTimeframe}→${timeframeText}]` : '';
+                updateStatus(`${CONFIG.MESSAGES.SUCCESS}: BTC + CBMA14 (MA${currentMAPeriod}, ${timeframeText}${apiInfo})`, 'success');
 
             } catch (error) {
                 console.error('❌ Error loading data:', error);
@@ -805,6 +935,28 @@
                 console.log('✅ Chart refreshed successfully');
             } catch (error) {
                 console.warn('⚠️ Error refreshing chart:', error);
+            }
+        }
+
+        function setOptimalInitialRange() {
+            if (!chart) return;
+            
+            try {
+                console.log('🎯 Setting optimal initial time range...');
+                
+                // Устанавливаем видимый диапазон на последние 2 года
+                const now = Math.floor(Date.now() / 1000);
+                const twoYearsAgo = now - (2 * 365 * 24 * 60 * 60); // 2 года назад
+                
+                const timeScale = chart.timeScale();
+                timeScale.setVisibleRange({
+                    from: twoYearsAgo,
+                    to: now
+                });
+                
+                console.log('📊 Initial range set to last 2 years for better visibility');
+            } catch (error) {
+                console.warn('⚠️ Could not set initial range:', error);
             }
         }
 
@@ -898,7 +1050,7 @@
 
         function setupEventHandlers() {
             // Проверяем существование DOM элементов
-            const requiredElements = ['maPeriodSelect', 'fromDate', 'toDate', 'resetScale', 'fitContent'];
+            const requiredElements = ['timeframeSelect', 'maPeriodSelect', 'fromDate', 'toDate', 'resetScale', 'fitContent'];
             for (const elementId of requiredElements) {
                 if (!document.getElementById(elementId)) {
                     console.error(`❌ Required DOM element not found: ${elementId}`);
@@ -906,6 +1058,14 @@
                     return;
                 }
             }
+            
+            // Смена таймфрейма
+            document.getElementById('timeframeSelect').addEventListener('change', (e) => {
+                currentTimeframe = e.target.value;
+                console.log(`📊 Timeframe changed to: ${currentTimeframe}`);
+                console.log('🔄 Reloading data with new timeframe...');
+                loadData();
+            });
             
             // Смена периода MA
             document.getElementById('maPeriodSelect').addEventListener('change', (e) => {
@@ -974,10 +1134,11 @@
         }
 
         function updateLegend() {
-            // Обновляем текст легенды с текущим периодом MA
+            // Обновляем текст легенды с текущим периодом MA и таймфреймом
             const legendElement = document.getElementById('cbma-legend');
             if (legendElement) {
-                legendElement.textContent = `Coinbase MA${currentMAPeriod} (синяя линия)`;
+                const timeframeText = currentTimeframe === '240' ? '4H' : currentTimeframe === 'D' ? '1D' : '1W';
+                legendElement.textContent = `Coinbase MA${currentMAPeriod} ${timeframeText} (синяя линия)`;
             }
         }
 
