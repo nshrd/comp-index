@@ -95,46 +95,7 @@
             box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
         }
         
-        .timeframe-buttons {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            background: rgba(255, 255, 255, 0.9);
-            border: 1px solid rgba(197, 203, 206, 0.3);
-            border-radius: 12px;
-            padding: 8px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            backdrop-filter: blur(10px);
-        }
-        
-        .timeframe-btn {
-            background: transparent;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 500;
-            color: #666;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            min-width: 40px;
-        }
-        
-        .timeframe-btn:hover {
-            background: rgba(41, 98, 255, 0.1);
-            color: #2962FF;
-        }
-        
-        .timeframe-btn.active {
-            background: #2962FF;
-            color: white;
-            box-shadow: 0 2px 8px rgba(41, 98, 255, 0.3);
-        }
-        
-        .timeframe-btn:focus {
-            outline: none;
-        }
-        
+
 
         
         .chart-container {
@@ -231,9 +192,14 @@
                 </select>
             </div>
             
-            <div class="timeframe-buttons">
-                <button class="timeframe-btn active" data-timeframe="4h">4H</button>
-                <button class="timeframe-btn" data-timeframe="1d">1D</button>
+            <div class="control-group">
+                <label for="fromDate">От:</label>
+                <input type="date" id="fromDate" class="date-input">
+            </div>
+            
+            <div class="control-group">
+                <label for="toDate">До:</label>
+                <input type="date" id="toDate" class="date-input">
             </div>
         </div>
         
@@ -250,55 +216,28 @@
         let candlestickSeries = null;
         let lineSeries = null;
         let currentMAPeriod = CONFIG.DEFAULT_MA_PERIOD;
-        let currentTimeframe = '4h'; // По умолчанию 4h (7 дней)
+        let fromDate = null;
+        let toDate = null;
 
         // Инициализация при загрузке страницы
         document.addEventListener('DOMContentLoaded', function() {
-            initializeTimeframe();
+            initializeDates();
             initializeChart();
             setupEventHandlers();
             // Небольшая задержка перед загрузкой данных
             setTimeout(loadData, 100);
         });
 
-        function initializeTimeframe() {
-            // Устанавливаем активную кнопку временного интервала по умолчанию
-            setActiveTimeframe(currentTimeframe);
-        }
-
-        function setActiveTimeframe(timeframe) {
-            // Убираем активный класс со всех кнопок
-            document.querySelectorAll('.timeframe-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
+        function initializeDates() {
+            // Устанавливаем даты по умолчанию: последние 30 дней
+            const today = new Date();
+            const thirtyDaysAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
             
-            // Добавляем активный класс к выбранной кнопке
-            const activeBtn = document.querySelector(`[data-timeframe="${timeframe}"]`);
-            if (activeBtn) {
-                activeBtn.classList.add('active');
-            }
+            toDate = today.toISOString().split('T')[0];
+            fromDate = thirtyDaysAgo.toISOString().split('T')[0];
             
-            currentTimeframe = timeframe;
-        }
-
-        function getTimeRange(timeframe) {
-            const now = new Date();
-            const toTime = Math.floor(now.getTime() / 1000);
-            let fromTime;
-
-            switch (timeframe) {
-                case '4h':
-                    // Последние 7 дней (краткосрочный просмотр)
-                    fromTime = Math.floor((now.getTime() - 7 * 24 * 60 * 60 * 1000) / 1000);
-                    break;
-                case '1d':
-                default:
-                    // Последние 30 дней (среднесрочный просмотр)
-                    fromTime = Math.floor((now.getTime() - 30 * 24 * 60 * 60 * 1000) / 1000);
-                    break;
-            }
-
-            return { fromTime, toTime };
+            document.getElementById('fromDate').value = fromDate;
+            document.getElementById('toDate').value = toDate;
         }
 
         function calculateMovingAverage(values, period) {
@@ -319,7 +258,7 @@
         async function loadLocalCBMA14Data() {
             try {
                 // Загружаем локальные данные
-                const response = await fetch('../../data/data.json');
+                const response = await fetch('/data/data.json');
                 const jsonData = await response.json();
                 
                 if (!jsonData.data || !Array.isArray(jsonData.data)) {
@@ -373,8 +312,13 @@
                     }
                 }
 
-                // Получаем временной диапазон для фильтрации отображения
-                const { fromTime, toTime } = getTimeRange(currentTimeframe);
+                // Получаем выбранные даты для фильтрации
+                const fromDateValue = document.getElementById('fromDate').value;
+                const toDateValue = document.getElementById('toDate').value;
+                
+                // Преобразуем даты в timestamp
+                const fromTime = fromDateValue ? Math.floor(new Date(fromDateValue).getTime() / 1000) : 0;
+                const toTime = toDateValue ? Math.floor(new Date(toDateValue + 'T23:59:59').getTime() / 1000) : Math.floor(Date.now() / 1000);
 
                 // Фильтруем данные для отображения
                 const filteredData = maData.filter(item => 
@@ -383,12 +327,12 @@
 
                 if (filteredData.length > 0) {
                     lineSeries.setData(filteredData);
-                    console.log(`✅ Loaded ${filteredData.length} MA${currentMAPeriod} points for ${currentTimeframe.toUpperCase()}`);
+                    console.log(`✅ Loaded ${filteredData.length} MA${currentMAPeriod} points for selected date range`);
                     console.log('📊 First point:', filteredData[0]);
                     console.log('📊 Last point:', filteredData[filteredData.length - 1]);
                 } else {
                     // Если в выбранном диапазоне нет данных, показываем последние доступные
-                    console.warn(`⚠️ No MA${currentMAPeriod} data found for timeframe ${currentTimeframe.toUpperCase()}`);
+                    console.warn(`⚠️ No MA${currentMAPeriod} data found for selected date range`);
                     const recentData = maData.slice(-100); // Последние 100 точек
                     if (recentData.length > 0) {
                         lineSeries.setData(recentData);
@@ -565,8 +509,13 @@
             try {
                 updateStatus(CONFIG.MESSAGES.LOADING, 'info');
 
-                // Получаем временной диапазон на основе выбранного интервала
-                const { fromTime, toTime } = getTimeRange(currentTimeframe);
+                // Получаем выбранные даты
+                const fromDateValue = document.getElementById('fromDate').value;
+                const toDateValue = document.getElementById('toDate').value;
+                
+                // Преобразуем даты в timestamp
+                const fromTime = fromDateValue ? Math.floor(new Date(fromDateValue).getTime() / 1000) : Math.floor((Date.now() - 365 * 24 * 60 * 60 * 1000) / 1000);
+                const toTime = toDateValue ? Math.floor(new Date(toDateValue + 'T23:59:59').getTime() / 1000) : Math.floor(Date.now() / 1000);
 
                 // Загружаем данные BTC
                 const btcResponse = await fetch(`${CONFIG.API_BASE_URL}/history?symbol=BTCUSDT&resolution=D&from=${fromTime}&to=${toTime}`);
@@ -597,10 +546,10 @@
                 // Обновляем легенду
                 updateLegend();
                 
-                // Устанавливаем видимый диапазон на основе выбранного временного интервала
-                setVisibleRangeForTimeframe();
+                // Устанавливаем видимый диапазон на основе выбранных дат
+                setVisibleRangeForDates();
                 
-                updateStatus(`${CONFIG.MESSAGES.SUCCESS}: BTC + CBMA14 (MA${currentMAPeriod}) - ${currentTimeframe.toUpperCase()}`, 'success');
+                updateStatus(`${CONFIG.MESSAGES.SUCCESS}: BTC + CBMA14 (MA${currentMAPeriod})`, 'success');
 
             } catch (error) {
                 console.error('❌ Error loading data:', error);
@@ -608,20 +557,29 @@
             }
         }
 
-        function setVisibleRangeForTimeframe() {
+        function setVisibleRangeForDates() {
             if (!chart) return;
             
             try {
-                // Получаем временной диапазон для текущего интервала
-                const { fromTime, toTime } = getTimeRange(currentTimeframe);
+                // Получаем выбранные даты
+                const fromDateValue = document.getElementById('fromDate').value;
+                const toDateValue = document.getElementById('toDate').value;
                 
-                // Устанавливаем видимый диапазон
-                chart.timeScale().setVisibleRange({
-                    from: fromTime,
-                    to: toTime
-                });
-                
-                console.log(`✅ Visible range set for ${currentTimeframe.toUpperCase()}: ${new Date(fromTime * 1000).toLocaleString()} - ${new Date(toTime * 1000).toLocaleString()}`);
+                if (fromDateValue && toDateValue) {
+                    const fromTime = Math.floor(new Date(fromDateValue).getTime() / 1000);
+                    const toTime = Math.floor(new Date(toDateValue + 'T23:59:59').getTime() / 1000);
+                    
+                    // Устанавливаем видимый диапазон
+                    chart.timeScale().setVisibleRange({
+                        from: fromTime,
+                        to: toTime
+                    });
+                    
+                    console.log(`✅ Visible range set: ${new Date(fromTime * 1000).toLocaleString()} - ${new Date(toTime * 1000).toLocaleString()}`);
+                } else {
+                    // Если даты не выбраны, подгоняем к содержимому
+                    chart.timeScale().fitContent();
+                }
             } catch (error) {
                 console.warn('⚠️ Error setting visible range:', error);
                 // Если не получается установить диапазон, просто подгоняем к содержимому
@@ -661,13 +619,15 @@
                 loadData();
             });
 
-            // Кнопки временных интервалов
-            document.querySelectorAll('.timeframe-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const timeframe = e.target.getAttribute('data-timeframe');
-                    setActiveTimeframe(timeframe);
-                    loadData();
-                });
+            // Изменение дат
+            document.getElementById('fromDate').addEventListener('change', (e) => {
+                fromDate = e.target.value;
+                loadData();
+            });
+
+            document.getElementById('toDate').addEventListener('change', (e) => {
+                toDate = e.target.value;
+                loadData();
             });
         }
 
