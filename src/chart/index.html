@@ -546,8 +546,12 @@
                 // Обновляем легенду
                 updateLegend();
                 
-                // Устанавливаем видимый диапазон на основе выбранных дат
-                setVisibleRangeForDates();
+                // Автоматически подгоняем график под загруженные данные
+                setTimeout(() => {
+                    if (chart) {
+                        chart.timeScale().fitContent();
+                    }
+                }, 100);
                 
                 updateStatus(`${CONFIG.MESSAGES.SUCCESS}: BTC + CBMA14 (MA${currentMAPeriod})`, 'success');
 
@@ -557,39 +561,7 @@
             }
         }
 
-        function setVisibleRangeForDates() {
-            if (!chart) return;
-            
-            try {
-                // Получаем выбранные даты
-                const fromDateValue = document.getElementById('fromDate').value;
-                const toDateValue = document.getElementById('toDate').value;
-                
-                if (fromDateValue && toDateValue) {
-                    const fromTime = Math.floor(new Date(fromDateValue).getTime() / 1000);
-                    const toTime = Math.floor(new Date(toDateValue + 'T23:59:59').getTime() / 1000);
-                    
-                    // Устанавливаем видимый диапазон
-                    chart.timeScale().setVisibleRange({
-                        from: fromTime,
-                        to: toTime
-                    });
-                    
-                    console.log(`✅ Visible range set: ${new Date(fromTime * 1000).toLocaleString()} - ${new Date(toTime * 1000).toLocaleString()}`);
-                } else {
-                    // Если даты не выбраны, подгоняем к содержимому
-                    chart.timeScale().fitContent();
-                }
-            } catch (error) {
-                console.warn('⚠️ Error setting visible range:', error);
-                // Если не получается установить диапазон, просто подгоняем к содержимому
-                try {
-                    chart.timeScale().fitContent();
-                } catch (e) {
-                    console.warn('⚠️ Error fitting content:', e);
-                }
-            }
-        }
+
 
         function setupScaleSynchronization() {
             if (!chart) return;
