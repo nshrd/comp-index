@@ -257,36 +257,16 @@
 
         async function loadLocalCBMA14Data() {
             try {
-                // Загружаем локальные данные (пробуем разные пути)
-                const possiblePaths = [
-                    './data/data.json',
-                    '../data/data.json', 
-                    '/data/data.json',
-                    '../../data/data.json'
-                ];
+                // Загружаем локальные данные из правильного пути для Docker
+                const dataPath = '/data/data.json';
+                console.log(`🔍 Loading data from: ${dataPath}`);
+                const response = await fetch(dataPath);
                 
-                let response = null;
-                let lastError = null;
-                
-                for (const path of possiblePaths) {
-                    try {
-                        console.log(`🔍 Trying to load data from: ${path}`);
-                        response = await fetch(path);
-                        if (response.ok) {
-                            console.log(`✅ Successfully loaded data from: ${path}`);
-                            break;
-                        } else {
-                            console.log(`❌ Failed to load from ${path}: ${response.status} ${response.statusText}`);
-                        }
-                    } catch (error) {
-                        console.log(`❌ Error loading from ${path}:`, error);
-                        lastError = error;
-                    }
+                if (!response.ok) {
+                    throw new Error(`Failed to load data.json: ${response.status} ${response.statusText}`);
                 }
                 
-                if (!response || !response.ok) {
-                    throw new Error(`Failed to load data.json from any path. Last error: ${lastError?.message}`);
-                }
+                // Загружаем JSON данные
                 const jsonData = await response.json();
                 
                 if (!jsonData.data || !Array.isArray(jsonData.data)) {
@@ -443,9 +423,10 @@
                     rightPriceScale: {
                         borderColor: 'rgba(197, 203, 206, 0.8)',
                         textColor: '#2d3748',
+                        autoScale: true,
                         scaleMargins: {
-                            top: 0.05,
-                            bottom: 0.05,
+                            top: 0.1,
+                            bottom: 0.1,
                         },
                         entireTextOnly: false,
                     },
@@ -454,9 +435,10 @@
                         borderColor: 'rgba(197, 203, 206, 0.8)',
                         textColor: '#2d3748',
                         invertScale: true,
+                        autoScale: true,
                         scaleMargins: {
-                            top: 0.05,
-                            bottom: 0.05,
+                            top: 0.1,
+                            bottom: 0.1,
                         },
                         entireTextOnly: false,
                     },
@@ -577,9 +559,33 @@
                 // Автоматически подгоняем график под загруженные данные
                 setTimeout(() => {
                     if (chart) {
+                        // Подгоняем временную шкалу
                         chart.timeScale().fitContent();
+                        
+                        // Автомасштабирование ценовых шкал
+                        try {
+                            // Сбрасываем и автомасштабируем правую шкалу (BTC)
+                            const rightPriceScale = chart.priceScale('right');
+                            if (rightPriceScale) {
+                                rightPriceScale.applyOptions({
+                                    autoScale: true,
+                                });
+                            }
+                            
+                            // Сбрасываем и автомасштабируем левую шкалу (CBMA14)
+                            const leftPriceScale = chart.priceScale('left');
+                            if (leftPriceScale) {
+                                leftPriceScale.applyOptions({
+                                    autoScale: true,
+                                });
+                            }
+                            
+                            console.log('✅ Auto-scaled both price scales');
+                        } catch (error) {
+                            console.warn('⚠️ Error auto-scaling price scales:', error);
+                        }
                     }
-                }, 100);
+                }, 150);
                 
                 updateStatus(`${CONFIG.MESSAGES.SUCCESS}: BTC + CBMA14 (MA${currentMAPeriod})`, 'success');
 
