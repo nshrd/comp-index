@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CBMA14 Index - Lightweight Charts</title>
+    <title>Coinbase App Index</title>
     <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
     <script src="config.js"></script>
     <style>
@@ -11,7 +11,7 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             margin: 0;
             padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8eaed 100%);
             color: #1a202c;
             min-height: 100vh;
         }
@@ -210,16 +210,16 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="title">CBMA14 Index - Lightweight Charts</div>
+            <div class="title">Coinbase App Index</div>
             
             <div class="legend">
                 <div class="legend-item">
                     <div class="legend-line legend-cbma14"></div>
-                    <span id="cbma-legend">Coinbase MA14 (синяя линия)</span>
+                    <span id="cbma-legend">Coinbase</span>
                 </div>
                 <div class="legend-item">
                     <div class="legend-line legend-btc"></div>
-                    <span>Bitcoin (свечи)</span>
+                    <span>$TICKER</span>
                 </div>
             </div>
         </div>
@@ -263,10 +263,9 @@
         </div>
         
         <div class="data-info">
-            📊 <strong>CBMA14:</strong> данные с мая 2017 года | 
+            📊 <strong>CB:</strong> данные с мая 2017 года | 
             🪙 <strong>BTC:</strong> данные с августа 2017 года | 
-            🕐 <strong>Таймфреймы:</strong> 4H, 1D, 1W (API поддерживает ≥4H, по умолчанию 1W) | 
-            🎛️ <strong>Управление:</strong> перетаскивание временной оси, колесико для масштаба, R - сброс, F - подогнать
+            🕐 <strong>Таймфреймы:</strong> 4H, 1D, 1W (API поддерживает ≥4H, по умолчанию 1W)
         </div>
         
         <div class="status" id="status">Загрузка графиков...</div>
@@ -716,7 +715,7 @@
                 // Создаем линейную серию для CBMA14 (левая шкала)
                 lineSeries = chart.addSeries(LightweightCharts.LineSeries, {
                     color: '#2962FF',
-                    lineWidth: 3,
+                    lineWidth: 2,
                     lineStyle: LightweightCharts.LineStyle.Solid,
                     lineType: LightweightCharts.LineType.Simple,
                     crosshairMarkerVisible: true,
@@ -1134,11 +1133,10 @@
         }
 
         function updateLegend() {
-            // Обновляем текст легенды с текущим периодом MA и таймфреймом
+            // Обновляем текст легенды
             const legendElement = document.getElementById('cbma-legend');
             if (legendElement) {
-                const timeframeText = currentTimeframe === '240' ? '4H' : currentTimeframe === 'D' ? '1D' : '1W';
-                legendElement.textContent = `Coinbase MA${currentMAPeriod} ${timeframeText} (синяя линия)`;
+                legendElement.textContent = 'Coinbase';
             }
         }
 
