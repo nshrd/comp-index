@@ -256,7 +256,7 @@
         <div class="data-info">
             📊 <strong>CBMA14:</strong> данные с мая 2017 года | 
             🪙 <strong>BTC:</strong> данные с августа 2017 года | 
-            🎛️ <strong>Управление:</strong> R - сброс масштаба, F - подогнать все
+            🎛️ <strong>Управление:</strong> перетаскивание временной оси, колесико для масштаба, R - сброс, F - подогнать
         </div>
         
         <div class="status" id="status">Загрузка графиков...</div>
@@ -547,14 +547,15 @@
                         borderVisible: true,
                         rightOffset: 12,
                         barSpacing: 8,
-                        minBarSpacing: 2,
-                        fixLeftEdge: false,
-                        fixRightEdge: false,
+                        minBarSpacing: 1,        // Уменьшаем минимальное расстояние
+                        fixLeftEdge: false,      // Позволяем свободно прокручивать левый край
+                        fixRightEdge: false,     // Позволяем свободно прокручивать правый край
                         lockVisibleTimeRangeOnResize: false,
-                        rightBarStaysOnScroll: true,
+                        rightBarStaysOnScroll: false,  // Разрешаем свободную прокрутку
                         allowBoldLabels: true,
                         visible: true,
                         ticksVisible: true,
+                        shiftVisibleRangeOnNewBar: false,  // Не сдвигаем при новых данных
                         tickMarkFormatter: (time) => {
                             const date = new Date(time * 1000);
                             return date.toLocaleDateString('ru-RU', { 
@@ -567,7 +568,7 @@
                         mouseWheel: true,          // Колесико мыши для прокрутки
                         pressedMouseMove: true,    // Прокрутка перетаскиванием
                         horzTouchDrag: true,       // Горизонтальное сенсорное перетаскивание
-                        vertTouchDrag: true,       // Вертикальное сенсорное перетаскивание
+                        vertTouchDrag: false,      // Отключаем вертикальное перетаскивание чтобы не мешало
                     },
                     handleScale: {
                         axisPressedMouseMove: {    // Масштабирование осей мышью
@@ -580,6 +581,10 @@
                             time: true,
                             price: true,
                         },
+                    },
+                    kineticScroll: {              // Добавляем кинетическую прокрутку
+                        touch: true,
+                        mouse: false,
                     },
                 });
 
@@ -624,6 +629,14 @@
 
                 // Синхронизация масштабирования левой и правой шкал
                 setupScaleSynchronization();
+                
+                // Принудительная подгонка при инициализации
+                setTimeout(() => {
+                    if (chart) {
+                        chart.timeScale().fitContent();
+                        console.log('📊 Initial chart fit applied');
+                    }
+                }, 100);
 
                 console.log('✅ Lightweight Charts initialized');
                 updateStatus('График инициализирован', 'success');
@@ -703,9 +716,19 @@
                 updateLegend();
                 
                 // Автоматически подгоняем график под загруженные данные
+                // Делаем несколько попыток с увеличивающейся задержкой
                 setTimeout(() => {
                     refreshChart();
-                }, 200);
+                }, 300);
+                
+                setTimeout(() => {
+                    refreshChart();
+                }, 800);
+                
+                // Финальная подгонка
+                setTimeout(() => {
+                    fitAllContent();
+                }, 1200);
                 
                 updateStatus(`${CONFIG.MESSAGES.SUCCESS}: BTC + CBMA14 (MA${currentMAPeriod})`, 'success');
 
@@ -739,27 +762,45 @@
             try {
                 console.log('🔄 Refreshing chart layout...');
                 
-                // Подгоняем временную шкалу
-                chart.timeScale().fitContent();
+                // Принудительно подгоняем временную шкалу
+                const timeScale = chart.timeScale();
+                timeScale.fitContent();
                 
-                // Автомасштабирование ценовых шкал
-                // Сбрасываем и автомасштабируем правую шкалу (BTC)
+                // Принудительно обновляем размеры
+                const container = document.getElementById('chart-container');
+                if (container) {
+                    chart.resize(container.clientWidth, 600);
+                }
+                
+                // Автомасштабирование ценовых шкал с принудительным обновлением
                 const rightPriceScale = chart.priceScale('right');
                 if (rightPriceScale) {
                     rightPriceScale.applyOptions({
                         autoScale: true,
+                        scaleMargins: {
+                            top: 0.08,
+                            bottom: 0.08,
+                        },
                     });
                     console.log('📊 BTC price scale (right) refreshed');
                 }
                 
-                // Сбрасываем и автомасштабируем левую шкалу (CBMA14)
                 const leftPriceScale = chart.priceScale('left');
                 if (leftPriceScale) {
                     leftPriceScale.applyOptions({
                         autoScale: true,
+                        scaleMargins: {
+                            top: 0.08,
+                            bottom: 0.08,
+                        },
                     });
                     console.log('📊 CBMA14 price scale (left) refreshed');
                 }
+                
+                // Дополнительная подгонка временной шкалы
+                setTimeout(() => {
+                    timeScale.fitContent();
+                }, 50);
                 
                 console.log('✅ Chart refreshed successfully');
             } catch (error) {
