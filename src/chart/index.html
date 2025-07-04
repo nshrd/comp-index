@@ -257,8 +257,36 @@
 
         async function loadLocalCBMA14Data() {
             try {
-                // Загружаем локальные данные
-                const response = await fetch('/data/data.json');
+                // Загружаем локальные данные (пробуем разные пути)
+                const possiblePaths = [
+                    './data/data.json',
+                    '../data/data.json', 
+                    '/data/data.json',
+                    '../../data/data.json'
+                ];
+                
+                let response = null;
+                let lastError = null;
+                
+                for (const path of possiblePaths) {
+                    try {
+                        console.log(`🔍 Trying to load data from: ${path}`);
+                        response = await fetch(path);
+                        if (response.ok) {
+                            console.log(`✅ Successfully loaded data from: ${path}`);
+                            break;
+                        } else {
+                            console.log(`❌ Failed to load from ${path}: ${response.status} ${response.statusText}`);
+                        }
+                    } catch (error) {
+                        console.log(`❌ Error loading from ${path}:`, error);
+                        lastError = error;
+                    }
+                }
+                
+                if (!response || !response.ok) {
+                    throw new Error(`Failed to load data.json from any path. Last error: ${lastError?.message}`);
+                }
                 const jsonData = await response.json();
                 
                 if (!jsonData.data || !Array.isArray(jsonData.data)) {
