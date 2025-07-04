@@ -95,25 +95,44 @@
             box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
         }
         
-        .date-input {
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            padding: 4px 8px;
-            font-size: 14px;
-            background: white;
-            color: #333;
+        .timeframe-buttons {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(197, 203, 206, 0.3);
+            border-radius: 12px;
+            padding: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            backdrop-filter: blur(10px);
+        }
+        
+        .timeframe-btn {
+            background: transparent;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #666;
             cursor: pointer;
-            min-width: 120px;
+            transition: all 0.2s ease;
+            min-width: 40px;
         }
         
-        .date-input:hover {
-            border-color: #2196f3;
+        .timeframe-btn:hover {
+            background: rgba(41, 98, 255, 0.1);
+            color: #2962FF;
         }
         
-        .date-input:focus {
+        .timeframe-btn.active {
+            background: #2962FF;
+            color: white;
+            box-shadow: 0 2px 8px rgba(41, 98, 255, 0.3);
+        }
+        
+        .timeframe-btn:focus {
             outline: none;
-            border-color: #2196f3;
-            box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
         }
         
 
@@ -212,14 +231,9 @@
                 </select>
             </div>
             
-            <div class="control-group">
-                <label for="fromDate">От:</label>
-                <input type="date" id="fromDate" class="date-input">
-            </div>
-            
-            <div class="control-group">
-                <label for="toDate">До:</label>
-                <input type="date" id="toDate" class="date-input">
+            <div class="timeframe-buttons">
+                <button class="timeframe-btn active" data-timeframe="4h">4H</button>
+                <button class="timeframe-btn" data-timeframe="1d">1D</button>
             </div>
         </div>
         
@@ -236,28 +250,180 @@
         let candlestickSeries = null;
         let lineSeries = null;
         let currentMAPeriod = CONFIG.DEFAULT_MA_PERIOD;
-        let fromDate = null;
-        let toDate = null;
+        let currentTimeframe = '4h'; // По умолчанию 4h (7 дней)
 
         // Инициализация при загрузке страницы
         document.addEventListener('DOMContentLoaded', function() {
-            initializeDates();
+            initializeTimeframe();
             initializeChart();
             setupEventHandlers();
             // Небольшая задержка перед загрузкой данных
             setTimeout(loadData, 100);
         });
 
-        function initializeDates() {
-            // Устанавливаем даты по умолчанию: с 9 марта 2022 года до сегодня
-            const today = new Date();
-            const startDate = new Date('2022-03-09'); // 9 марта 2022 года
+        function initializeTimeframe() {
+            // Устанавливаем активную кнопку временного интервала по умолчанию
+            setActiveTimeframe(currentTimeframe);
+        }
+
+        function setActiveTimeframe(timeframe) {
+            // Убираем активный класс со всех кнопок
+            document.querySelectorAll('.timeframe-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
             
-            toDate = today.toISOString().split('T')[0];
-            fromDate = startDate.toISOString().split('T')[0];
+            // Добавляем активный класс к выбранной кнопке
+            const activeBtn = document.querySelector(`[data-timeframe="${timeframe}"]`);
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+            }
             
-            document.getElementById('fromDate').value = fromDate;
-            document.getElementById('toDate').value = toDate;
+            currentTimeframe = timeframe;
+        }
+
+        function getTimeRange(timeframe) {
+            const now = new Date();
+            const toTime = Math.floor(now.getTime() / 1000);
+            let fromTime;
+
+            switch (timeframe) {
+                case '4h':
+                    // Последние 7 дней (краткосрочный просмотр)
+                    fromTime = Math.floor((now.getTime() - 7 * 24 * 60 * 60 * 1000) / 1000);
+                    break;
+                case '1d':
+                default:
+                    // Последние 30 дней (среднесрочный просмотр)
+                    fromTime = Math.floor((now.getTime() - 30 * 24 * 60 * 60 * 1000) / 1000);
+                    break;
+            }
+
+            return { fromTime, toTime };
+        }
+
+        function calculateMovingAverage(values, period) {
+            if (values.length < period) {
+                return values; // Если данных меньше чем период, возвращаем как есть
+            }
+            
+            const maValues = [];
+            for (let i = period - 1; i < values.length; i++) {
+                const window = values.slice(i - period + 1, i + 1);
+                const avg = window.reduce((sum, val) => sum + val, 0) / window.length;
+                maValues.push(avg);
+            }
+            
+            return maValues;
+        }
+
+        async function loadLocalCBMA14Data() {
+            try {
+                // Загружаем локальные данные
+                const response = await fetch('../../data/data.json');
+                const jsonData = await response.json();
+                
+                if (!jsonData.data || !Array.isArray(jsonData.data)) {
+                    console.error('❌ Invalid data structure in data.json');
+                    return;
+                }
+
+                console.log(`📊 Loaded ${jsonData.data.length} local data points`);
+
+                // Преобразуем ВСЕ данные и сортируем по времени
+                const allData = [];
+                for (const item of jsonData.data) {
+                    if (!item.date || item.rank == null) continue;
+
+                    const timestamp = parseDateString(item.date);
+                    if (!timestamp) continue;
+
+                    allData.push({
+                        time: timestamp,
+                        value: parseFloat(item.rank),
+                    });
+                }
+
+                if (allData.length === 0) {
+                    console.error('❌ No valid data found in data.json');
+                    return;
+                }
+
+                // Сортируем данные по времени (от старых к новым)
+                allData.sort((a, b) => a.time - b.time);
+                console.log(`📊 Sorted ${allData.length} data points from ${new Date(allData[0].time * 1000).toLocaleDateString()} to ${new Date(allData[allData.length-1].time * 1000).toLocaleDateString()}`);
+
+                // Извлекаем значения для расчёта MA
+                const rawValues = allData.map(item => item.value);
+                
+                // Рассчитываем moving average с выбранным периодом
+                const maValues = calculateMovingAverage(rawValues, currentMAPeriod);
+                console.log(`📊 Calculated MA${currentMAPeriod} for ${maValues.length} points`);
+
+                // Создаём данные для графика (MA начинается с индекса period-1)
+                const maData = [];
+                const startIndex = currentMAPeriod - 1;
+                
+                for (let i = 0; i < maValues.length; i++) {
+                    const originalIndex = startIndex + i;
+                    if (originalIndex < allData.length) {
+                        maData.push({
+                            time: allData[originalIndex].time,
+                            value: maValues[i]
+                        });
+                    }
+                }
+
+                // Получаем временной диапазон для фильтрации отображения
+                const { fromTime, toTime } = getTimeRange(currentTimeframe);
+
+                // Фильтруем данные для отображения
+                const filteredData = maData.filter(item => 
+                    item.time >= fromTime && item.time <= toTime
+                );
+
+                if (filteredData.length > 0) {
+                    lineSeries.setData(filteredData);
+                    console.log(`✅ Loaded ${filteredData.length} MA${currentMAPeriod} points for ${currentTimeframe.toUpperCase()}`);
+                    console.log('📊 First point:', filteredData[0]);
+                    console.log('📊 Last point:', filteredData[filteredData.length - 1]);
+                } else {
+                    // Если в выбранном диапазоне нет данных, показываем последние доступные
+                    console.warn(`⚠️ No MA${currentMAPeriod} data found for timeframe ${currentTimeframe.toUpperCase()}`);
+                    const recentData = maData.slice(-100); // Последние 100 точек
+                    if (recentData.length > 0) {
+                        lineSeries.setData(recentData);
+                        console.log(`✅ Loaded ${recentData.length} recent MA${currentMAPeriod} points as fallback`);
+                    }
+                }
+
+            } catch (error) {
+                console.error('❌ Error loading local CBMA14 data:', error);
+            }
+        }
+
+        function parseDateString(dateStr) {
+            try {
+                // Парсим строку типа "Fri, Jul 4, 25"
+                const parts = dateStr.split(',').map(s => s.trim());
+                if (parts.length !== 3) return null;
+
+                const monthDay = parts[1]; // "Jul 4"
+                const year = parts[2]; // "25"
+
+                // Преобразуем короткий год в полный
+                const fullYear = year.length === 2 ? '20' + year : year;
+
+                // Создаем полную дату
+                const fullDate = `${monthDay}, ${fullYear}`;
+                const date = new Date(fullDate);
+
+                if (isNaN(date.getTime())) return null;
+
+                return Math.floor(date.getTime() / 1000);
+            } catch (error) {
+                console.warn('⚠️ Error parsing date:', dateStr, error);
+                return null;
+            }
         }
 
         function initializeChart() {
@@ -399,13 +565,8 @@
             try {
                 updateStatus(CONFIG.MESSAGES.LOADING, 'info');
 
-                // Получаем актуальные даты из полей
-                const fromDateValue = document.getElementById('fromDate').value;
-                const toDateValue = document.getElementById('toDate').value;
-                
-                // Преобразуем даты в timestamp
-                const fromTime = fromDateValue ? Math.floor(new Date(fromDateValue).getTime() / 1000) : Math.floor((Date.now() - 365 * 24 * 60 * 60 * 1000) / 1000);
-                const toTime = toDateValue ? Math.floor(new Date(toDateValue + 'T23:59:59').getTime() / 1000) : Math.floor(Date.now() / 1000);
+                // Получаем временной диапазон на основе выбранного интервала
+                const { fromTime, toTime } = getTimeRange(currentTimeframe);
 
                 // Загружаем данные BTC
                 const btcResponse = await fetch(`${CONFIG.API_BASE_URL}/history?symbol=BTCUSDT&resolution=D&from=${fromTime}&to=${toTime}`);
@@ -429,55 +590,17 @@
                     console.log(`✅ Loaded ${candleData.length} BTC candles`);
                 }
 
-                // Загружаем данные CBMA14 - все данные с начала
-                console.log('📊 Loading CBMA14 data...');
-                const cbma14Response = await fetch(
-                    `${CONFIG.API_BASE_URL}/history?symbol=CBMA14&resolution=D&from=0&to=${Math.floor(Date.now()/1000)}&ma_period=${currentMAPeriod}`
-                );
-                const cbma14Data = await cbma14Response.json();
-                console.log('📊 CBMA14 response:', cbma14Data.s, 'points:', cbma14Data.t?.length);
-
-                // Обновляем график CBMA14
-                if (cbma14Data.s === 'ok' && cbma14Data.t && cbma14Data.c) {
-                    const lineData = [];
-                    for (let i = 0; i < Math.min(cbma14Data.t.length, cbma14Data.c.length); i++) {
-                        const timestamp = cbma14Data.t[i];
-                        const value = cbma14Data.c[i];
-                        
-                        if (timestamp && value != null && !isNaN(value) && isFinite(value)) {
-                            lineData.push({
-                                time: timestamp,
-                                value: parseFloat(value),
-                            });
-                        } else {
-                            console.warn(`⚠️ Invalid CBMA14 data at index ${i}:`, { timestamp, value });
-                        }
-                    }
-                    
-                    console.log(`📊 Processed ${lineData.length} valid CBMA14 points`);
-                    
-                    if (lineData.length > 0) {
-                        // Сортируем данные по времени
-                        lineData.sort((a, b) => a.time - b.time);
-                        console.log('📊 First CBMA14 point:', lineData[0]);
-                        console.log('📊 Last CBMA14 point:', lineData[lineData.length - 1]);
-                        
-                        lineSeries.setData(lineData);
-                        console.log(`✅ Loaded ${lineData.length} CBMA14 points`);
-                    } else {
-                        console.warn('⚠️ No valid CBMA14 data found');
-                    }
-                } else {
-                    console.error('❌ Invalid CBMA14 response:', cbma14Data);
-                }
+                // Загружаем локальные данные CBMA14 из data.json
+                console.log('📊 Loading local CBMA14 data...');
+                await loadLocalCBMA14Data();
 
                 // Обновляем легенду
                 updateLegend();
                 
-                // Устанавливаем видимый диапазон с 9 марта 2022 года
-                setVisibleRangeFromMarch2022();
+                // Устанавливаем видимый диапазон на основе выбранного временного интервала
+                setVisibleRangeForTimeframe();
                 
-                updateStatus(`${CONFIG.MESSAGES.SUCCESS}: BTC + CBMA14 (MA${currentMAPeriod})`, 'success');
+                updateStatus(`${CONFIG.MESSAGES.SUCCESS}: BTC + CBMA14 (MA${currentMAPeriod}) - ${currentTimeframe.toUpperCase()}`, 'success');
 
             } catch (error) {
                 console.error('❌ Error loading data:', error);
@@ -485,25 +608,20 @@
             }
         }
 
-        function setVisibleRangeFromMarch2022() {
+        function setVisibleRangeForTimeframe() {
             if (!chart) return;
             
             try {
-                // Устанавливаем видимый диапазон с 9 марта 2022 года до текущей даты
-                const startDate = new Date('2022-03-09');
-                const endDate = new Date();
-                
-                // Преобразуем в timestamp для Lightweight Charts
-                const startTimestamp = Math.floor(startDate.getTime() / 1000);
-                const endTimestamp = Math.floor(endDate.getTime() / 1000);
+                // Получаем временной диапазон для текущего интервала
+                const { fromTime, toTime } = getTimeRange(currentTimeframe);
                 
                 // Устанавливаем видимый диапазон
                 chart.timeScale().setVisibleRange({
-                    from: startTimestamp,
-                    to: endTimestamp
+                    from: fromTime,
+                    to: toTime
                 });
                 
-                console.log('✅ Visible range set from March 9, 2022 to today');
+                console.log(`✅ Visible range set for ${currentTimeframe.toUpperCase()}: ${new Date(fromTime * 1000).toLocaleString()} - ${new Date(toTime * 1000).toLocaleString()}`);
             } catch (error) {
                 console.warn('⚠️ Error setting visible range:', error);
                 // Если не получается установить диапазон, просто подгоняем к содержимому
@@ -543,15 +661,13 @@
                 loadData();
             });
 
-            // Изменение дат
-            document.getElementById('fromDate').addEventListener('change', (e) => {
-                fromDate = e.target.value;
-                loadData();
-            });
-
-            document.getElementById('toDate').addEventListener('change', (e) => {
-                toDate = e.target.value;
-                loadData();
+            // Кнопки временных интервалов
+            document.querySelectorAll('.timeframe-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const timeframe = e.target.getAttribute('data-timeframe');
+                    setActiveTimeframe(timeframe);
+                    loadData();
+                });
             });
         }
 
