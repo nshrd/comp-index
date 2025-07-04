@@ -203,6 +203,11 @@
             </div>
         </div>
         
+        <div class="data-info">
+            📊 <strong>CBMA14:</strong> данные с мая 2017 года | 
+            🪙 <strong>BTC:</strong> данные с ~2023 года (ограничение API)
+        </div>
+        
         <div class="status" id="status">Загрузка графиков...</div>
         
         <div class="chart-container" id="chart-container"></div>
@@ -229,15 +234,17 @@
         });
 
         function initializeDates() {
-            // Устанавливаем даты по умолчанию: последние 30 дней
+            // Устанавливаем даты по умолчанию: с мая 2017 года до сегодня
             const today = new Date();
-            const thirtyDaysAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+            const startDate = new Date('2017-05-01'); // 1 мая 2017 года - начало данных CBMA14
             
             toDate = today.toISOString().split('T')[0];
-            fromDate = thirtyDaysAgo.toISOString().split('T')[0];
+            fromDate = startDate.toISOString().split('T')[0];
             
             document.getElementById('fromDate').value = fromDate;
             document.getElementById('toDate').value = toDate;
+            
+            console.log(`📅 Default date range set: ${fromDate} to ${toDate}`);
         }
 
         function calculateMovingAverage(values, period) {
@@ -528,8 +535,15 @@
                 const toTime = toDateValue ? Math.floor(new Date(toDateValue + 'T23:59:59').getTime() / 1000) : Math.floor(Date.now() / 1000);
 
                 // Загружаем данные BTC
+                console.log('📊 Loading BTC data...');
+                console.log(`🔗 BTC API URL: ${CONFIG.API_BASE_URL}/history?symbol=BTCUSDT&resolution=D&from=${fromTime}&to=${toTime}`);
+                console.log(`📅 Requested period: ${new Date(fromTime * 1000).toLocaleDateString('ru-RU')} - ${new Date(toTime * 1000).toLocaleDateString('ru-RU')}`);
+                console.log(`⏱️ From timestamp: ${fromTime}, To timestamp: ${toTime}`);
+                
                 const btcResponse = await fetch(`${CONFIG.API_BASE_URL}/history?symbol=BTCUSDT&resolution=D&from=${fromTime}&to=${toTime}`);
                 const btcData = await btcResponse.json();
+                
+                console.log('📊 BTC API Response:', btcData);
 
                 if (btcData.s === 'ok' && btcData.t && btcData.o && btcData.h && btcData.l && btcData.c) {
                     const candleData = [];
@@ -546,7 +560,26 @@
                         }
                     }
                     candlestickSeries.setData(candleData);
-                    console.log(`✅ Loaded ${candleData.length} BTC candles`);
+                    
+                    // Проверяем диапазон BTC данных
+                    if (candleData.length > 0) {
+                        const firstBTCDate = new Date(candleData[0].time * 1000).toLocaleDateString('ru-RU');
+                        const lastBTCDate = new Date(candleData[candleData.length - 1].time * 1000).toLocaleDateString('ru-RU');
+                        console.log(`✅ Loaded ${candleData.length} BTC candles (${firstBTCDate} - ${lastBTCDate})`);
+                        
+                        // Предупреждение если выбранный период шире доступных BTC данных
+                        const requestedStart = new Date(fromTime * 1000);
+                        const actualStart = new Date(candleData[0].time * 1000);
+                        
+                        if (requestedStart < actualStart) {
+                            console.warn(`⚠️ BTC данные доступны только с ${firstBTCDate}, но CBMA14 данные есть с ${fromDateValue}`);
+                            updateStatus(`BTC данные: ${firstBTCDate} - ${lastBTCDate} | CBMA14: полный период`, 'info');
+                        }
+                    } else {
+                        console.warn('⚠️ No BTC data available for selected period');
+                    }
+                } else {
+                    console.error('❌ Failed to load BTC data:', btcData);
                 }
 
                 // Загружаем локальные данные CBMA14 из data.json
