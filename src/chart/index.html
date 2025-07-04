@@ -95,6 +95,48 @@
             box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
         }
         
+        .date-input {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 14px;
+            background: white;
+            color: #333;
+            cursor: pointer;
+        }
+        
+        .date-input:hover {
+            border-color: #2196f3;
+        }
+        
+        .date-input:focus {
+            outline: none;
+            border-color: #2196f3;
+            box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+        }
+        
+        .reset-btn, .fit-btn {
+            border: 1px solid #2962FF;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 14px;
+            background: linear-gradient(135deg, #2962FF, #667eea);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .reset-btn:hover, .fit-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(41, 98, 255, 0.3);
+            background: linear-gradient(135deg, #1e4fd4, #5a6fd8);
+        }
+        
+        .reset-btn:active, .fit-btn:active {
+            transform: translateY(0);
+        }
+        
 
 
         
@@ -201,11 +243,20 @@
                 <label for="toDate">До:</label>
                 <input type="date" id="toDate" class="date-input">
             </div>
+            
+            <div class="control-group">
+                <button id="resetScale" class="reset-btn">🔄 Сбросить масштаб</button>
+            </div>
+            
+            <div class="control-group">
+                <button id="fitContent" class="fit-btn">📏 Подогнать все</button>
+            </div>
         </div>
         
         <div class="data-info">
             📊 <strong>CBMA14:</strong> данные с мая 2017 года | 
-            🪙 <strong>BTC:</strong> данные с ~2023 года (ограничение API)
+            🪙 <strong>BTC:</strong> данные с августа 2017 года | 
+            🎛️ <strong>Управление:</strong> R - сброс масштаба, F - подогнать все
         </div>
         
         <div class="status" id="status">Загрузка графиков...</div>
@@ -217,6 +268,10 @@
         // Конфигурация загружается из config.js
         // CONFIG доступен глобально
 
+        // Константы данных
+        const BTC_DATA_START_DATE = '2017-08-17'; // Первая доступная дата BTC данных
+        const CBMA14_DATA_START_DATE = '2017-05-01'; // Первая доступная дата CBMA14 данных
+        
         let chart = null;
         let candlestickSeries = null;
         let lineSeries = null;
@@ -226,6 +281,20 @@
 
         // Инициализация при загрузке страницы
         document.addEventListener('DOMContentLoaded', function() {
+            // Проверяем доступность CONFIG
+            if (typeof CONFIG === 'undefined') {
+                console.error('❌ CONFIG not loaded! Make sure config.js is loaded before this script.');
+                updateStatus('Ошибка: файл конфигурации не загружен', 'error');
+                return;
+            }
+            
+            // Проверяем доступность Lightweight Charts
+            if (typeof LightweightCharts === 'undefined') {
+                console.error('❌ LightweightCharts not loaded! Make sure the library is loaded.');
+                updateStatus('Ошибка: библиотека Lightweight Charts не загружена', 'error');
+                return;
+            }
+            
             initializeDates();
             initializeChart();
             setupEventHandlers();
@@ -234,17 +303,18 @@
         });
 
         function initializeDates() {
-            // Устанавливаем даты по умолчанию: с мая 2017 года до сегодня
+            // Устанавливаем даты по умолчанию: исходя из доступных BTC данных
             const today = new Date();
-            const startDate = new Date('2017-05-01'); // 1 мая 2017 года - начало данных CBMA14
+            const btcStartDate = new Date(BTC_DATA_START_DATE);
             
             toDate = today.toISOString().split('T')[0];
-            fromDate = startDate.toISOString().split('T')[0];
+            fromDate = btcStartDate.toISOString().split('T')[0];
             
             document.getElementById('fromDate').value = fromDate;
             document.getElementById('toDate').value = toDate;
             
-            console.log(`📅 Default date range set: ${fromDate} to ${toDate}`);
+            console.log(`📅 Default date range set based on BTC data availability: ${fromDate} to ${toDate}`);
+            console.log(`ℹ️ Note: CBMA14 data is available from ${CBMA14_DATA_START_DATE}, BTC from ${BTC_DATA_START_DATE}`);
         }
 
         function calculateMovingAverage(values, period) {
@@ -331,9 +401,13 @@
                 const fromDateValue = document.getElementById('fromDate').value;
                 const toDateValue = document.getElementById('toDate').value;
                 
+                console.log(`📅 Filtering CBMA14 data: from=${fromDateValue} to=${toDateValue}`);
+                
                 // Преобразуем даты в timestamp
                 const fromTime = fromDateValue ? Math.floor(new Date(fromDateValue).getTime() / 1000) : 0;
                 const toTime = toDateValue ? Math.floor(new Date(toDateValue + 'T23:59:59').getTime() / 1000) : Math.floor(Date.now() / 1000);
+                
+                console.log(`🔢 Timestamp range: ${fromTime} - ${toTime}`);
 
                 // Фильтруем данные для отображения
                 const filteredData = maData.filter(item => 
@@ -345,6 +419,8 @@
                     console.log(`✅ Loaded ${filteredData.length} MA${currentMAPeriod} points for selected date range`);
                     console.log('📊 First point:', filteredData[0]);
                     console.log('📊 Last point:', filteredData[filteredData.length - 1]);
+                    
+
                 } else {
                     // Если в выбранном диапазоне нет данных, показываем последние доступные
                     console.warn(`⚠️ No MA${currentMAPeriod} data found for selected date range`);
@@ -352,6 +428,8 @@
                     if (recentData.length > 0) {
                         lineSeries.setData(recentData);
                         console.log(`✅ Loaded ${recentData.length} recent MA${currentMAPeriod} points as fallback`);
+                        
+
                     }
                 }
 
@@ -431,23 +509,35 @@
                         borderColor: 'rgba(197, 203, 206, 0.8)',
                         textColor: '#2d3748',
                         autoScale: true,
+                        mode: LightweightCharts.PriceScaleMode.Normal,
+                        invertScale: false,
+                        alignLabels: true,
                         scaleMargins: {
-                            top: 0.1,
-                            bottom: 0.1,
+                            top: 0.08,
+                            bottom: 0.08,
                         },
+                        borderVisible: true,
                         entireTextOnly: false,
+                        visible: true,
+                        drawTicks: true,
+                        ticksVisible: true,
                     },
                     leftPriceScale: {
                         visible: true,
                         borderColor: 'rgba(197, 203, 206, 0.8)',
                         textColor: '#2d3748',
-                        invertScale: true,
+                        mode: LightweightCharts.PriceScaleMode.Normal,
+                        invertScale: true, // Инвертируем для рангов (меньший ранг = выше)
                         autoScale: true,
+                        alignLabels: true,
                         scaleMargins: {
-                            top: 0.1,
-                            bottom: 0.1,
+                            top: 0.08,
+                            bottom: 0.08,
                         },
+                        borderVisible: true,
                         entireTextOnly: false,
+                        drawTicks: true,
+                        ticksVisible: true,
                     },
                     timeScale: {
                         borderColor: 'rgba(197, 203, 206, 0.8)',
@@ -455,6 +545,16 @@
                         timeVisible: true,
                         secondsVisible: false,
                         borderVisible: true,
+                        rightOffset: 12,
+                        barSpacing: 8,
+                        minBarSpacing: 2,
+                        fixLeftEdge: false,
+                        fixRightEdge: false,
+                        lockVisibleTimeRangeOnResize: false,
+                        rightBarStaysOnScroll: true,
+                        allowBoldLabels: true,
+                        visible: true,
+                        ticksVisible: true,
                         tickMarkFormatter: (time) => {
                             const date = new Date(time * 1000);
                             return date.toLocaleDateString('ru-RU', { 
@@ -464,17 +564,29 @@
                         },
                     },
                     handleScroll: {
-                        mouseWheel: true,
-                        pressedMouseMove: true,
-                        horzTouchDrag: true,
-                        vertTouchDrag: true,
+                        mouseWheel: true,          // Колесико мыши для прокрутки
+                        pressedMouseMove: true,    // Прокрутка перетаскиванием
+                        horzTouchDrag: true,       // Горизонтальное сенсорное перетаскивание
+                        vertTouchDrag: true,       // Вертикальное сенсорное перетаскивание
                     },
                     handleScale: {
-                        axisPressedMouseMove: true,
-                        mouseWheel: true,
-                        pinch: true,
+                        axisPressedMouseMove: {    // Масштабирование осей мышью
+                            time: true,
+                            price: true,
+                        },
+                        mouseWheel: true,          // Масштабирование колесиком мыши
+                        pinch: true,              // Масштабирование пинчем на сенсорных устройствах
+                        axisDoubleClickReset: {   // Сброс масштаба двойным кликом
+                            time: true,
+                            price: true,
+                        },
                     },
                 });
+
+                // Проверяем доступность API Lightweight Charts
+                if (!LightweightCharts.CandlestickSeries || !LightweightCharts.LineSeries) {
+                    throw new Error('Required chart series types are not available');
+                }
 
                 // Создаем серию свечей для криптовалюты (правая шкала)
                 candlestickSeries = chart.addSeries(LightweightCharts.CandlestickSeries, {
@@ -560,6 +672,7 @@
                         }
                     }
                     candlestickSeries.setData(candleData);
+                    console.log(`🔄 BTC chart updated with ${candleData.length} candles`);
                     
                     // Проверяем диапазон BTC данных
                     if (candleData.length > 0) {
@@ -591,34 +704,8 @@
                 
                 // Автоматически подгоняем график под загруженные данные
                 setTimeout(() => {
-                    if (chart) {
-                        // Подгоняем временную шкалу
-                        chart.timeScale().fitContent();
-                        
-                        // Автомасштабирование ценовых шкал
-                        try {
-                            // Сбрасываем и автомасштабируем правую шкалу (BTC)
-                            const rightPriceScale = chart.priceScale('right');
-                            if (rightPriceScale) {
-                                rightPriceScale.applyOptions({
-                                    autoScale: true,
-                                });
-                            }
-                            
-                            // Сбрасываем и автомасштабируем левую шкалу (CBMA14)
-                            const leftPriceScale = chart.priceScale('left');
-                            if (leftPriceScale) {
-                                leftPriceScale.applyOptions({
-                                    autoScale: true,
-                                });
-                            }
-                            
-                            console.log('✅ Auto-scaled both price scales');
-                        } catch (error) {
-                            console.warn('⚠️ Error auto-scaling price scales:', error);
-                        }
-                    }
-                }, 150);
+                    refreshChart();
+                }, 200);
                 
                 updateStatus(`${CONFIG.MESSAGES.SUCCESS}: BTC + CBMA14 (MA${currentMAPeriod})`, 'success');
 
@@ -634,24 +721,151 @@
             if (!chart) return;
             
             try {
-                // Альтернативный подход: синхронизация через события масштабирования времени
-                // При изменении временного диапазона также синхронизируем ценовые шкалы
-                chart.timeScale().subscribeVisibleTimeRangeChange(() => {
-                    try {
-                        // Принудительно подгоняем обе ценовые шкалы к видимым данным
-                        chart.timeScale().fitContent();
-                    } catch (e) {
-                        console.warn('Ошибка синхронизации шкал:', e);
-                    }
-                });
+                // Отключаем потенциально проблемную синхронизацию
+                // которая может вызывать циклические события
                 
-                console.log('✅ Scale synchronization setup completed');
+                console.log('✅ Scale synchronization setup completed (minimal)');
             } catch (error) {
                 console.warn('⚠️ Scale synchronization not available:', error);
             }
         }
 
+        function refreshChart() {
+            if (!chart) {
+                console.warn('⚠️ Chart not initialized, cannot refresh');
+                return;
+            }
+            
+            try {
+                console.log('🔄 Refreshing chart layout...');
+                
+                // Подгоняем временную шкалу
+                chart.timeScale().fitContent();
+                
+                // Автомасштабирование ценовых шкал
+                // Сбрасываем и автомасштабируем правую шкалу (BTC)
+                const rightPriceScale = chart.priceScale('right');
+                if (rightPriceScale) {
+                    rightPriceScale.applyOptions({
+                        autoScale: true,
+                    });
+                    console.log('📊 BTC price scale (right) refreshed');
+                }
+                
+                // Сбрасываем и автомасштабируем левую шкалу (CBMA14)
+                const leftPriceScale = chart.priceScale('left');
+                if (leftPriceScale) {
+                    leftPriceScale.applyOptions({
+                        autoScale: true,
+                    });
+                    console.log('📊 CBMA14 price scale (left) refreshed');
+                }
+                
+                console.log('✅ Chart refreshed successfully');
+            } catch (error) {
+                console.warn('⚠️ Error refreshing chart:', error);
+            }
+        }
+
+        function resetAllScaling() {
+            if (!chart) {
+                console.warn('⚠️ Chart not initialized, cannot reset scaling');
+                return;
+            }
+            
+            try {
+                console.log('🔄 Resetting all chart scaling...');
+                
+                // Сбрасываем временную шкалу (проверяем доступность метода)
+                const timeScale = chart.timeScale();
+                if (timeScale.resetTimeScale) {
+                    timeScale.resetTimeScale();
+                } else {
+                    // Альтернативный способ сброса
+                    timeScale.fitContent();
+                }
+                
+                // Сбрасываем правую ценовую шкалу (BTC)
+                const rightPriceScale = chart.priceScale('right');
+                if (rightPriceScale) {
+                    rightPriceScale.applyOptions({
+                        autoScale: true,
+                        scaleMargins: {
+                            top: 0.08,
+                            bottom: 0.08,
+                        },
+                    });
+                }
+                
+                // Сбрасываем левую ценовую шкалу (CBMA14)
+                const leftPriceScale = chart.priceScale('left');
+                if (leftPriceScale) {
+                    leftPriceScale.applyOptions({
+                        autoScale: true,
+                        scaleMargins: {
+                            top: 0.08,
+                            bottom: 0.08,
+                        },
+                    });
+                }
+                
+                console.log('✅ All scaling reset successfully');
+                updateStatus('Масштаб всех осей сброшен', 'success');
+                
+            } catch (error) {
+                console.warn('⚠️ Error resetting scaling:', error);
+                updateStatus('Ошибка сброса масштаба', 'error');
+            }
+        }
+
+        function fitAllContent() {
+            if (!chart) {
+                console.warn('⚠️ Chart not initialized, cannot fit content');
+                return;
+            }
+            
+            try {
+                console.log('🔄 Fitting all content...');
+                
+                // Подгоняем временную шкалу под все данные
+                chart.timeScale().fitContent();
+                
+                // Подгоняем правую ценовую шкалу
+                const rightPriceScale = chart.priceScale('right');
+                if (rightPriceScale) {
+                    rightPriceScale.applyOptions({
+                        autoScale: true,
+                    });
+                }
+                
+                // Подгоняем левую ценовую шкалу  
+                const leftPriceScale = chart.priceScale('left');
+                if (leftPriceScale) {
+                    leftPriceScale.applyOptions({
+                        autoScale: true,
+                    });
+                }
+                
+                console.log('✅ All content fitted successfully');
+                updateStatus('Все данные подогнаны под размер графика', 'success');
+                
+            } catch (error) {
+                console.warn('⚠️ Error fitting content:', error);
+                updateStatus('Ошибка подгонки содержимого', 'error');
+            }
+        }
+
         function setupEventHandlers() {
+            // Проверяем существование DOM элементов
+            const requiredElements = ['maPeriodSelect', 'fromDate', 'toDate', 'resetScale', 'fitContent'];
+            for (const elementId of requiredElements) {
+                if (!document.getElementById(elementId)) {
+                    console.error(`❌ Required DOM element not found: ${elementId}`);
+                    updateStatus(`Ошибка: элемент ${elementId} не найден`, 'error');
+                    return;
+                }
+            }
+            
             // Смена периода MA
             document.getElementById('maPeriodSelect').addEventListener('change', (e) => {
                 currentMAPeriod = parseInt(e.target.value);
@@ -661,12 +875,60 @@
             // Изменение дат
             document.getElementById('fromDate').addEventListener('change', (e) => {
                 fromDate = e.target.value;
+                console.log(`📅 FROM date changed to: ${fromDate}`);
+                
+                // Проверяем, не выбрана ли дата раньше доступных BTC данных
+                const btcStartDate = new Date(BTC_DATA_START_DATE);
+                const selectedDate = new Date(fromDate);
+                
+                if (selectedDate < btcStartDate) {
+                    console.warn(`⚠️ Selected date (${fromDate}) is before BTC data availability (${BTC_DATA_START_DATE})`);
+                    updateStatus(`Выбранная дата раньше доступных BTC данных (с ${BTC_DATA_START_DATE}). BTC данные будут показаны с доступной даты.`, 'info');
+                }
+                
+                console.log('🔄 Reloading data with new date range...');
                 loadData();
             });
 
             document.getElementById('toDate').addEventListener('change', (e) => {
                 toDate = e.target.value;
+                console.log(`📅 TO date changed to: ${toDate}`);
+                console.log('🔄 Reloading data with new date range...');
                 loadData();
+            });
+
+            // Кнопки управления масштабом
+            document.getElementById('resetScale').addEventListener('click', () => {
+                console.log('🔄 Reset scale button clicked');
+                resetAllScaling();
+            });
+
+            document.getElementById('fitContent').addEventListener('click', () => {
+                console.log('📏 Fit content button clicked');
+                fitAllContent();
+            });
+
+            // Горячие клавиши для управления масштабом
+            document.addEventListener('keydown', (e) => {
+                // Проверяем, что не фокусированы поля ввода
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') {
+                    return;
+                }
+                
+                switch (e.key) {
+                    case 'r':
+                    case 'R':
+                        e.preventDefault();
+                        console.log('⌨️ Reset scale hotkey pressed (R)');
+                        resetAllScaling();
+                        break;
+                    case 'f':
+                    case 'F':
+                        e.preventDefault();
+                        console.log('⌨️ Fit content hotkey pressed (F)');
+                        fitAllContent();
+                        break;
+                }
             });
         }
 
@@ -680,6 +942,11 @@
 
         function updateStatus(message, type = 'info') {
             const statusEl = document.getElementById('status');
+            if (!statusEl) {
+                console.warn('⚠️ Status element not found, logging message:', message);
+                return;
+            }
+            
             statusEl.textContent = message;
             
             switch (type) {
