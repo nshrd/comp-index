@@ -9,20 +9,20 @@ function getApiConfig() {
     const protocol = window.location.protocol;
     const port = window.location.port;
     
-    // Развитие локально
+    // Локальная разработка
     if (hostname === 'localhost' || hostname === '127.0.0.1') {
         return {
-                UDF_BASE_URL: 'http://localhost:8001',
-    API_BASE_URL: 'http://localhost:8001/api',
-            UDF_ENDPOINT: '/api', // Прямые API вызовы
+            UDF_BASE_URL: 'http://localhost:8001',
+            API_BASE_URL: 'http://localhost:8001/api',
+            UDF_ENDPOINT: '/api',
             IS_DEVELOPMENT: true,
             CORS_ENABLED: true
         };
     }
     
-    // VPS развертывание
+    // VPS развертывание (IP адрес)
     if (hostname.match(/^\d+\.\d+\.\d+\.\d+$/)) {
-        const baseUrl = `${protocol}//${hostname}`;
+        const baseUrl = `${protocol}//${hostname}:8001`;
         return {
             UDF_BASE_URL: baseUrl,
             API_BASE_URL: `${baseUrl}/api`,
@@ -32,18 +32,7 @@ function getApiConfig() {
         };
     }
     
-    // GitHub Pages или другие хостинги
-    if (hostname.includes('github.io') || hostname.includes('github.com')) {
-        return {
-            UDF_BASE_URL: 'https://charts.expert', // Используем наш домен с SSL
-            API_BASE_URL: 'https://charts.expert/api',
-            UDF_ENDPOINT: '/api',
-            IS_DEVELOPMENT: false,
-            CORS_ENABLED: true
-        };
-    }
-    
-    // Основной домен charts.expert
+    // Основной домен charts.expert (Docker деплой)
     if (hostname.includes('charts.expert')) {
         return {
             UDF_BASE_URL: `${protocol}//${hostname}`,
@@ -54,7 +43,7 @@ function getApiConfig() {
         };
     }
     
-    // Продакшн с доменом
+    // По умолчанию - API режим (для charts.expert)
     return {
         UDF_BASE_URL: `${protocol}//${hostname}`,
         API_BASE_URL: `${protocol}//${hostname}/api`,
@@ -83,16 +72,16 @@ const CONFIG = {
     }
 };
 
-// Конфигурация для множественных инструментов
+// Конфигурация для всех инструментов
 const INSTRUMENTS = {
     coinbase: {
         name: 'Coinbase Index',
-        dataSource: 'json', // специальный формат JSON
+        dataSource: 'json',
         path: '/data/data.json',
         color: '#2962FF',
         priceScaleId: 'left',
         seriesType: 'line',
-        supportedTimeframes: ['D', '3D', 'W'] // JSON данные не поддерживают 4H
+        supportedTimeframes: ['D', '3D', 'W']
     },
     spx: {
         name: 'S&P 500',
@@ -101,7 +90,7 @@ const INSTRUMENTS = {
         color: '#FF6B35',
         priceScaleId: 'right',
         seriesType: 'line',
-        supportedTimeframes: ['D', '3D', 'W'] // CSV данные обычно дневные
+        supportedTimeframes: ['D', '3D', 'W']
     },
     vix: {
         name: 'VIX',
@@ -110,7 +99,7 @@ const INSTRUMENTS = {
         color: '#6A4C93',
         priceScaleId: 'right',
         seriesType: 'line',
-        supportedTimeframes: ['D', '3D', 'W'] // CSV данные обычно дневные
+        supportedTimeframes: ['D', '3D', 'W']
     },
     dxy: {
         name: 'DXY',
@@ -119,7 +108,7 @@ const INSTRUMENTS = {
         color: '#1B998B',
         priceScaleId: 'right',
         seriesType: 'line',
-        supportedTimeframes: ['D', '3D', 'W'] // CSV данные обычно дневные
+        supportedTimeframes: ['D', '3D', 'W']
     },
     btc: {
         name: 'BTC',
@@ -128,7 +117,7 @@ const INSTRUMENTS = {
         color: '#F7931A',
         priceScaleId: 'right',
         seriesType: 'candlestick',
-        supportedTimeframes: ['240', 'D', '3D', 'W'] // API поддерживает все таймфреймы
+        supportedTimeframes: ['240', 'D', '3D', 'W']
     },
     total3esbtc: {
         name: 'Total3 - BTC',
@@ -137,7 +126,7 @@ const INSTRUMENTS = {
         color: '#F72585',
         priceScaleId: 'right',
         seriesType: 'line',
-        supportedTimeframes: ['D', '3D', 'W'] // CSV данные обычно дневные
+        supportedTimeframes: ['D', '3D', 'W']
     },
     withoutbtceth: {
         name: 'Without BTC/ETH',
@@ -146,17 +135,17 @@ const INSTRUMENTS = {
         color: '#4361EE',
         priceScaleId: 'right',
         seriesType: 'line',
-        supportedTimeframes: ['D', '3D', 'W'] // CSV данные обычно дневные
+        supportedTimeframes: ['D', '3D', 'W']
     }
 };
 
-    // Добавляем инструменты в глобальную конфигурацию
-    CONFIG.INSTRUMENTS = INSTRUMENTS;
-    
-    // Экспорт для использования в других файлах
-    if (typeof module !== 'undefined' && module.exports) {
-        module.exports = CONFIG;
-    } else {
+// Добавляем инструменты в глобальную конфигурацию
+CONFIG.INSTRUMENTS = INSTRUMENTS;
+
+// Экспорт для использования в других файлах
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = CONFIG;
+} else {
     window.CONFIG = CONFIG;
 }
 
@@ -165,5 +154,6 @@ console.log('🔧 Frontend Configuration:', {
     Environment: CONFIG.IS_DEVELOPMENT ? 'Development' : 'Production',
     API_BASE_URL: CONFIG.API_BASE_URL,
     UDF_BASE_URL: CONFIG.UDF_BASE_URL,
-    Hostname: window.location.hostname
+    Hostname: window.location.hostname,
+    Available_Instruments: Object.keys(CONFIG.INSTRUMENTS)
 }); 

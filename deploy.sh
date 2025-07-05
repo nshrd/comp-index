@@ -385,6 +385,10 @@ create_static_deploy() {
         print_status "Копирование HTML и JavaScript файлов..."
         cp $CHART_SOURCE_DIR/*.html $STATIC_DIR/
         cp $CHART_SOURCE_DIR/*.js $STATIC_DIR/
+        
+        # Копируем конфигурацию из основной папки
+        print_status "Используется конфигурация из src/chart/"
+        
         print_status "Скопировано $(ls -1 $CHART_SOURCE_DIR/*.html $CHART_SOURCE_DIR/*.js 2>/dev/null | wc -l) файлов"
     else
         print_warning "Директория $CHART_SOURCE_DIR не найдена"
