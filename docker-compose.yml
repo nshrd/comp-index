@@ -39,7 +39,7 @@ services:
       timeout: 10s
       retries: 3
 
-  # UDF API сервер
+  # UDF API сервер (объединенный с веб-сервером)
   udf:
     build:
       context: .
@@ -52,7 +52,7 @@ services:
       - PYTHONPATH=/app
       - FLASK_ENV=${FLASK_ENV:-production}
       - UDF_HOST=${UDF_HOST:-0.0.0.0}
-      - UDF_PORT=${UDF_PORT:-8001}
+      - UDF_PORT=${UDF_PORT:-8000}
       - UDF_DEBUG=${UDF_DEBUG:-false}
       - COINGLASS_API_KEY=${COINGLASS_API_KEY}
       - DATA_OUTPUT_FILE=${DATA_OUTPUT_FILE:-data/CBMA14.json}
@@ -60,11 +60,11 @@ services:
     env_file:
       - .env
     ports:
-      - "${UDF_PORT:-8001}:${UDF_PORT:-8001}"
+      - "${UDF_PORT:-8000}:${UDF_PORT:-8000}"
     command: >
       bash -c "
-        echo 'Starting UDF Server...'
-        gunicorn --bind 0.0.0.0:8001 --workers 2 --timeout 60 --access-logfile - --error-logfile - src.udf.server:app
+        echo 'Starting CBMA14 UDF Server (with static files)...'
+        gunicorn --bind 0.0.0.0:8000 --workers 2 --timeout 60 --access-logfile - --error-logfile - src.udf.server:app
       "
     restart: ${DOCKER_RESTART_POLICY:-unless-stopped}
     depends_on:
@@ -73,35 +73,7 @@ services:
     networks:
       - cbma14_network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8001/api/status"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-  # Nginx веб-сервер
-  nginx:
-    image: nginx:1.25-alpine
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./src/chart:/usr/share/nginx/html:ro
-      - ./data:/app/data:ro
-      - ./logs/nginx:/var/log/nginx
-      - /etc/ssl/certs:/etc/ssl/certs:ro
-      - /etc/ssl/private:/etc/ssl/private:ro
-    ports:
-      - "${NGINX_PORT:-80}:80"
-      - "${NGINX_SSL_PORT:-443}:443"
-    environment:
-      - UDF_HOST=udf
-      - UDF_PORT=${UDF_PORT:-8001}
-    restart: ${DOCKER_RESTART_POLICY:-unless-stopped}
-    depends_on:
-      udf:
-        condition: service_healthy
-    networks:
-      - cbma14_network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:80/"]
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/status"]
       interval: 30s
       timeout: 10s
       retries: 3
