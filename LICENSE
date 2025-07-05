@@ -1,21 +1,56 @@
-MIT License
+CBMA14 Index - Proprietary License
 
 Copyright (c) 2025 CBMA14 Index Project
+All rights reserved.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+TERMS AND CONDITIONS
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+1. GRANT OF RIGHTS
+   Subject to the terms and conditions of this license, the copyright holder grants you 
+   a limited, non-exclusive, non-transferable license to:
+   - Use the software for personal or internal business purposes
+   - Modify the software for your own use
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE. 
+2. RESTRICTIONS
+   You may NOT, without express written permission from the copyright holder:
+   - Distribute, sublicense, or sell copies of the software
+   - Share the source code publicly or privately with third parties
+   - Use the software as a basis for commercial products or services
+   - Deploy the software on public hosting services accessible to others
+   - Create derivative works for distribution
+
+3. PERMITTED USE
+   - Personal use and modification
+   - Internal business use within your organization
+   - Educational and research purposes (non-commercial)
+
+4. REQUIRED PERMISSIONS
+   The following activities require written consent from the copyright holder:
+   - Any form of distribution or sharing
+   - Commercial use or deployment
+   - Public hosting or SaaS deployment
+   - Integration into commercial products
+
+5. INTELLECTUAL PROPERTY
+   - All intellectual property rights remain with the copyright holder
+   - No trademark or patent rights are granted
+   - The software name "CBMA14" and related marks are protected
+
+6. DISCLAIMER
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+   SOFTWARE.
+
+7. TERMINATION
+   This license is effective until terminated. Your rights under this license will
+   terminate automatically without notice if you fail to comply with any term.
+
+8. CONTACT
+   For permissions or licensing inquiries, contact the copyright holder.
+
+BY USING THIS SOFTWARE, YOU ACKNOWLEDGE THAT YOU HAVE READ THIS LICENSE AND
+AGREE TO BE BOUND BY ITS TERMS AND CONDITIONS. 
