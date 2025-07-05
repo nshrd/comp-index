@@ -58,7 +58,7 @@ DATA_INPUT_FILE=data/data.json
 DATA_OUTPUT_FILE=data/CBMA14.json
 
 # Frontend настройки
-FRONTEND_API_URL=http://localhost:8000
+FRONTEND_API_URL=http://localhost:8001
 
 # Docker настройки
 COMPOSE_PROJECT_NAME=cbma14
@@ -135,9 +135,9 @@ nano .env
 ```
 
 ### 3. Доступ к сервисам
-- **API сервер**: http://localhost:8000
+- **API сервер**: http://localhost:8001
 - **Веб-интерфейс**: http://localhost:8080 (с nginx)
-- **Статус**: http://localhost:8000/api/status
+- **Статус**: http://localhost:8001/api/status
 
 ## 🔧 Разработка
 
@@ -159,7 +159,7 @@ docker-compose logs -f udf
 python -c "from config import config; print(config)"
 
 # Проверка API
-curl http://localhost:8000/api/status
+curl http://localhost:8001/api/status
 
 # Проверка Docker
 docker-compose ps
@@ -199,7 +199,7 @@ docker-compose ps
 ### Локальная разработка
 ```bash
 # .env настройки
-FRONTEND_API_URL=http://localhost:8000
+FRONTEND_API_URL=http://localhost:8001
 UDF_DEBUG=true
 FLASK_ENV=development
 ```

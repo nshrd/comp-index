@@ -37,7 +37,7 @@ class CoinglassConfig:
 class UDFConfig:
     """Конфигурация для UDF сервера"""
     host: str = "0.0.0.0"
-    port: int = 8000  # Исправлен порт
+    port: int = 8001  # Исправлен порт на 8001
     debug: bool = False
     data_file: Optional[Path] = None
     cbma14_symbol: str = "CBMA14"
@@ -75,7 +75,7 @@ class ChartConfig:
     
     def __post_init__(self):
         # Получаем URL API из переменных окружения
-        self.udf_url = os.getenv('FRONTEND_API_URL', f'http://localhost:8000')
+        self.udf_url = os.getenv('FRONTEND_API_URL', f'http://localhost:8001')
 
 
 @dataclass

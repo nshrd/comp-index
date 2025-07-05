@@ -52,7 +52,7 @@ services:
       - PYTHONPATH=/app
       - FLASK_ENV=${FLASK_ENV:-production}
       - UDF_HOST=${UDF_HOST:-0.0.0.0}
-      - UDF_PORT=${UDF_PORT:-8000}
+      - UDF_PORT=${UDF_PORT:-8001}
       - UDF_DEBUG=${UDF_DEBUG:-false}
       - COINGLASS_API_KEY=${COINGLASS_API_KEY}
       - DATA_OUTPUT_FILE=${DATA_OUTPUT_FILE:-data/CBMA14.json}
@@ -60,7 +60,7 @@ services:
     env_file:
       - .env
     ports:
-      - "${UDF_PORT:-8000}:${UDF_PORT:-8000}"
+      - "${UDF_PORT:-8001}:${UDF_PORT:-8001}"
     command: >
       bash -c "
         echo 'Starting UDF Server...'
@@ -93,7 +93,7 @@ services:
       - "${NGINX_SSL_PORT:-443}:443"
     environment:
       - UDF_HOST=udf
-      - UDF_PORT=${UDF_PORT:-8000}
+      - UDF_PORT=${UDF_PORT:-8001}
     restart: ${DOCKER_RESTART_POLICY:-unless-stopped}
     networks:
       - cbma14_network

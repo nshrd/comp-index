@@ -47,7 +47,7 @@
 
 #### Команда запуска:
 ```bash
-python test_tradingview_compatibility.py --url http://localhost:8000 --save-report
+python test_tradingview_compatibility.py --url http://localhost:8001 --save-report
 ```
 
 ---

@@ -12,8 +12,8 @@ function getApiConfig() {
     // Развитие локально
     if (hostname === 'localhost' || hostname === '127.0.0.1') {
         return {
-            UDF_BASE_URL: 'http://localhost:8000',
-            API_BASE_URL: 'http://localhost:8000/api',
+                UDF_BASE_URL: 'http://localhost:8001',
+    API_BASE_URL: 'http://localhost:8001/api',
             UDF_ENDPOINT: '/api', // Прямые API вызовы
             IS_DEVELOPMENT: true,
             CORS_ENABLED: true
