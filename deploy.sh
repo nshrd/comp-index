@@ -368,178 +368,36 @@ EOF
     print_status "  - cbma14-status  (статус)"
 }
 
-# Создание статичного деплоя для charts.expert
-create_static_deploy() {
-    print_header "Создание статичного деплоя для charts.expert"
+# Проверка Docker сервисов
+check_docker_services() {
+    print_header "Проверка Docker сервисов"
     
-    STATIC_DIR="/var/www/charts.expert"
-    CHART_SOURCE_DIR="/opt/cbma14/src/chart"
-    DATA_SOURCE_DIR="/opt/cbma14/data"
-    
-    # Создаем директорию для статичного деплоя
-    mkdir -p $STATIC_DIR
-    mkdir -p $STATIC_DIR/data
-    
-    # Копируем HTML и JS файлы
-    if [ -d "$CHART_SOURCE_DIR" ]; then
-        print_status "Копирование HTML и JavaScript файлов..."
-        cp $CHART_SOURCE_DIR/*.html $STATIC_DIR/
-        cp $CHART_SOURCE_DIR/*.js $STATIC_DIR/
-        
-        # Копируем конфигурацию из основной папки
-        print_status "Используется конфигурация из src/chart/"
-        
-        print_status "Скопировано $(ls -1 $CHART_SOURCE_DIR/*.html $CHART_SOURCE_DIR/*.js 2>/dev/null | wc -l) файлов"
+    # Определение команды Docker Compose
+    if docker compose version &> /dev/null; then
+        DOCKER_COMPOSE_CMD="docker compose"
+    elif command -v docker-compose &> /dev/null; then
+        DOCKER_COMPOSE_CMD="docker-compose"
     else
-        print_warning "Директория $CHART_SOURCE_DIR не найдена"
+        print_error "Docker Compose не найден"
+        exit 1
     fi
     
-    # Копируем данные
-    if [ -d "$DATA_SOURCE_DIR" ]; then
-        print_status "Копирование данных..."
-        cp -r $DATA_SOURCE_DIR/* $STATIC_DIR/data/
-        print_status "Данные скопированы в $STATIC_DIR/data/"
-    else
-        print_warning "Директория $DATA_SOURCE_DIR не найдена"
-    fi
+    print_status "Используется команда: $DOCKER_COMPOSE_CMD"
     
-    # Создаем .htaccess для Apache
-    cat > $STATIC_DIR/.htaccess << 'EOF'
-# CBMA14 Chart - Apache Configuration for charts.expert
-
-# Включение CORS для JSON файлов
-<FilesMatch "\.(json)$">
-    Header set Access-Control-Allow-Origin "*"
-    Header set Access-Control-Allow-Methods "GET, OPTIONS"
-    Header set Access-Control-Allow-Headers "Content-Type"
-</FilesMatch>
-
-# Кэширование статичных ресурсов
-<IfModule mod_expires.c>
-    ExpiresActive On
-    ExpiresByType text/html "access plus 1 hour"
-    ExpiresByType application/javascript "access plus 1 day"
-    ExpiresByType application/json "access plus 1 hour"
-    ExpiresByType text/css "access plus 1 week"
-</IfModule>
-
-# Сжатие файлов
-<IfModule mod_deflate.c>
-    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
-</IfModule>
-
-# Redirect для совместимости
-RewriteEngine On
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ index.html [L]
-EOF
-
-    # Устанавливаем права доступа
-    chown -R www-data:www-data $STATIC_DIR
-    chmod -R 644 $STATIC_DIR/*
-    chmod 755 $STATIC_DIR
-    find $STATIC_DIR -type d -exec chmod 755 {} \;
+    # Проверка статуса сервисов
+    print_status "Статус Docker сервисов:"
+    $DOCKER_COMPOSE_CMD -f docker-compose.yml ps
     
-    print_status "Статичный деплой создан в $STATIC_DIR"
-    
-    # Показываем размер
-    TOTAL_SIZE=$(du -sh $STATIC_DIR | cut -f1)
-    FILE_COUNT=$(find $STATIC_DIR -type f | wc -l)
-    print_status "Размер: $TOTAL_SIZE, файлов: $FILE_COUNT"
-}
-
-# Настройка Nginx для charts.expert
-setup_nginx_static() {
-    print_header "Настройка Nginx для статичного сайта charts.expert"
-    
-    # Создаем конфигурацию Nginx для статичного сайта
-    cat > /etc/nginx/sites-available/charts.expert << 'EOF'
-server {
-    listen 80;
-    listen [::]:80;
-    server_name charts.expert www.charts.expert;
-    
-    root /var/www/charts.expert;
-    index index.html;
-    
-    # Логирование
-    access_log /var/log/nginx/charts.expert.access.log;
-    error_log /var/log/nginx/charts.expert.error.log;
-    
-    # Безопасность
-    add_header X-Frame-Options "SAMEORIGIN" always;
-    add_header X-Content-Type-Options "nosniff" always;
-    add_header X-XSS-Protection "1; mode=block" always;
-    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
-    
-    # CORS для JSON файлы
-    location ~* \.(json)$ {
-        add_header Access-Control-Allow-Origin "*" always;
-        add_header Access-Control-Allow-Methods "GET, OPTIONS" always;
-        add_header Access-Control-Allow-Headers "Content-Type" always;
-        add_header Cache-Control "public, max-age=300";
-    }
-    
-    # Кэширование статичных файлов
-    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
-        expires 1y;
-        add_header Cache-Control "public, immutable";
-        add_header Access-Control-Allow-Origin "*";
-    }
-    
-    # Доступ к данным
-    location /data/ {
-        add_header Access-Control-Allow-Origin "*" always;
-        add_header Cache-Control "public, max-age=300";
-    }
-    
-    # API прокси (для Docker backend если есть)
-    location /api/ {
-        proxy_pass http://localhost:8001/api/;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_connect_timeout 30;
-        proxy_send_timeout 30;
-        proxy_read_timeout 30;
-    }
-    
-    # Главная страница
-    location / {
-        try_files $uri $uri/ /index.html;
-    }
-    
-    # Health check
-    location /health {
-        access_log off;
-        return 200 "charts.expert is healthy\n";
-        add_header Content-Type text/plain;
-    }
-}
-EOF
-
-    # Активируем сайт
-    if [ -f "/etc/nginx/sites-available/charts.expert" ]; then
-        ln -sf /etc/nginx/sites-available/charts.expert /etc/nginx/sites-enabled/
-        print_status "Nginx конфигурация создана и активирована"
-    fi
-    
-    # Тестируем конфигурацию
-    if nginx -t; then
-        systemctl reload nginx
-        print_status "Nginx перезагружен успешно"
-    else
-        print_error "Ошибка в конфигурации Nginx"
-        return 1
+    # Проверка логов если есть проблемы
+    if ! $DOCKER_COMPOSE_CMD -f docker-compose.yml ps | grep -q "Up"; then
+        print_warning "Некоторые сервисы не запущены. Показываю логи:"
+        $DOCKER_COMPOSE_CMD -f docker-compose.yml logs --tail=20
     fi
 }
 
-# Получение SSL сертификата для charts.expert
-setup_ssl_charts_expert() {
-    print_header "Настройка SSL для charts.expert"
+# Настройка SSL для Docker Nginx
+setup_ssl_docker() {
+    print_header "Настройка SSL для Docker Nginx"
     
     read -p "Настроить SSL сертификат для charts.expert? (y/n): " -n 1 -r
     echo
@@ -551,33 +409,43 @@ setup_ssl_charts_expert() {
             return 1
         fi
         
-        # Установка Certbot если нет
-        if ! command -v certbot &> /dev/null; then
-            print_status "Установка Certbot..."
-            if command -v apt-get &> /dev/null; then
-                apt-get update
-                apt-get install -y certbot python3-certbot-nginx
-            elif command -v yum &> /dev/null; then
-                yum install -y certbot python3-certbot-nginx
-            fi
-        fi
+        # Создаем директории для SSL
+        mkdir -p ssl/live/charts.expert
         
-        # Получение сертификата
+        # Получение сертификата через Docker
         print_status "Получение SSL сертификата для charts.expert..."
-        certbot --nginx -d charts.expert -d www.charts.expert --email "$EMAIL" --agree-tos --no-eff-email --non-interactive
+        docker run --rm \
+            -v $(pwd)/ssl:/etc/letsencrypt \
+            -v $(pwd)/src/chart:/var/www/certbot \
+            -p 80:80 \
+            certbot/certbot certonly \
+            --standalone \
+            --email "$EMAIL" \
+            --agree-tos \
+            --no-eff-email \
+            -d charts.expert -d www.charts.expert
         
         if [ $? -eq 0 ]; then
-            print_status "SSL сертификат успешно установлен для charts.expert"
+            # Обновляем nginx конфигурацию для SSL
+            print_status "Обновление nginx конфигурации для SSL..."
             
-            # Настройка автообновления
-            (crontab -l 2>/dev/null; echo "0 12 * * * /usr/bin/certbot renew --quiet") | crontab -
-            print_status "Автообновление SSL сертификата настроено"
+            # Создаем SSL версию nginx.conf
+            cp nginx/nginx.conf nginx/nginx-ssl.conf
+            
+            # Перезапуск с SSL
+            print_status "Перезапуск Docker стека с SSL..."
+            docker compose down
+            docker compose up -d
+            
+            print_status "SSL сертификат успешно установлен для charts.expert"
         else
             print_error "Ошибка получения SSL сертификата"
             return 1
         fi
     fi
 }
+
+
 
 # Показ информации о развертывании
 show_deployment_info() {
@@ -593,30 +461,35 @@ show_deployment_info() {
     echo "   🔗 IP: http://$IP"
     echo ""
     echo "🔧 Полезные команды:"
-    echo "   docker compose -f docker-compose.yml ps    # Статус Docker (если используется)"
-    echo "   docker compose -f docker-compose.yml logs  # Логи Docker"
-    echo "   systemctl status nginx                      # Статус Nginx"
+    echo "   docker compose ps                           # Статус контейнеров"
+    echo "   docker compose logs                         # Логи всех сервисов"
+    echo "   docker compose logs nginx                   # Логи Nginx"
+    echo "   docker compose logs udf                     # Логи API"
     echo "   cbma14-status                               # Быстрый статус"
     echo "   cbma14-backup                               # Бэкап"
     echo "   cbma14-update                               # Обновление"
     echo ""
-    echo "📁 Файлы сайта:"
-    echo "   🗂️  Статичные файлы: /var/www/charts.expert/"
-    echo "   ⚙️  Nginx конфиг: /etc/nginx/sites-available/charts.expert"
-    echo "   📋 Логи Nginx: /var/log/nginx/charts.expert.*"
+    echo "🐳 Docker сервисы:"
+    echo "   📊 Frontend: Nginx контейнер (порт 80/443)"
+    echo "   📡 API: UDF сервер (порт 8001)"
+    echo "   🔧 Builder: Генератор индекса"
+    echo ""
+    echo "📁 Файлы проекта:"
+    echo "   🗂️  Исходники: /opt/cbma14/src/chart/"
+    echo "   ⚙️  Nginx конфиг: /opt/cbma14/nginx/nginx.conf"
+    echo "   📋 Docker логи: docker compose logs"
     echo ""
     echo "🔒 SSL сертификат:"
-    if [ -f "/etc/letsencrypt/live/charts.expert/fullchain.pem" ]; then
-        echo "   ✅ SSL активен"
-        echo "   📅 Автообновление: 0 12 * * * (ежедневно в 12:00)"
+    if [ -d "ssl/live/charts.expert" ]; then
+        echo "   ✅ SSL активен в Docker"
     else
         echo "   ⚠️  SSL не настроен - запустите: bash deploy.sh ssl"
     fi
     echo ""
     echo "📊 Архитектура:"
-    echo "   🎨 Frontend: Статичный HTML/JS с TradingView Charts"
-    echo "   📡 API: Docker UDF сервер (опционально для криптовалют)"
-    echo "   📈 Данные: JSON/CSV файлы + API для BTC"
+    echo "   🐳 Полностью в Docker контейнерах"
+    echo "   📈 Данные: JSON/CSV + API через Docker"
+    echo "   🌐 Nginx проксирует к UDF API"
     echo ""
     echo "🔄 Обновление:"
     echo "   1. git pull origin main (в /opt/cbma14/)"
@@ -626,20 +499,18 @@ show_deployment_info() {
 
 # Основная функция
 main() {
-    print_header "CBMA14 Index - Production Deployment for charts.expert"
+    print_header "CBMA14 Index - Docker Deployment for charts.expert"
     
     # Проверка аргументов
     case "${1:-}" in
         "ssl")
             cd /opt/cbma14 2>/dev/null || cd /opt/cbma14
-            setup_ssl_charts_expert
+            setup_ssl_docker
             exit 0
             ;;
-        "static")
+        "check")
             cd /opt/cbma14 2>/dev/null || cd /opt/cbma14
-            create_static_deploy
-            setup_nginx_static
-            print_status "Статичный деплой завершен для charts.expert"
+            check_docker_services
             exit 0
             ;;
         "update")
@@ -647,8 +518,9 @@ main() {
             /usr/local/bin/cbma14-update 2>/dev/null || {
                 print_status "Обновление кода..."
                 git pull origin main
-                create_static_deploy
-                systemctl reload nginx
+                print_status "Перезапуск Docker контейнеров..."
+                docker compose down
+                docker compose up -d --build
                 print_status "Обновление завершено"
             }
             exit 0
@@ -656,14 +528,17 @@ main() {
         "status")
             cd /opt/cbma14 2>/dev/null || cd /opt/cbma14
             /usr/local/bin/cbma14-status 2>/dev/null || {
-                echo "=== CBMA14 Charts.expert Status ==="
-                systemctl status nginx --no-pager
-                echo ""
+                echo "=== CBMA14 Docker Status ==="
                 if command -v docker &> /dev/null; then
                     docker compose ps 2>/dev/null || echo "Docker not running"
+                    echo ""
+                    echo "=== Resource Usage ==="
+                    docker stats --no-stream 2>/dev/null || echo "No containers running"
+                else
+                    echo "Docker not available"
                 fi
                 echo ""
-                echo "Site check: $(curl -s -o /dev/null -w "%{http_code}" http://localhost/health || echo "N/A")"
+                echo "Site check: $(curl -s -o /dev/null -w "%{http_code}" http://localhost/ || echo "N/A")"
             }
             exit 0
             ;;
@@ -672,16 +547,17 @@ main() {
                 DATE=$(date +%Y%m%d_%H%M%S)
                 BACKUP_DIR="/opt/backups/cbma14"
                 mkdir -p $BACKUP_DIR
-                tar -czf $BACKUP_DIR/charts_expert_$DATE.tar.gz /var/www/charts.expert/ /opt/cbma14/ 2>/dev/null
-                print_status "Backup completed: charts_expert_$DATE.tar.gz"
+                cd /opt/cbma14 2>/dev/null || cd /opt/cbma14
+                tar -czf $BACKUP_DIR/cbma14_docker_$DATE.tar.gz . --exclude=logs --exclude=.git 2>/dev/null
+                print_status "Backup completed: cbma14_docker_$DATE.tar.gz"
             }
             exit 0
             ;;
         "help"|"-h"|"--help")
             echo "Использование: $0 [команда]"
             echo "Команды:"
-            echo "  (default)     - Полное развертывание Docker + статичный сайт"
-            echo "  static        - Только статичный деплой для charts.expert"
+            echo "  (default)     - Полное развертывание через Docker"
+            echo "  check         - Проверка статуса Docker сервисов"
             echo "  ssl           - Настройка SSL сертификата"
             echo "  update        - Обновление приложения"
             echo "  status        - Проверка статуса"
@@ -689,8 +565,8 @@ main() {
             echo "  help          - Показать эту справку"
             echo ""
             echo "Примеры:"
-            echo "  bash deploy.sh           # Полная установка"
-            echo "  bash deploy.sh static    # Только статичный сайт"
+            echo "  bash deploy.sh           # Полная установка Docker"
+            echo "  bash deploy.sh check     # Проверить Docker сервисы"
             echo "  bash deploy.sh ssl       # Настроить HTTPS"
             exit 0
             ;;
@@ -704,13 +580,11 @@ main() {
     clone_repository
     create_config
     
-    # Создаем статичный деплой
-    create_static_deploy
-    setup_nginx_static
-    
-    # Запускаем Docker стек (опционально для API)
-    print_status "Запуск Docker стека для API..."
+    # Запускаем Docker стек
     start_application
+    
+    # Проверяем статус сервисов
+    check_docker_services
     
     create_maintenance_scripts
     show_deployment_info
