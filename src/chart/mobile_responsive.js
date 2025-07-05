@@ -8,8 +8,8 @@ class MobileResponsiveChart {
     constructor(chart, chartContainer) {
         this.chart = chart;
         this.chartContainer = chartContainer;
-        this.isMobile = this.detectMobile();
-        this.isTablet = this.detectTablet();
+        
+        // Инициализируем конфигурацию ПЕРЕД вызовом детекции устройств
         this.screenBreakpoints = {
             mobile: 768,
             tablet: 1024,
@@ -26,6 +26,11 @@ class MobileResponsiveChart {
             exitOnEscape: true,
             showControls: true
         };
+        
+        // Теперь безопасно вызываем детекцию устройств
+        this.isMobile = this.detectMobile();
+        this.isTablet = this.detectTablet();
+        
         this.isFullscreen = false;
         this.resizeObserver = null;
         this.isInitialized = false;
@@ -71,7 +76,7 @@ class MobileResponsiveChart {
         const mobileScreen = window.innerWidth <= this.screenBreakpoints.mobile;
         
         // Проверка поддержки touch
-        const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        const hasTouch = 'ontouchstart' in window || (navigator.maxTouchPoints && navigator.maxTouchPoints > 0);
         
         return mobileUA || (mobileScreen && hasTouch);
     }

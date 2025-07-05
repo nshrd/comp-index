@@ -12,17 +12,17 @@ function getApiConfig() {
     // Локальная разработка
     if (hostname === 'localhost' || hostname === '127.0.0.1') {
         return {
-            UDF_BASE_URL: 'http://localhost:8000',
-            API_BASE_URL: 'http://localhost:8000/api',
+            UDF_BASE_URL: 'http://localhost',
+            API_BASE_URL: 'http://localhost/api',
             UDF_ENDPOINT: '/api',
             IS_DEVELOPMENT: true,
             CORS_ENABLED: true
         };
     }
     
-    // VPS развертывание (IP адрес)
+    // VPS развертывание (IP адрес) - через nginx
     if (hostname.match(/^\d+\.\d+\.\d+\.\d+$/)) {
-        const baseUrl = `${protocol}//${hostname}:8000`;
+        const baseUrl = `${protocol}//${hostname}`;
         return {
             UDF_BASE_URL: baseUrl,
             API_BASE_URL: `${baseUrl}/api`,
@@ -32,21 +32,21 @@ function getApiConfig() {
         };
     }
     
-    // Основной домен charts.expert (Docker деплой)
+    // Основной домен charts.expert (через nginx)
     if (hostname.includes('charts.expert')) {
         return {
-            UDF_BASE_URL: `${protocol}//${hostname}:8000`,
-            API_BASE_URL: `${protocol}//${hostname}:8000/api`,
+            UDF_BASE_URL: `${protocol}//${hostname}`,
+            API_BASE_URL: `${protocol}//${hostname}/api`,
             UDF_ENDPOINT: '/api',
             IS_DEVELOPMENT: false,
             CORS_ENABLED: true
         };
     }
     
-    // По умолчанию - API режим (для charts.expert)
+    // По умолчанию - через nginx на стандартных портах
     return {
-        UDF_BASE_URL: `${protocol}//${hostname}:8000`,
-        API_BASE_URL: `${protocol}//${hostname}:8000/api`,
+        UDF_BASE_URL: `${protocol}//${hostname}`,
+        API_BASE_URL: `${protocol}//${hostname}/api`,
         UDF_ENDPOINT: '/api',
         IS_DEVELOPMENT: false,
         CORS_ENABLED: true

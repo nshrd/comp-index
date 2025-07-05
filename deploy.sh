@@ -181,7 +181,7 @@ create_config() {
 DOMAIN=your-domain.com
 COINGLASS_API_KEY=your_coinglass_api_key_here
 UDF_HOST=0.0.0.0
-UDF_PORT=8001
+UDF_PORT=8000
 FLASK_ENV=production
 SSL_EMAIL=admin@your-domain.com
 NGINX_WORKER_PROCESSES=auto
@@ -471,7 +471,7 @@ show_deployment_info() {
     echo ""
     echo "🐳 Docker сервисы:"
     echo "   📊 Frontend: Nginx контейнер (порт 80/443)"
-    echo "   📡 API: UDF сервер (порт 8001)"
+    echo "   📡 API: UDF сервер (порт 8000)"
     echo "   🔧 Builder: Генератор индекса"
     echo ""
     echo "📁 Файлы проекта:"

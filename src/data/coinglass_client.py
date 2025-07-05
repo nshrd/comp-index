@@ -7,7 +7,7 @@ import logging
 from typing import Dict, List, Optional, Any
 from datetime import datetime
 
-from config import CoinglassConfig
+from config import config
 
 logger = logging.getLogger(__name__)
 
@@ -15,15 +15,18 @@ logger = logging.getLogger(__name__)
 class CoinglassClient:
     """Клиент для получения данных BTC через Coinglass API"""
     
-    def __init__(self, config: CoinglassConfig):
-        self.config = config
+    def __init__(self, api_key: Optional[str] = None):
+        self.api_key = api_key or config.coinglass_api_key or ''
+        self.base_url = config.coinglass_base_url
+        self.request_delay = 0.5  # секунды между запросами
+        
         self.headers = {
             "accept": "application/json"
         }
         
         # Добавляем ключ только если он есть
-        if self.config.api_key:
-            self.headers["CG-API-KEY"] = self.config.api_key
+        if self.api_key:
+            self.headers["CG-API-KEY"] = self.api_key
         
         # Rate limiting
         self.last_request_time = 0
@@ -40,8 +43,8 @@ class CoinglassClient:
         current_time = time.time()
         time_since_last = current_time - self.last_request_time
         
-        if time_since_last < self.config.request_delay:
-            sleep_time = self.config.request_delay - time_since_last
+        if time_since_last < self.request_delay:
+            sleep_time = self.request_delay - time_since_last
             logger.debug(f"Rate limiting: sleeping {sleep_time:.2f}s")
             time.sleep(sleep_time)
             
@@ -49,7 +52,7 @@ class CoinglassClient:
         """Выполнить запрос к API"""
         self._wait_for_rate_limit()
         
-        url = f"{self.config.base_url}{endpoint}"
+        url = f"{self.base_url}{endpoint}"
         
         try:
             response = requests.get(url, headers=self.headers, params=params, timeout=30)

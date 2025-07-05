@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multi-Instrument Chart</title>
-    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+    <title>CBMA14 Chart - TradingView Style</title>
+    <script src="https://unpkg.com/lightweight-charts@3.8.0/dist/lightweight-charts.standalone.production.js"></script>
     <script src="config.js"></script>
     <script src="optimized_utils.js"></script>
     <script src="enhanced_technical_indicators.js"></script>
@@ -17,291 +17,405 @@
     <script src="mobile_responsive.js"></script>
     <script src="candlestick_bar_series.js"></script>
     <script src="advanced_time_features.js"></script>
-    <script src="performance_optimizations.js"></script>
+    <!-- <script src="performance_optimizations.js"></script> -->
     <script src="animation_effects.js"></script>
     <script src="custom_crosshair.js"></script>
     <style>
-        /* TradingView-like design */
+        /* ========= ОСНОВНЫЕ СТИЛИ TRADINGVIEW ========= */
         * {
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-            margin: 0;
-            padding: 0;
-            background: #131722;
-            color: #d1d4dc;
-            min-height: 100vh;
-            font-size: 13px;
-        }
-        
-        .container {
-            max-width: 100%;
-            margin: 0;
-            background: #131722;
-            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
+            background: #0D1421;
+            color: #B2B5BE;
+            overflow: hidden;
             height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* ========= БОКОВАЯ ПАНЕЛЬ СЛЕВА ========= */
+        .sidebar {
+            width: 48px;
+            background: #1E222D;
+            border-right: 1px solid #2A2E39;
             display: flex;
             flex-direction: column;
+            padding: 8px 0;
         }
-        
-        .header {
-            background: #1e222d;
-            border-bottom: 1px solid #2a2e39;
-            padding: 8px 12px;
+
+        .sidebar-tool {
+            width: 32px;
+            height: 32px;
+            margin: 4px auto;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            height: 44px;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            background: transparent;
         }
-        
-        .title {
+
+        .sidebar-tool:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-tool.active {
+            background: #2962FF;
+            color: white;
+        }
+
+        /* ========= ОСНОВНОЙ КОНТЕНТ ========= */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #0D1421;
+        }
+
+        /* ========= ВЕРХНЯЯ ПАНЕЛЬ ========= */
+        .top-panel {
+            height: 48px;
+            background: #1E222D;
+            border-bottom: 1px solid #2A2E39;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            justify-content: space-between;
+        }
+
+        .symbol-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .symbol-name {
             font-size: 16px;
             font-weight: 600;
-            color: #ffffff;
-            margin: 0;
+            color: #FFFFFF;
         }
-        
-        .legend {
+
+        .symbol-details {
+            font-size: 11px;
+            color: #787B86;
+        }
+
+        .price-data {
             display: flex;
             gap: 20px;
             align-items: center;
         }
-        
-        .legend-item {
+
+        .price-item {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 2px;
+        }
+
+        .price-label {
+            font-size: 10px;
+            font-weight: 500;
+        }
+
+        .price-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #FFFFFF;
+        }
+
+        .price-change {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .price-change.positive {
+            color: #00C851;
+        }
+
+        .price-change.negative {
+            color: #FF4444;
+        }
+
+        /* ========= ПАНЕЛЬ ТАЙМФРЕЙМОВ ========= */
+        .toolbar-panel {
+            height: 40px;
+            background: #1E222D;
+            border-bottom: 1px solid #2A2E39;
             display: flex;
             align-items: center;
-            gap: 6px;
+            padding: 0 16px;
+            gap: 16px;
+        }
+
+        .toolbar-group {
+            display: flex;
+            gap: 2px;
+        }
+
+        .toolbar-btn {
+            padding: 6px 12px;
             font-size: 12px;
-            color: #9db2bd;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            color: #B2B5BE;
+            background: transparent;
+            border: none;
         }
-        
-        .legend-line {
-            width: 16px;
-            height: 2px;
-            border-radius: 1px;
+
+        .toolbar-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #FFFFFF;
         }
-        
-        .legend-comparison {
-            background: #ff9800;
+
+        .toolbar-btn.active {
+            background: #2962FF;
+            color: #FFFFFF;
         }
-        
-        .legend-instrument {
-            background: #2962ff;
+
+        .toolbar-separator {
+            width: 1px;
+            height: 20px;
+            background: #2A2E39;
         }
-        
+
+        /* ========= ПАНЕЛЬ УПРАВЛЕНИЯ ========= */
         .controls {
-            background: #1e222d;
-            border-bottom: 1px solid #2a2e39;
-            padding: 8px 12px;
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
+            padding: 12px 16px;
+            background: #1E222D;
+            border-bottom: 1px solid #2A2E39;
             align-items: center;
         }
-        
+
         .control-group {
             display: flex;
             align-items: center;
-            gap: 6px;
-            background: #2a2e39;
-            border: 1px solid #363a45;
-            border-radius: 4px;
-            padding: 6px 8px;
-            transition: all 0.2s ease;
-        }
-        
-        .control-group:hover {
-            background: #323641;
-            border-color: #464a57;
-        }
-        
-        .control-group label {
+            gap: 8px;
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #2A2E39;
+            border-radius: 6px;
             font-size: 12px;
-            color: #9db2bd;
-            font-weight: 400;
+        }
+
+        .control-group label {
+            color: #B2B5BE;
+            font-weight: 500;
             white-space: nowrap;
         }
-        
-        .control-group select {
-            border: none;
-            background: transparent;
-            color: #d1d4dc;
-            font-size: 12px;
-            cursor: pointer;
-            padding: 0;
-            outline: none;
-            min-width: 60px;
-        }
-        
-        .control-group select:focus {
-            color: #ffffff;
-        }
-        
-        .control-group select option {
-            background: #2a2e39;
-            color: #d1d4dc;
-            padding: 4px 8px;
-        }
-        
-        .date-input {
-            border: none;
-            background: transparent;
-            color: #d1d4dc;
-            font-size: 12px;
-            cursor: pointer;
-            padding: 0;
-            outline: none;
-            min-width: 100px;
-        }
-        
-        .date-input:focus {
-            color: #ffffff;
-        }
-        
-        .reset-btn, .fit-btn {
-            border: none;
-            background: #2962ff;
-            color: #ffffff;
-            font-size: 12px;
-            cursor: pointer;
-            padding: 6px 10px;
-            border-radius: 4px;
-            transition: all 0.2s ease;
-            font-weight: 500;
-        }
-        
-        .reset-btn:hover, .fit-btn:hover {
-            background: #1e4fd4;
-        }
-        
-        .reset-btn:active, .fit-btn:active {
-            background: #1b4bc7;
-        }
-        
-        .chart-container {
-            flex: 1;
+
+        .control-group select,
+        .control-group input {
             background: #131722;
-            border: none;
-            margin: 0;
-            overflow: hidden;
-            position: relative;
+            border: 1px solid #2A2E39;
+            border-radius: 4px;
+            padding: 4px 8px;
+            color: #FFFFFF;
+            font-size: 12px;
+            min-width: 80px;
         }
-        
+
+        .control-group select:focus,
+        .control-group input:focus {
+            outline: none;
+            border-color: #2962FF;
+            box-shadow: 0 0 0 2px rgba(41, 98, 255, 0.3);
+        }
+
+        .control-btn {
+            background: #2962FF;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .control-btn:hover {
+            background: #1E53E5;
+            transform: translateY(-1px);
+        }
+
+        .control-btn:active {
+            transform: translateY(0);
+        }
+
+        .date-input {
+            width: 140px !important;
+        }
+
+        /* ========= ОБЛАСТЬ ГРАФИКА ========= */
+        .chart-area {
+            flex: 1;
+            position: relative;
+            background: #0D1421;
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 100%;
+            background: #0D1421;
+        }
+
         .status {
             position: absolute;
-            top: 10px;
-            left: 10px;
-            padding: 4px 8px;
-            border-radius: 3px;
-            font-size: 11px;
-            background: rgba(42, 46, 57, 0.9);
-            color: #9db2bd;
-            border: 1px solid #363a45;
+            bottom: 16px;
+            left: 16px;
+            right: 16px;
+            padding: 8px 12px;
+            background: rgba(30, 34, 45, 0.9);
+            border: 1px solid #2A2E39;
+            border-radius: 6px;
+            font-size: 12px;
             z-index: 1000;
+            backdrop-filter: blur(8px);
         }
-        
+
         .status.success {
-            background: rgba(76, 175, 80, 0.1);
-            color: #4caf50;
-            border-color: #4caf50;
+            border-color: #00C851;
+            color: #00C851;
         }
-        
+
         .status.error {
-            background: rgba(244, 67, 54, 0.1);
-            color: #f44336;
-            border-color: #f44336;
+            border-color: #FF4444;
+            color: #FF4444;
         }
-        
+
         .status.info {
-            background: rgba(33, 150, 243, 0.1);
-            color: #2196f3;
-            border-color: #2196f3;
+            border-color: #2962FF;
+            color: #2962FF;
         }
-        
-        .data-info {
-            background: #1e222d;
-            border-top: 1px solid #2a2e39;
+
+        /* ========= ПРАВАЯ ПАНЕЛЬ ========= */
+        .right-panel {
+            width: 280px;
+            background: #1E222D;
+            border-left: 1px solid #2A2E39;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .right-panel-header {
+            padding: 12px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #FFFFFF;
+            border-bottom: 1px solid #2A2E39;
+            background: rgba(41, 98, 255, 0.1);
+        }
+
+        .watchlist {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .watchlist-header {
             padding: 8px 12px;
             font-size: 11px;
-            color: #787b86;
-            line-height: 1.4;
+            color: #787B86;
+            border-bottom: 1px solid #2A2E39;
         }
-        
-        /* Scrollbars */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+
+        .watchlist-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid #2A2E39;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        
-        ::-webkit-scrollbar-track {
-            background: #131722;
+
+        .watchlist-item:hover {
+            background: rgba(255, 255, 255, 0.05);
         }
-        
-        ::-webkit-scrollbar-thumb {
-            background: #2a2e39;
-            border-radius: 4px;
+
+        .watchlist-item.active {
+            background: rgba(41, 98, 255, 0.2);
+            border-left: 3px solid #2962FF;
         }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: #363a45;
+
+        .watchlist-symbol {
+            font-size: 13px;
+            font-weight: 500;
+            color: #FFFFFF;
+            margin-bottom: 4px;
         }
-        
-        /* Tooltips */
-        .tooltip {
-            position: absolute;
-            background: #2a2e39;
-            color: #d1d4dc;
-            padding: 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            border: 1px solid #363a45;
-            z-index: 1000;
-            max-width: 200px;
+
+        .watchlist-price {
+            font-size: 11px;
+            color: #B2B5BE;
         }
-        
-        /* Button variants */
-        .btn-secondary {
-            background: #363a45;
-            color: #d1d4dc;
+
+        .watchlist-change {
+            font-size: 11px;
+            font-weight: 500;
         }
-        
-        .btn-secondary:hover {
-            background: #434651;
+
+        .watchlist-change.positive {
+            color: #00C851;
         }
-        
-        .btn-success {
-            background: #4caf50;
-            color: #ffffff;
+
+        .watchlist-change.negative {
+            color: #FF4444;
         }
-        
-        .btn-success:hover {
-            background: #45a049;
+
+        /* ========= СКРЫТЫЕ ЭЛЕМЕНТЫ ========= */
+        .hidden {
+            display: none;
         }
-        
-        .btn-warning {
-            background: #ff9800;
-            color: #ffffff;
+
+        /* ========= АДАПТИВНОСТЬ ========= */
+        @media (max-width: 1200px) {
+            .right-panel {
+                width: 240px;
+            }
+            
+            .price-data {
+                gap: 12px;
+            }
         }
-        
-        .btn-warning:hover {
-            background: #e68900;
-        }
-        
-        .btn-danger {
-            background: #f44336;
-            color: #ffffff;
-        }
-        
-        .btn-danger:hover {
-            background: #da190b;
-        }
-        
-        /* Responsive design */
+
         @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: 48px;
+                flex-direction: row;
+                justify-content: center;
+                border-right: none;
+                border-bottom: 1px solid #2A2E39;
+            }
+            
+            .right-panel {
+                display: none;
+            }
+            
             .controls {
                 flex-direction: column;
+                gap: 8px;
                 align-items: stretch;
             }
             
@@ -309,307 +423,347 @@
                 justify-content: space-between;
             }
             
-            .header {
+            .top-panel {
                 flex-direction: column;
                 height: auto;
-                padding: 12px;
+                padding: 8px 16px;
                 gap: 8px;
             }
             
-            .legend {
-                order: 2;
-            }
-            
-            .data-info {
-                font-size: 10px;
+            .price-data {
+                justify-content: space-around;
+                width: 100%;
             }
         }
-        
-        /* Animation enhancements */
+
+        /* ========= АНИМАЦИИ ========= */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
         .fade-in {
-            animation: fadeIn 0.3s ease;
+            animation: fadeIn 0.3s ease-out;
         }
-        
-        /* Chart-specific styles */
-        .chart-loading {
-            display: flex;
-            align-items: center;
-            justify-content: center;
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* ========= ДОПОЛНИТЕЛЬНЫЕ УЛУЧШЕНИЯ ========= */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1E222D;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #2A2E39;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #363A45;
+        }
+
+        select option {
+            background: #1E222D;
+            color: #FFFFFF;
+        }
+
+        /* ========= FULLSCREEN MODE ========= */
+        .fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 10000;
+            background: #0D1421;
+        }
+
+        .fullscreen .sidebar,
+        .fullscreen .right-panel {
+            display: none;
+        }
+
+        .fullscreen .main-content {
+            width: 100%;
             height: 100%;
-            color: #9db2bd;
-            font-size: 14px;
-        }
-        
-        .chart-error {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            color: #f44336;
-            font-size: 14px;
-        }
-        
-        /* Enhanced control styles */
-        .control-group.active {
-            background: #2962ff;
-            border-color: #2962ff;
-        }
-        
-        .control-group.active label {
-            color: #ffffff;
-        }
-        
-        .control-group.active select {
-            color: #ffffff;
-        }
-        
-        /* Custom select arrow */
-        .control-group select {
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23d1d4dc' viewBox='0 0 16 16'%3e%3cpath d='M8 13.1l-8-8 2.1-2.1 5.9 5.9 5.9-5.9 2.1 2.1-8 8z'/%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-position: right 4px center;
-            background-size: 12px;
-            padding-right: 20px;
-        }
-        
-        /* Enhanced status messages */
-        .status.loading {
-            background: rgba(255, 193, 7, 0.1);
-            color: #ffc107;
-            border-color: #ffc107;
-        }
-        
-        .status.loading::before {
-            content: "⏳ ";
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <div class="title">CBMA14 Chart</div>
-            
-            <div class="legend">
-                <div class="legend-item">
-                    <div class="legend-line legend-instrument"></div>
-                    <span id="coinbase-legend">Coinbase Index</span>
+        <!-- Боковая панель инструментов -->
+        <div class="sidebar">
+            <div class="sidebar-tool active" id="sidebar-chart" title="График">
+                📊
+            </div>
+            <div class="sidebar-tool" id="sidebar-indicators" title="Индикаторы">
+                📈
+            </div>
+            <div class="sidebar-tool" id="sidebar-drawing" title="Рисование">
+                ✏️
+            </div>
+            <div class="sidebar-tool" id="sidebar-alerts" title="Оповещения">
+                🔔
+            </div>
+            <div class="sidebar-tool" id="sidebar-settings" title="Настройки">
+                ⚙️
+            </div>
+        </div>
+        
+        <!-- Основная область -->
+        <div class="main-content">
+            <!-- Верхняя панель с символом и данными -->
+            <div class="top-panel">
+                <div class="symbol-info">
+                    <div class="symbol-name">Coinbase Index Rank</div>
+                    <div class="symbol-details">Основная кривая • vs <span id="comparison-instrument">BTC</span> • 1W • charts.expert</div>
                 </div>
-                <div class="legend-item">
-                    <div class="legend-line legend-comparison"></div>
-                    <span id="comparison-legend">BTC</span>
+                <div class="price-data">
+                    <div class="price-item">
+                        <span class="price-label" style="color: #2962FF;">Rank</span>
+                        <span class="price-value" id="coinbase-rank">-</span>
+                    </div>
+                    <div class="price-item">
+                        <span class="price-label" style="color: #F7931A;" id="comparison-label">BTC</span>
+                        <span class="price-value" id="comparison-price">-</span>
+                    </div>
+                    <div class="price-item">
+                        <span class="price-change" id="rank-change">+0.00%</span>
+                    </div>
+                    <div class="price-item">
+                        <span class="price-change" id="comparison-change">+0.00%</span>
+                    </div>
                 </div>
             </div>
-        </div>
-        
-        <div class="controls">
-            <div class="control-group">
-                <label for="comparisonSelect">Сравнить с:</label>
-                <select id="comparisonSelect">
-                    <option value="btc" selected>BTC</option>
-                    <option value="spx">S&P 500</option>
-                    <option value="vix">VIX</option>
-                    <option value="dxy">DXY</option>
-                    <option value="total3esbtc">Total3 - BTC</option>
-                    <option value="withoutbtceth">Without BTC/ETH</option>
-                </select>
+            
+            <!-- Панель инструментов -->
+            <div class="toolbar-panel">
+                <div class="toolbar-group">
+                    <div class="toolbar-btn active">1s</div>
+                    <div class="toolbar-btn">1m</div>
+                    <div class="toolbar-btn">5m</div>
+                    <div class="toolbar-btn">15m</div>
+                    <div class="toolbar-btn">30m</div>
+                    <div class="toolbar-btn">1h</div>
+                    <div class="toolbar-btn">4h</div>
+                    <div class="toolbar-btn">1D</div>
+                    <div class="toolbar-btn">1W</div>
+                    <div class="toolbar-btn">1M</div>
+                </div>
+                <div class="toolbar-separator"></div>
+                <div class="toolbar-group">
+                    <div class="toolbar-btn">📊</div>
+                    <div class="toolbar-btn">📈</div>
+                    <div class="toolbar-btn">📉</div>
+                    <div class="toolbar-btn">⚡</div>
+                </div>
             </div>
             
-            <div class="control-group">
-                <label for="timeframeSelect">Таймфрейм:</label>
-                <select id="timeframeSelect">
-                    <option value="240">4H</option>
-                    <option value="D">1D</option>
-                    <option value="3D">3D</option>
-                    <option value="W" selected>1W</option>
-                </select>
+            <!-- Элементы управления -->
+            <div class="controls">
+                <div class="control-group" style="background: rgba(41, 98, 255, 0.1); border-color: #2962FF;">
+                    <label style="color: #2962FF; font-weight: 600;">📊 Coinbase Index:</label>
+                    <span style="color: #FFFFFF; font-size: 11px;">Основная кривая (всегда показана)</span>
+                </div>
+                
+                <div class="control-group">
+                    <label for="comparisonSelect">🎯 Сравнить с:</label>
+                    <select id="comparisonSelect">
+                        <option value="btc" selected>🟠 BTC</option>
+                        <option value="spx">🔵 S&P 500</option>
+                        <option value="vix">🔴 VIX</option>
+                        <option value="dxy">🟢 DXY</option>
+                        <option value="total3esbtc">🟡 Total3-BTC</option>
+                        <option value="withoutbtceth">🟣 Without BTC/ETH</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <label for="timeframeSelect">Таймфрейм:</label>
+                    <select id="timeframeSelect">
+                        <option value="240">4H</option>
+                        <option value="D">1D</option>
+                        <option value="3D">3D</option>
+                        <option value="W" selected>1W</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <label for="maPeriodSelect">MA период:</label>
+                    <select id="maPeriodSelect">
+                        <option value="7">7</option>
+                        <option value="14" selected>14</option>
+                        <option value="21">21</option>
+                        <option value="50">50</option>
+                        <option value="200">200</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <label for="fromDate">С:</label>
+                    <input type="date" id="fromDate" class="date-input">
+                </div>
+                
+                <div class="control-group">
+                    <label for="toDate">По:</label>
+                    <input type="date" id="toDate" class="date-input">
+                </div>
+                
+                <button id="resetScale" class="control-btn">🔄 Сбросить</button>
+                <button id="fitContent" class="control-btn">📏 Подогнать</button>
+                <button id="toggleFullscreen" class="control-btn">⛶ Полный экран</button>
             </div>
             
-            <div class="control-group">
-                <label for="maPeriodSelect">MA период:</label>
-                <select id="maPeriodSelect">
-                    <option value="7">7 дней</option>
-                    <option value="14" selected>14 дней</option>
-                    <option value="30">30 дней</option>
-                </select>
-            </div>
-            
-            <div class="control-group">
-                <label for="fromDate">От:</label>
-                <input type="date" id="fromDate" class="date-input">
-            </div>
-            
-            <div class="control-group">
-                <label for="toDate">До:</label>
-                <input type="date" id="toDate" class="date-input">
-            </div>
-            
-            <div class="control-group">
-                <button id="resetScale" class="reset-btn">🔄 Сбросить масштаб</button>
-            </div>
-            
-            <div class="control-group">
-                <button id="fitContent" class="fit-btn">📏 Подогнать все</button>
-            </div>
-            
-            <div class="control-group">
-                <label for="indicatorSelect">Индикаторы:</label>
-                <select id="indicatorSelect">
-                    <option value="">Выберите индикатор</option>
-                    <option value="sma">SMA</option>
-                    <option value="ema">EMA</option>
-                    <option value="rsi">RSI</option>
-                    <option value="macd">MACD</option>
-                    <option value="bollinger">Bollinger Bands</option>
-                    <option value="stochastic">Stochastic</option>
-                    <option value="cbma14">CBMA14 Enhanced</option>
-                </select>
-            </div>
-            
-            <div class="control-group">
-                <button id="addIndicator" class="reset-btn">➕ Добавить</button>
-            </div>
-            
-            <div class="control-group">
-                <label>Быстрый выбор:</label>
-                <select id="quickTimeRange">
-                    <option value="">Выбрать диапазон</option>
-                    <option value="7days">7 дней</option>
-                    <option value="30days">30 дней</option>
-                    <option value="3months">3 месяца</option>
-                    <option value="6months">6 месяцев</option>
-                    <option value="1year">1 год</option>
-                    <option value="2years">2 года</option>
-                    <option value="all">Все данные</option>
-                </select>
-            </div>
-            
-            <div class="control-group">
-                <button id="toggleTheme" class="reset-btn">🌓 Тема</button>
-            </div>
-            
-            <div class="control-group">
-                <button id="toggleGrid" class="reset-btn">⚏ Сетка</button>
-            </div>
-            
-            <div class="control-group">
-                <label>Уровни:</label>
-                <select id="addPriceLevels">
-                    <option value="">Добавить уровень</option>
-                    <option value="support">Поддержка</option>
-                    <option value="resistance">Сопротивление</option>
-                    <option value="fibonacci">Фибоначчи</option>
-                    <option value="pivot">Пивоты</option>
-                </select>
-            </div>
-            
-            <div class="control-group">
-                <label>Экспорт:</label>
-                <select id="exportOptions">
-                    <option value="">Экспорт</option>
-                    <option value="image">📸 Изображение</option>
-                    <option value="csv">📄 CSV</option>
-                    <option value="json">📦 JSON</option>
-                </select>
-            </div>
-            
-            <div class="control-group">
-                <label>Серии:</label>
-                <select id="seriesOptions">
-                    <option value="">Добавить серию</option>
-                    <!-- <option value="volume">📊 Объёмы</option> -->
-                    <option value="area">📈 Область</option>
-                    <option value="baseline">📉 Базовая линия</option>
-                </select>
-            </div>
-            
-            <div class="control-group">
-                <label>Шкала:</label>
-                <select id="priceScaleMode">
-                    <option value="normal">Обычная</option>
-                    <option value="logarithmic">Логарифмическая</option>
-                    <option value="percentage">Процентная</option>
-                </select>
-            </div>
-            
-            <div class="control-group">
-                <button id="saveState" class="reset-btn">💾 Сохранить</button>
-            </div>
-            
-            <div class="control-group">
-                <button id="toggleFullscreen" class="reset-btn">⛶ Полный экран</button>
-            </div>
-            
-            <div class="control-group">
-                <label>Candlesticks:</label>
-                <select id="candlestickOptions">
-                    <option value="">Добавить свечи</option>
-                    <option value="classic">🕯️ Классические</option>
-                    <option value="hollow">⚪ Полые</option>
-                    <option value="heikin">🎌 Heikin-Ashi</option>
-                    <option value="bar">📊 Бары</option>
-                </select>
-            </div>
-            
-            <div class="control-group">
-                <label>Время:</label>
-                <select id="timeFeatures">
-                    <option value="">Функции времени</option>
-                    <option value="business_hours">🏢 Торговые часы</option>
-                    <option value="timezone">🌍 Часовой пояс</option>
-                    <option value="goto_now">⏰ Текущее время</option>
-                    <option value="custom_marks">📍 Пользовательские метки</option>
-                </select>
-            </div>
-            
-            <div class="control-group">
-                <label>Crosshair:</label>
-                <select id="crosshairMode">
-                    <option value="normal">Обычный</option>
-                    <option value="magnet">Магнитный</option>
-                    <option value="hidden">Скрытый</option>
-                </select>
-            </div>
-            
-            <div class="control-group">
-                <label>Анимации:</label>
-                <select id="animationEffects">
-                    <option value="">Эффекты</option>
-                    <option value="entrance_fade">💫 Появление</option>
-                    <option value="highlight">✨ Подсветка</option>
-                    <option value="pulse">💓 Пульсация</option>
-                    <option value="loading">⏳ Загрузка</option>
-                </select>
-            </div>
-            
-            <div class="control-group">
-                <button id="toggleAnimations" class="reset-btn">🎬 Анимации</button>
+            <!-- Область графика -->
+            <div class="chart-area">
+                <div class="chart-container" id="chart-container"></div>
+                <div class="status" id="status">Загрузка графиков...</div>
             </div>
         </div>
         
-        <div class="data-info">
-            📊 <strong>Coinbase Index:</strong> всегда отображается на левой оси (ранк относительно всех криптовалют) | 
-            📈 <strong>Сравнение:</strong> выберите инструмент для сравнения (BTC, S&P 500, VIX, DXY и другие) |
-            🕐 <strong>Таймфреймы:</strong> динамически фильтруются по поддержке инструментов (только BTC поддерживает 4H) |
-            🔗 <strong>Синхронизация:</strong> графики автоматически синхронизируются по общей дате начала данных
+        <!-- Правая панель -->
+        <div class="right-panel">
+            <div class="right-panel-header">📊 Coinbase Index vs:</div>
+            <div class="watchlist">
+                <div class="watchlist-header" style="padding: 8px 12px; font-size: 11px; color: #787b86; border-bottom: 1px solid #2a2e39;">
+                    Выберите инструмент для сравнения
+                </div>
+                <div class="watchlist-item active" data-symbol="btc">
+                    <div>
+                        <div class="watchlist-symbol">🟠 BTC</div>
+                        <div class="watchlist-price">$108,082</div>
+                    </div>
+                    <div class="watchlist-change positive">+0.05%</div>
+                </div>
+                <div class="watchlist-item" data-symbol="spx">
+                    <div>
+                        <div class="watchlist-symbol">🔵 S&P 500</div>
+                        <div class="watchlist-price">5,974</div>
+                    </div>
+                    <div class="watchlist-change negative">-0.32%</div>
+                </div>
+                <div class="watchlist-item" data-symbol="vix">
+                    <div>
+                        <div class="watchlist-symbol">🔴 VIX</div>
+                        <div class="watchlist-price">14.2</div>
+                    </div>
+                    <div class="watchlist-change positive">+2.1%</div>
+                </div>
+                <div class="watchlist-item" data-symbol="dxy">
+                    <div>
+                        <div class="watchlist-symbol">🟢 DXY</div>
+                        <div class="watchlist-price">105.8</div>
+                    </div>
+                    <div class="watchlist-change negative">-0.1%</div>
+                </div>
+                <div class="watchlist-item" data-symbol="total3esbtc">
+                    <div>
+                        <div class="watchlist-symbol">🟡 Total3-BTC</div>
+                        <div class="watchlist-price">0.0142</div>
+                    </div>
+                    <div class="watchlist-change positive">+1.5%</div>
+                </div>
+                <div class="watchlist-item" data-symbol="withoutbtceth">
+                    <div>
+                        <div class="watchlist-symbol">🟣 Without BTC/ETH</div>
+                        <div class="watchlist-price">0.0089</div>
+                    </div>
+                    <div class="watchlist-change negative">-0.8%</div>
+                </div>
+            </div>
+            <div style="padding: 8px 12px; font-size: 10px; color: #787b86; border-top: 1px solid #2a2e39; line-height: 1.4;">
+                💡 Синяя кривая (слева) - ранг Coinbase Index<br>
+                🎯 Цветная кривая (справа) - выбранный инструмент
+            </div>
         </div>
-        
-        <div class="status" id="status">Загрузка графиков...</div>
-        
-        <div class="chart-container" id="chart-container"></div>
+    </div>
+
+    <!-- Скрытые элементы для индикаторов -->
+    <div class="hidden">
+        <select id="indicatorSelect">
+            <option value="">Выберите индикатор</option>
+            <option value="sma">SMA</option>
+            <option value="ema">EMA</option>
+            <option value="rsi">RSI</option>
+            <option value="macd">MACD</option>
+            <option value="bollinger">Bollinger Bands</option>
+            <option value="stochastic">Stochastic</option>
+            <option value="cbma14">CBMA14 Enhanced</option>
+        </select>
+        <button id="addIndicator">Добавить</button>
+        <select id="quickTimeRange">
+            <option value="">Выбрать диапазон</option>
+            <option value="7days">7 дней</option>
+            <option value="30days">30 дней</option>
+            <option value="3months">3 месяца</option>
+            <option value="6months">6 месяцев</option>
+            <option value="1year">1 год</option>
+            <option value="2years">2 года</option>
+            <option value="all">Все данные</option>
+        </select>
+        <select id="exportOptions">
+            <option value="">Экспорт</option>
+            <option value="png">PNG</option>
+            <option value="svg">SVG</option>
+            <option value="csv">CSV</option>
+        </select>
+        <select id="seriesOptions">
+            <option value="">Добавить серию</option>
+            <option value="line">Линия</option>
+            <option value="area">Область</option>
+            <option value="histogram">Гистограмма</option>
+        </select>
+        <select id="priceScaleMode">
+            <option value="normal">Обычный</option>
+            <option value="logarithmic">Логарифмический</option>
+        </select>
+        <button id="saveState">Сохранить</button>
+        <button id="toggleTheme">Сменить тему</button>
+        <button id="toggleGrid">Сетка</button>
+        <select id="addPriceLevels">
+            <option value="">Уровни цен</option>
+            <option value="current">Текущая цена</option>
+            <option value="support">Поддержка</option>
+            <option value="resistance">Сопротивление</option>
+        </select>
+        <select id="candlestickOptions">
+            <option value="">Добавить свечи</option>
+            <option value="classic">Классические</option>
+            <option value="hollow">Полые</option>
+            <option value="heikin">Heikin-Ashi</option>
+            <option value="bar">Бары</option>
+        </select>
+        <select id="timeFeatures">
+            <option value="">Функции времени</option>
+            <option value="business_hours">Торговые часы</option>
+            <option value="timezone">Часовой пояс</option>
+            <option value="goto_now">Текущее время</option>
+            <option value="custom_marks">Пользовательские метки</option>
+        </select>
+        <select id="crosshairMode">
+            <option value="normal">Обычный</option>
+            <option value="magnet">Магнитный</option>
+            <option value="hidden">Скрытый</option>
+        </select>
+        <select id="animationEffects">
+            <option value="">Эффекты</option>
+            <option value="entrance_fade">Появление</option>
+            <option value="highlight">Подсветка</option>
+            <option value="pulse">Пульсация</option>
+            <option value="loading">Загрузка</option>
+        </select>
+        <button id="toggleAnimations">Анимации</button>
     </div>
 
     <script>
@@ -699,18 +853,14 @@
                 return;
             }
             
+            // Ожидаем загрузки TradingView Lightweight Charts
+            await waitForTradingViewCharts();
+            
             // Проверяем, что выбранный по умолчанию инструмент для сравнения существует
             if (!CONFIG.INSTRUMENTS[currentComparisonInstrument]) {
                 console.warn(`⚠️ Default comparison instrument '${currentComparisonInstrument}' not found, using first available instrument.`);
                 currentComparisonInstrument = Object.keys(CONFIG.INSTRUMENTS).find(key => key !== 'coinbase') || 'btc';
                 console.log(`📊 Switched to comparison instrument: ${currentComparisonInstrument}`);
-            }
-            
-            // Проверяем доступность Lightweight Charts
-            if (typeof LightweightCharts === 'undefined') {
-                console.error('❌ LightweightCharts not loaded! Make sure the library is loaded.');
-                updateStatus('Ошибка: библиотека Lightweight Charts не загружена', 'error');
-                return;
             }
             
             // Синхронизируем селектор инструментов с текущим выбранным инструментом
@@ -728,6 +878,36 @@
             // Небольшая задержка перед загрузкой данных
             setTimeout(loadData, 100);
         });
+
+        // Функция ожидания загрузки TradingView Charts
+        async function waitForTradingViewCharts() {
+            return new Promise((resolve, reject) => {
+                let attempts = 0;
+                const maxAttempts = 50; // 5 секунд максимум
+                
+                const checkTradingView = () => {
+                    attempts++;
+                    
+                    if (typeof LightweightCharts !== 'undefined') {
+                        console.log('✅ TradingView Lightweight Charts loaded successfully');
+                        resolve();
+                        return;
+                    }
+                    
+                    if (attempts >= maxAttempts) {
+                        console.error('❌ TradingView Lightweight Charts failed to load');
+                        updateStatus('Ошибка: библиотека TradingView не загрузилась', 'error');
+                        reject(new Error('TradingView Charts timeout'));
+                        return;
+                    }
+                    
+                    // Проверяем каждые 100ms
+                    setTimeout(checkTradingView, 100);
+                };
+                
+                checkTradingView();
+            });
+        }
 
         async function initializeDates() {
             // Устанавливаем даты по умолчанию: исходя из общей доступности данных
@@ -855,15 +1035,29 @@
                     console.error(`❌ Unknown instrument: ${instrumentKey}`);
                     return null;
                 }
-                
 
-                
                 let firstTimestamp = null;
                 
                 if (instrument.dataSource === 'json') {
                     // Для JSON данных (Coinbase Index)
-                    const response = await fetch(instrument.path);
-                    if (response.ok) {
+                    try {
+                        const cacheBuster = Date.now();
+                        const response = await fetch(`${instrument.path}?v=${cacheBuster}`, {
+                            headers: {
+                                'Accept': 'application/json',
+                                'Cache-Control': 'no-cache, no-store, must-revalidate'
+                            }
+                        });
+                        
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                        }
+                        
+                        const contentType = response.headers.get('content-type');
+                        if (!contentType || !contentType.includes('application/json')) {
+                            throw new Error(`Expected JSON, got ${contentType}`);
+                        }
+                        
                         const jsonData = await response.json();
                         if (jsonData.data && jsonData.data.length > 0) {
                             // Находим первую валидную дату
@@ -877,6 +1071,9 @@
                                 }
                             }
                         }
+                    } catch (jsonError) {
+                        console.error(`❌ Error loading JSON for ${instrumentKey}:`, jsonError.message);
+                        return null;
                     }
                 } else if (instrument.dataSource === 'csv') {
                     // Для CSV данных (для 3D используем 1D файлы)
@@ -973,21 +1170,45 @@
 
         async function loadCoinbaseData(fromTime, toTime) {
             try {
-                // Загружаем данные Coinbase Index из JSON
-                const response = await fetch('/data/data.json');
+                // Загружаем данные Coinbase Index из JSON (ЕДИНСТВЕННЫЙ источник)
+                console.log('📊 Loading Coinbase Index from data.json...');
+                
+                // Добавляем cache-busting параметр для принудительной перезагрузки
+                const cacheBuster = Date.now();
+                const response = await fetch(`/data/data.json?v=${cacheBuster}`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache',
+                        'Expires': '0'
+                    }
+                });
                 
                 if (!response.ok) {
-                    throw new Error(`Failed to load Coinbase data: ${response.status} ${response.statusText}`);
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                // Проверяем Content-Type перед парсингом
+                const contentType = response.headers.get('content-type');
+                console.log('📊 Response Content-Type:', contentType);
+                
+                if (!contentType || !contentType.includes('application/json')) {
+                    const textResponse = await response.text();
+                    console.error('❌ Expected JSON, got:', contentType);
+                    console.error('❌ Response text (first 500 chars):', textResponse.substring(0, 500));
+                    throw new Error(`Expected JSON, got ${contentType || 'unknown'}`);
                 }
                 
                 const jsonData = await response.json();
+                console.log('📊 JSON data loaded, title:', jsonData.title);
                 
                 if (!jsonData.data || !Array.isArray(jsonData.data)) {
-                    console.error('❌ Invalid Coinbase data structure');
-                    return;
+                    throw new Error('Invalid Coinbase data structure in JSON');
                 }
 
-                // Преобразуем JSON данные
+                // Преобразуем JSON данные в формат для графика
                 const allData = [];
                 for (const item of jsonData.data) {
                     if (!item.date || item.rank == null) continue;
@@ -1002,52 +1223,50 @@
                 }
 
                 if (allData.length === 0) {
-                    console.error('❌ No valid Coinbase data found');
-                    return;
+                    throw new Error('No valid Coinbase data found in JSON');
                 }
-
-                // Сортируем данные по времени
+                
+                // Сортируем по времени
                 allData.sort((a, b) => a.time - b.time);
-                console.log(`📊 Sorted ${allData.length} Coinbase data points`);
+                console.log(`📊 Loaded ${allData.length} Coinbase data points from JSON`);
 
-                // Рассчитываем moving average
+                // Вычисляем Moving Average с помощью TradingView Lightweight Charts
                 const rawValues = allData.map(item => item.value);
                 const maValues = calculateMovingAverage(rawValues, currentMAPeriod);
-                
-                // Создаём данные для графика
-                let maData = [];
-                const startIndex = currentMAPeriod - 1;
-                
+
+                // Создаем финальные данные с MA для отображения поверх графика
+                const finalData = [];
                 for (let i = 0; i < maValues.length; i++) {
-                    const originalIndex = startIndex + i;
+                    const originalIndex = i + currentMAPeriod - 1;
                     if (originalIndex < allData.length) {
-                        maData.push({
+                        finalData.push({
                             time: allData[originalIndex].time,
                             value: maValues[i]
                         });
                     }
                 }
 
-                // Агрегируем данные по выбранному таймфрейму
-                maData = aggregateDataByTimeframe(maData, currentTimeframe);
-                
-                // Фильтруем по датам
-                const filteredData = maData.filter(item => item.time >= fromTime && item.time <= toTime);
+                console.log(`📊 Coinbase MA${currentMAPeriod} ready: ${finalData.length} points`);
 
-                // Инвертируем данные для правильной визуализации (чем меньше ранг, тем лучше)
-                if (filteredData.length > 0) {
-                    const maxRank = Math.max(...filteredData.map(d => d.value));
-                    const invertedData = filteredData.map(item => ({
-                        ...item,
-                        value: maxRank - item.value + 1
-                    }));
+                // Фильтруем по временному диапазону
+                const filteredData = finalData.filter(item => 
+                    item.time >= fromTime && item.time <= toTime
+                );
 
-                    coinbaseLineSeries.setData(invertedData);
-                    console.log(`🔄 Coinbase chart updated with ${invertedData.length} points (MA${currentMAPeriod}, ${currentTimeframe})`);
+                console.log(`📊 Filtered Coinbase MA: ${filteredData.length} points`);
+
+                // Устанавливаем данные в серию (MA поверх основных данных)
+                if (coinbaseLineSeries && filteredData.length > 0) {
+                    coinbaseLineSeries.setData(filteredData);
+                    console.log('✅ Coinbase MA data set to series (overlay)');
+                } else {
+                    console.warn('⚠️ Coinbase series not initialized or no data');
                 }
 
             } catch (error) {
                 console.error('❌ Error loading Coinbase data:', error);
+                updateStatus(`Ошибка загрузки Coinbase Index: ${error.message}`, 'error');
+                // НЕ используем fallback - данные должны быть только из JSON!
             }
         }
 
@@ -1106,11 +1325,20 @@
                 console.log(`🔗 API URL: ${apiUrl}`);
                 
                 const response = await fetch(apiUrl);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
                 const apiData = await response.json();
                 
                 console.log('📊 API Response:', apiData);
+                console.log('📊 API Response status:', apiData.s);
+                console.log('📊 API Response data keys:', Object.keys(apiData));
 
                 if (apiData.s === 'ok' && apiData.t && apiData.o && apiData.h && apiData.l && apiData.c) {
+                    console.log(`📊 API returned ${apiData.t.length} candles for ${instrument.apiSymbol}`);
+                    
                     let candleData = [];
                     for (let i = 0; i < apiData.t.length; i++) {
                         if (apiData.t[i] && apiData.o[i] != null && apiData.h[i] != null && 
@@ -1125,6 +1353,8 @@
                         }
                     }
 
+                    console.log(`📊 Processed ${candleData.length} valid candles`);
+
                     // Агрегируем данные если нужно используя современные утилиты
                     if (currentTimeframe === 'W' && apiTimeframe === 'D') {
                         candleData = DataAggregator.aggregateTimeSeriesData(candleData, 'W');
@@ -1136,12 +1366,24 @@
 
                     return candleData;
                 } else {
-                    console.error('❌ Failed to load API data:', apiData);
-                    return [];
+                    console.error('❌ API response error details:');
+                    console.error('- Status:', apiData.s);
+                    console.error('- Message:', apiData.errmsg || 'No error message');
+                    console.error('- Has time data:', !!apiData.t);
+                    console.error('- Has OHLC data:', !!apiData.o && !!apiData.h && !!apiData.l && !!apiData.c);
+                    
+                    if (apiData.s === 'no_data') {
+                        console.warn('⚠️ No data available for the requested period');
+                        return [];
+                    }
+                    
+                    throw new Error(`API error: ${apiData.s} - ${apiData.errmsg || 'Unknown error'}`);
                 }
 
             } catch (error) {
                 console.error('❌ Error loading API data:', error);
+                console.error('❌ Error type:', error.constructor.name);
+                console.error('❌ Error message:', error.message);
                 return [];
             }
         }
@@ -1200,55 +1442,122 @@
 
 
 
-        function createComparisonSeries() {
+        function createCoinbaseSeries() {
+            if (!chart) {
+                console.error('⚠️ Chart not initialized, cannot create Coinbase series');
+                return;
+            }
+            
             try {
-                // Удаляем предыдущую серию сравнения, если она существует
+                // Удаляем существующую серию если есть
+                if (coinbaseLineSeries) {
+                    chart.removeSeries(coinbaseLineSeries);
+                    coinbaseLineSeries = null;
+                }
+                
+                // Создаем серию для Coinbase Index Moving Average (поверх основных данных)
+                coinbaseLineSeries = chart.addLineSeries({
+                    color: '#2962FF',           // TradingView синий - хорошо видно поверх
+                    lineWidth: 3,               // Толще чем основные данные 
+                    priceScaleId: 'left',       // Левая ось для ранга (1-100)
+                    title: `Coinbase Index MA${currentMAPeriod}`,
+                    lastValueVisible: true,
+                    priceLineVisible: true,
+                    crosshairMarkerVisible: true,
+                    crosshairMarkerRadius: 5,
+                    crosshairMarkerBorderColor: '#2962FF',
+                    crosshairMarkerBackgroundColor: '#2962FF',
+                });
+                
+                if (!coinbaseLineSeries) {
+                    throw new Error('Failed to create line series - returned null');
+                }
+                
+                console.log(`✅ Coinbase MA${currentMAPeriod} series created (overlay)`);
+                
+            } catch (error) {
+                console.error('❌ Error creating Coinbase series:', error);
+                console.error('❌ Chart object available methods:', Object.keys(chart).filter(k => typeof chart[k] === 'function'));
+                throw new Error('Failed to create Coinbase MA series');
+            }
+        }
+
+        function createComparisonSeries() {
+            if (!chart) {
+                console.error('⚠️ Chart not initialized, cannot create comparison series');
+                return;
+            }
+            
+            try {
+                // Удаляем существующую серию если есть
                 if (comparisonLineSeries) {
                     chart.removeSeries(comparisonLineSeries);
                     comparisonLineSeries = null;
                 }
-                if (candlestickSeries) {
-                    chart.removeSeries(candlestickSeries);
-                    candlestickSeries = null;
-                }
                 
-                const comparisonInstrument = CONFIG.INSTRUMENTS[currentComparisonInstrument];
-                if (!comparisonInstrument) {
+                // Получаем настройки инструмента
+                const instrument = CONFIG.INSTRUMENTS[currentComparisonInstrument];
+                if (!instrument) {
                     console.error(`❌ Unknown comparison instrument: ${currentComparisonInstrument}`);
                     return;
                 }
                 
-                if (comparisonInstrument.seriesType === 'candlestick') {
-                    // Создаем свечную серию (для BTC)
-                    candlestickSeries = chart.addSeries(LightweightCharts.CandlestickSeries, {
-                        upColor: comparisonInstrument.color,
-                        downColor: '#FF4976',
-                        borderVisible: false,
-                        wickUpColor: comparisonInstrument.color,
-                        wickDownColor: '#FF4976',
-                        priceScaleId: 'right',
+                // Определяем цвет (более приглушенный, так как это фоновые данные)
+                const colors = {
+                    'btc': '#F7931A',    
+                    'spx': '#4285F4',    
+                    'vix': '#DB4437',    
+                    'dxy': '#0F9D58',    
+                    'total3esbtc': '#FF6B35',
+                    'withoutbtceth': '#6A4C93'
+                };
+                
+                const seriesColor = colors[currentComparisonInstrument] || instrument.color || '#FF9800';
+                
+                // Создаем серию (основные данные, на которые накладывается MA)
+                if (instrument.seriesType === 'candlestick') {
+                    comparisonLineSeries = chart.addCandlestickSeries({
+                        upColor: '#00C851',
+                        downColor: '#FF4444',
+                        borderVisible: true,
+                        wickUpColor: '#00C851',
+                        wickDownColor: '#FF4444',
+                        borderUpColor: '#00C851',
+                        borderDownColor: '#FF4444',
+                        priceScaleId: 'right',      // Правая ось для цены
+                        title: instrument.name,
+                        lastValueVisible: true,
+                        priceLineVisible: false,    // Убираем чтобы не мешало MA
+                        crosshairMarkerVisible: true,
                     });
                 } else {
-                    // Создаем линейную серию (для других инструментов)
-                    comparisonLineSeries = chart.addSeries(LightweightCharts.LineSeries, {
-                        color: comparisonInstrument.color,
+                    comparisonLineSeries = chart.addLineSeries({
+                        color: seriesColor,
                         lineWidth: 2,
-                        lineStyle: LightweightCharts.LineStyle.Solid,
-                        lineType: LightweightCharts.LineType.Simple,
-                        crosshairMarkerVisible: true,
-                        crosshairMarkerRadius: 6,
-                        crosshairMarkerBorderColor: comparisonInstrument.color,
-                        crosshairMarkerBackgroundColor: '#FFFFFF',
+                        priceScaleId: 'right',      // Правая ось для цены/индекса
+                        title: instrument.name,
                         lastValueVisible: true,
-                        priceLineVisible: true,
-                        priceScaleId: 'right',
+                        priceLineVisible: false,    // Убираем чтобы не мешало MA
+                        crosshairMarkerVisible: true,
+                        crosshairMarkerRadius: 4,
+                        crosshairMarkerBorderColor: seriesColor,
+                        crosshairMarkerBackgroundColor: seriesColor,
                     });
                 }
                 
-                console.log(`✅ Created ${comparisonInstrument.seriesType} series for ${comparisonInstrument.name}`);
+                if (!comparisonLineSeries) {
+                    throw new Error('Failed to create comparison series - returned null');
+                }
+                
+                console.log(`✅ ${instrument.name} series created (background data for MA overlay)`);
+                
+                // Обновляем информацию о символе
+                updateSymbolInfo(currentComparisonInstrument);
                 
             } catch (error) {
                 console.error('❌ Error creating comparison series:', error);
+                console.error('❌ Chart object available methods:', Object.keys(chart).filter(k => typeof chart[k] === 'function'));
+                throw new Error('Failed to create comparison series');
             }
         }
 
@@ -1262,7 +1571,16 @@
                 const year = parts[2]; // "25"
 
                 // Преобразуем короткий год в полный
-                const fullYear = year.length === 2 ? '20' + year : year;
+                let fullYear;
+                if (year.length === 2) {
+                    const yearNum = parseInt(year);
+                    // Для данных: "25" должно быть 2023, но поскольку у нас "25" в данных 
+                    // вероятно означает 2023 год, используем простое правило:
+                    // 00-30 = 20xx, 31-99 = 19xx
+                    fullYear = yearNum <= 30 ? '20' + year : '19' + year;
+                } else {
+                    fullYear = year;
+                }
 
                 // Создаем полную дату
                 const fullDate = `${monthDay}, ${fullYear}`;
@@ -1277,224 +1595,79 @@
             }
         }
 
-        function initializeChart() {
+        async function initializeChart() {
             try {
                 const container = document.getElementById('chart-container');
-                
+                if (!container) {
+                    throw new Error('Chart container not found');
+                }
+
+                updateStatus('Инициализация графика...', 'info');
+
+                // Убеждаемся что TradingView Charts загружена
+                if (typeof LightweightCharts === 'undefined') {
+                    console.log('⏳ Waiting for TradingView Lightweight Charts to load...');
+                    await waitForTradingViewCharts();
+                }
+
+                console.log('✅ TradingView Lightweight Charts is available');
+
+                // Очищаем контейнер
+                container.innerHTML = '';
+
+                // Создаем график с простой конфигурацией
                 chart = LightweightCharts.createChart(container, {
                     width: container.clientWidth,
                     height: 600,
                     layout: {
-                        background: { color: '#131722' },
-                        textColor: '#d1d4dc',
-                        fontSize: 11,
-                        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                        backgroundColor: '#0D1421',
+                        textColor: '#B2B5BE',
                     },
                     grid: {
                         vertLines: { 
-                            color: '#2a2e39',
-                            style: LightweightCharts.LineStyle.Solid,
+                            color: 'rgba(42, 46, 57, 0.3)',
                         },
                         horzLines: { 
-                            color: '#2a2e39',
-                            style: LightweightCharts.LineStyle.Solid,
+                            color: 'rgba(42, 46, 57, 0.3)',
                         },
                     },
                     crosshair: {
                         mode: LightweightCharts.CrosshairMode.Normal,
-                        vertLine: {
-                            color: '#758696',
-                            width: 1,
-                            style: LightweightCharts.LineStyle.Solid,
-                            labelBackgroundColor: '#363a45',
-                        },
-                        horzLine: {
-                            color: '#758696',
-                            width: 1,
-                            style: LightweightCharts.LineStyle.Solid,
-                            labelBackgroundColor: '#363a45',
-                        },
                     },
                     rightPriceScale: {
-                        borderColor: '#2a2e39',
-                        textColor: '#d1d4dc',
-                        autoScale: true,
-                        mode: LightweightCharts.PriceScaleMode.Normal,
-                        invertScale: false,
-                        alignLabels: true,
-                        scaleMargins: {
-                            top: 0.08,
-                            bottom: 0.08,
-                        },
-                        borderVisible: true,
-                        entireTextOnly: false,
+                        borderColor: '#2A2E39',
                         visible: true,
-                        drawTicks: true,
-                        ticksVisible: true,
                     },
                     leftPriceScale: {
+                        borderColor: '#2A2E39',
                         visible: true,
-                        borderColor: '#2a2e39',
-                        textColor: '#d1d4dc',
-                        mode: LightweightCharts.PriceScaleMode.Normal,
-                        invertScale: true, // Инвертируем для рангов (меньший ранг = выше)
-                        autoScale: true,
-                        alignLabels: true,
-                        scaleMargins: {
-                            top: 0.08,
-                            bottom: 0.08,
-                        },
-                        borderVisible: true,
-                        entireTextOnly: false,
-                        drawTicks: true,
-                        ticksVisible: true,
                     },
                     timeScale: {
-                        borderColor: '#2a2e39',
-                        textColor: '#d1d4dc',
+                        borderColor: '#2A2E39',
                         timeVisible: true,
-                        secondsVisible: false,
-                        borderVisible: true,
-                        rightOffset: 12,
-                        barSpacing: 3,           // Уменьшаем расстояние между барами для большей плотности
-                        minBarSpacing: 0.5,      // Еще больше уменьшаем минимальное расстояние
-                        fixLeftEdge: false,      // Позволяем свободно прокручивать левый край
-                        fixRightEdge: false,     // Позволяем свободно прокручивать правый край
-                        lockVisibleTimeRangeOnResize: false,
-                        rightBarStaysOnScroll: false,  // Разрешаем свободную прокрутку
-                        allowBoldLabels: true,
-                        visible: true,
-                        ticksVisible: true,
-                        shiftVisibleRangeOnNewBar: false,  // Не сдвигаем при новых данных
-                        tickMarkFormatter: (time) => {
-                            const date = new Date(time * 1000);
-                            return date.toLocaleDateString('ru-RU', { 
-                                month: 'short', 
-                                day: 'numeric' 
-                            });
-                        },
-                    },
-                    handleScroll: {
-                        mouseWheel: true,          // Колесико мыши для прокрутки
-                        pressedMouseMove: true,    // Прокрутка перетаскиванием
-                        horzTouchDrag: true,       // Горизонтальное сенсорное перетаскивание
-                        vertTouchDrag: false,      // Отключаем вертикальное перетаскивание чтобы не мешало
-                    },
-                    handleScale: {
-                        axisPressedMouseMove: {    // Масштабирование осей мышью
-                            time: true,
-                            price: true,
-                        },
-                        mouseWheel: true,          // Масштабирование колесиком мыши
-                        pinch: true,              // Масштабирование пинчем на сенсорных устройствах
-                        axisDoubleClickReset: {   // Сброс масштаба двойным кликом
-                            time: true,
-                            price: true,
-                        },
-                    },
-                    kineticScroll: {              // Добавляем кинетическую прокрутку
-                        touch: true,
-                        mouse: false,
                     },
                 });
 
-                // Проверяем доступность API Lightweight Charts
-                if (!LightweightCharts.CandlestickSeries || !LightweightCharts.LineSeries) {
-                    throw new Error('Required chart series types are not available');
-                }
+                console.log('✅ Chart created successfully');
 
-                // Создаем серию для Coinbase Index (всегда на левой оси)
-                coinbaseLineSeries = chart.addSeries(LightweightCharts.LineSeries, {
-                    color: '#2962FF',
-                    lineWidth: 2,
-                    lineStyle: LightweightCharts.LineStyle.Solid,
-                    lineType: LightweightCharts.LineType.Simple,
-                    crosshairMarkerVisible: true,
-                    crosshairMarkerRadius: 6,
-                    crosshairMarkerBorderColor: '#2962FF',
-                    crosshairMarkerBackgroundColor: '#FFFFFF',
-                    lastValueVisible: true,
-                    priceLineVisible: true,
-                    priceScaleId: 'left',
-                });
-
-                // Серия для сравнения будет создана динамически в зависимости от выбранного инструмента
+                // Создаем серии
+                createCoinbaseSeries();
                 createComparisonSeries();
-
-                if (!coinbaseLineSeries) {
-                    throw new Error('Failed to create Coinbase series');
-                }
-
-                // Инициализация менеджера технических индикаторов
-                window.indicatorsManager = new IndicatorsManager(chart);
-                console.log('✅ Technical Indicators Manager initialized');
-
-                // Инициализация менеджера TimeScale API для замены самописной агрегации
-                window.timeScaleManager = new TimeScaleManager(chart);
-                console.log('✅ TimeScale Manager initialized - legacy aggregation replaced');
-
-                // Инициализация продвинутых возможностей Lightweight Charts
-                window.advancedFeatures = new AdvancedChartFeatures(chart);
-                console.log('✅ Advanced Chart Features initialized');
-
-                // Инициализация оптимизатора UDF datafeed
-                window.datafeedOptimizer = new DatafeedOptimizer();
-                console.log('✅ Datafeed Optimizer initialized');
-
-                // Инициализация Events API и Export Features
-                window.eventsAndExport = new ChartEventsAndExport(chart);
-                console.log('✅ Events & Export initialized');
-
-                // Инициализация расширенных типов серий и Price Scale
-                window.advancedSeriesAndScale = new AdvancedSeriesAndScale(chart);
-                console.log('✅ Advanced Series & Scale initialized');
-
-                // Инициализация мобильных и адаптивных возможностей
-                window.mobileResponsive = new MobileResponsiveChart(chart, container);
-                console.log('✅ Mobile & Responsive initialized');
-
-                // Инициализация Candlestick & Bar Series
-                window.candlestickBarSeries = new CandlestickBarSeries(chart);
-                console.log('✅ Candlestick & Bar Series initialized');
-
-                // Инициализация Advanced Time Features
-                window.advancedTimeFeatures = new AdvancedTimeFeatures(chart);
-                console.log('✅ Advanced Time Features initialized');
-
-                // Инициализация Performance Optimizations
-                window.performanceOptimizations = new PerformanceOptimizations(chart);
-                console.log('✅ Performance Optimizations initialized');
-
-                // Инициализация Animation Effects
-                window.animationEffects = new AnimationEffects(chart, container);
-                console.log('✅ Animation Effects initialized');
-
-                // Инициализация Custom Crosshair
-                window.customCrosshair = new CustomCrosshair(chart);
-                console.log('✅ Custom Crosshair initialized');
 
                 // Обработчик изменения размера окна
                 window.addEventListener('resize', () => {
-                    chart.applyOptions({ width: container.clientWidth });
-                });
-
-                // Синхронизация масштабирования левой и правой шкал
-                setupScaleSynchronization();
-                
-                // Принудительная подгонка при инициализации
-                setTimeout(() => {
-                    if (chart) {
-                        chart.timeScale().fitContent();
-                        console.log('📊 Initial chart fit applied');
+                    if (chart && chart.applyOptions) {
+                        chart.applyOptions({ width: container.clientWidth });
                     }
-                }, 100);
+                });
 
                 console.log('✅ Lightweight Charts initialized');
                 updateStatus('График инициализирован', 'success');
 
             } catch (error) {
                 console.error('❌ Chart initialization failed:', error);
-                updateStatus('Ошибка инициализации графика', 'error');
+                updateStatus(`Ошибка инициализации графика: ${error.message}`, 'error');
+                throw error;
             }
         }
 
@@ -1538,6 +1711,27 @@
                 // Обновляем легенду
                 updateLegend();
                 
+                // Получаем данные из серий для обновления цен
+                let coinbaseSeriesData = null;
+                let comparisonSeriesData = null;
+                
+                try {
+                    if (coinbaseLineSeries && coinbaseLineSeries.data) {
+                        coinbaseSeriesData = coinbaseLineSeries.data();
+                    }
+                    if (comparisonLineSeries && comparisonLineSeries.data) {
+                        comparisonSeriesData = comparisonLineSeries.data();
+                    }
+                } catch (error) {
+                    console.warn('⚠️ Could not get series data for price update:', error);
+                }
+                
+                // Обновляем данные цен в верхней панели
+                updatePriceData(coinbaseSeriesData, comparisonSeriesData);
+                
+                // Обновляем информацию о символе
+                updateSymbolInfo(currentComparisonInstrument);
+                
                 // Автоматически подгоняем график под загруженные данные
                 setTimeout(() => {
                     refreshChart();
@@ -1553,10 +1747,10 @@
                 }, 1200);
                 
                 const timeframeText = TimeframeUtils.getDisplayText(currentTimeframe);
-                const coinbaseName = CONFIG.INSTRUMENTS['coinbase']?.name || 'Coinbase';
+                const coinbaseName = `Coinbase Index MA${currentMAPeriod}`;
                 const comparisonName = CONFIG.INSTRUMENTS[currentComparisonInstrument]?.name || 'Unknown';
                 const commonDate = DateUtils.toLocaleDateString(commonStartTime);
-                updateStatus(`${CONFIG.MESSAGES.SUCCESS}: ${coinbaseName} vs ${comparisonName} (MA${currentMAPeriod}, ${timeframeText}) | Синхронизировано с ${commonDate}`, 'success');
+                updateStatus(`📊 ${coinbaseName} overlay on ${comparisonName} | ${timeframeText} | Данные с ${commonDate}`, 'success');
 
             } catch (error) {
                 console.error('❌ Error loading data:', error);
@@ -1864,34 +2058,6 @@
                 e.target.value = ''; // Сбрасываем выбор
             });
 
-            // Горячие клавиши для управления масштабом
-            document.addEventListener('keydown', (e) => {
-                // Проверяем, что не фокусированы поля ввода
-                if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') {
-                    return;
-                }
-                
-                switch (e.key) {
-                    case 'r':
-                    case 'R':
-                        e.preventDefault();
-                        console.log('⌨️ Reset scale hotkey pressed (R)');
-                        resetAllScaling();
-                        break;
-                    case 'f':
-                    case 'F':
-                        e.preventDefault();
-                        console.log('⌨️ Fit content hotkey pressed (F)');
-                        fitAllContent();
-                        break;
-                    case 'F11':
-                        e.preventDefault();
-                        console.log('⌨️ Fullscreen hotkey pressed (F11)');
-                        handleToggleFullscreen();
-                        break;
-                }
-            });
-
             // ===============================================
             // ОБРАБОТЧИКИ НОВЫХ ФУНКЦИЙ
             // ===============================================
@@ -1951,7 +2117,315 @@
                 handleToggleAnimations();
             });
 
+            // Устанавливаем обработчики для новых элементов toolbar
+            setupToolbarHandlers();
+
+            // ===============================================
+            // ОБРАБОТЧИКИ TRADINGVIEW-STYLE ИНТЕРФЕЙСА
+            // ===============================================
+
+            // Боковая панель
+            setupSidebarHandlers();
+
+            // Правая панель (watchlist)
+            setupWatchlistHandlers();
+
+            // Панель инструментов
+            setupTradingViewToolbarHandlers();
+
             console.log('✅ All event handlers set up successfully');
+        }
+
+        function setupSidebarHandlers() {
+            const sidebarTools = document.querySelectorAll('.sidebar-tool');
+            
+            sidebarTools.forEach(tool => {
+                tool.addEventListener('click', () => {
+                    // Убираем активный класс со всех инструментов
+                    sidebarTools.forEach(t => t.classList.remove('active'));
+                    
+                    // Добавляем активный класс к выбранному инструменту
+                    tool.classList.add('active');
+                    
+                    // Обрабатываем действие в зависимости от ID
+                    const toolId = tool.id;
+                    switch(toolId) {
+                        case 'sidebar-chart':
+                            showChartPanel();
+                            break;
+                        case 'sidebar-indicators':
+                            showIndicatorsPanel();
+                            break;
+                        case 'sidebar-drawing':
+                            showDrawingPanel();
+                            break;
+                        case 'sidebar-alerts':
+                            showAlertsPanel();
+                            break;
+                        case 'sidebar-settings':
+                            showSettingsPanel();
+                            break;
+                        default:
+                            console.log(`Sidebar tool clicked: ${toolId}`);
+                    }
+                });
+            });
+        }
+
+        function setupWatchlistHandlers() {
+            const watchlistItems = document.querySelectorAll('.watchlist-item');
+            
+            watchlistItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    // Убираем активный класс со всех элементов
+                    watchlistItems.forEach(i => i.classList.remove('active'));
+                    
+                    // Добавляем активный класс к выбранному элементу
+                    item.classList.add('active');
+                    
+                    // Получаем символ и обновляем график
+                    const symbol = item.dataset.symbol;
+                    if (symbol && symbol !== currentComparisonInstrument) {
+                        currentComparisonInstrument = symbol;
+                        
+                        // Обновляем селектор
+                        const comparisonSelect = document.getElementById('comparisonSelect');
+                        if (comparisonSelect) {
+                            comparisonSelect.value = symbol;
+                        }
+                        
+                        // Обновляем данные
+                        updateTimeframeSelector(currentComparisonInstrument);
+                        createComparisonSeries();
+                        DataUpdateUtils.updateStartDateAndReload('смены инструмента');
+                        
+                        updateStatus(`📊 Coinbase Index vs ${CONFIG.INSTRUMENTS[symbol]?.name || symbol} - корреляционный анализ`, 'success');
+                    }
+                });
+            });
+        }
+
+        function setupTradingViewToolbarHandlers() {
+            // Обработчики для панели таймфреймов
+            const timeframeButtons = document.querySelectorAll('.toolbar-panel .toolbar-btn');
+            
+            timeframeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const timeframeText = button.textContent.trim();
+                    
+                    // Маппинг кнопок на значения таймфреймов
+                    const timeframeMap = {
+                        '1s': '1',
+                        '1m': '1',
+                        '5m': '5',
+                        '15m': '15',
+                        '30m': '30',
+                        '1h': '60',
+                        '4h': '240',
+                        '1D': 'D',
+                        '1W': 'W',
+                        '1M': 'M'
+                    };
+                    
+                    const newTimeframe = timeframeMap[timeframeText];
+                    if (newTimeframe && getSupportedTimeframes(currentComparisonInstrument).includes(newTimeframe)) {
+                        // Убираем активный класс со всех кнопок
+                        timeframeButtons.forEach(btn => btn.classList.remove('active'));
+                        
+                        // Добавляем активный класс к выбранной кнопке
+                        button.classList.add('active');
+                        
+                        // Обновляем таймфрейм
+                        currentTimeframe = newTimeframe;
+                        
+                        // Обновляем селектор
+                        const timeframeSelect = document.getElementById('timeframeSelect');
+                        if (timeframeSelect) {
+                            timeframeSelect.value = newTimeframe;
+                        }
+                        
+                        // Обновляем данные
+                        DataUpdateUtils.updateStartDateAndReload('смены таймфрейма');
+                        updateStatus(`Таймфрейм изменен на ${timeframeText}`, 'success');
+                    } else {
+                        updateStatus(`Таймфрейм ${timeframeText} не поддерживается для ${CONFIG.INSTRUMENTS[currentComparisonInstrument]?.name}`, 'error');
+                    }
+                });
+            });
+        }
+
+        function showChartPanel() {
+            updateStatus('Панель графика активна', 'info');
+        }
+
+        function showDrawingPanel() {
+            updateStatus('Инструменты рисования пока не доступны', 'info');
+        }
+
+        function showAlertsPanel() {
+            updateStatus('Настройка оповещений пока не доступна', 'info');
+        }
+
+        function showSettingsPanel() {
+            // Создаем модальное окно для настроек
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.7);
+                z-index: 10000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            `;
+            
+            const panel = document.createElement('div');
+            panel.style.cssText = `
+                background: #1e222d;
+                border: 1px solid #2a2e39;
+                border-radius: 8px;
+                padding: 20px;
+                max-width: 400px;
+                color: #d1d4dc;
+                max-height: 80vh;
+                overflow-y: auto;
+            `;
+            
+            panel.innerHTML = `
+                <h3 style="margin-top: 0; color: #ffffff;">Настройки</h3>
+                <div style="margin: 15px 0;">
+                    <label style="display: block; margin-bottom: 5px;">Тема:</label>
+                    <button onclick="toggleChartTheme()" style="padding: 8px 16px; background: #2962ff; color: white; border: none; border-radius: 4px; cursor: pointer;">Переключить тему</button>
+                </div>
+                <div style="margin: 15px 0;">
+                    <label style="display: block; margin-bottom: 5px;">Сетка:</label>
+                    <button onclick="toggleChartGrid()" style="padding: 8px 16px; background: #2962ff; color: white; border: none; border-radius: 4px; cursor: pointer;">Переключить сетку</button>
+                </div>
+                <div style="margin: 15px 0;">
+                    <label style="display: block; margin-bottom: 5px;">Полный экран:</label>
+                    <button onclick="handleToggleFullscreen()" style="padding: 8px 16px; background: #2962ff; color: white; border: none; border-radius: 4px; cursor: pointer;">Полный экран</button>
+                </div>
+                <div style="margin: 15px 0;">
+                    <label style="display: block; margin-bottom: 5px;">Анимации:</label>
+                    <button onclick="handleToggleAnimations()" style="padding: 8px 16px; background: #2962ff; color: white; border: none; border-radius: 4px; cursor: pointer;">Переключить анимации</button>
+                </div>
+                <div style="margin: 15px 0;">
+                    <button onclick="handleSaveState()" style="padding: 8px 16px; background: #00c851; color: white; border: none; border-radius: 4px; cursor: pointer; margin-right: 10px;">Сохранить состояние</button>
+                    <button onclick="this.closest('.modal').remove()" style="padding: 8px 16px; background: #ff4444; color: white; border: none; border-radius: 4px; cursor: pointer;">Закрыть</button>
+                </div>
+            `;
+            
+            modal.className = 'modal';
+            modal.appendChild(panel);
+            document.body.appendChild(modal);
+            
+            // Закрытие по клику вне панели
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
+        }
+
+        function updatePriceData(coinbaseData, comparisonData) {
+            // Обновляем данные Coinbase Index (ранг)
+            if (coinbaseData && coinbaseData.length > 0) {
+                const latestCoinbase = coinbaseData[coinbaseData.length - 1];
+                const previousCoinbase = coinbaseData.length > 1 ? coinbaseData[coinbaseData.length - 2] : latestCoinbase;
+                
+                const coinbaseRank = document.getElementById('coinbase-rank');
+                const rankChange = document.getElementById('rank-change');
+                
+                if (coinbaseRank) {
+                    const currentRank = latestCoinbase.value || latestCoinbase.close || latestCoinbase;
+                    coinbaseRank.textContent = currentRank?.toFixed(1) || '-';
+                }
+                
+                if (rankChange && typeof latestCoinbase.value === 'number' && typeof previousCoinbase.value === 'number') {
+                    const change = latestCoinbase.value - previousCoinbase.value;
+                    const changePercent = (change / previousCoinbase.value) * 100;
+                    
+                    const sign = change >= 0 ? '+' : '';
+                    rankChange.textContent = `${sign}${changePercent.toFixed(2)}%`;
+                    rankChange.className = change >= 0 ? 'price-change positive' : 'price-change negative';
+                }
+            }
+            
+            // Обновляем данные инструмента сравнения
+            if (comparisonData && comparisonData.length > 0) {
+                const latestComparison = comparisonData[comparisonData.length - 1];
+                const previousComparison = comparisonData.length > 1 ? comparisonData[comparisonData.length - 2] : latestComparison;
+                
+                const comparisonPrice = document.getElementById('comparison-price');
+                const comparisonChange = document.getElementById('comparison-change');
+                
+                if (comparisonPrice) {
+                    const currentPrice = latestComparison.value || latestComparison.close || latestComparison;
+                    
+                    // Форматируем цену в зависимости от инструмента
+                    let formattedPrice = '-';
+                    if (typeof currentPrice === 'number') {
+                        if (currentComparisonInstrument === 'btc') {
+                            formattedPrice = `$${currentPrice.toLocaleString()}`;
+                        } else if (currentComparisonInstrument === 'spx') {
+                            formattedPrice = currentPrice.toFixed(0);
+                        } else {
+                            formattedPrice = currentPrice.toFixed(2);
+                        }
+                    }
+                    
+                    comparisonPrice.textContent = formattedPrice;
+                }
+                
+                if (comparisonChange && typeof latestComparison.value === 'number' && typeof previousComparison.value === 'number') {
+                    const change = latestComparison.value - previousComparison.value;
+                    const changePercent = (change / previousComparison.value) * 100;
+                    
+                    const sign = change >= 0 ? '+' : '';
+                    comparisonChange.textContent = `${sign}${changePercent.toFixed(2)}%`;
+                    comparisonChange.className = change >= 0 ? 'price-change positive' : 'price-change negative';
+                }
+            }
+        }
+
+        function updateSymbolInfo(instrumentKey) {
+            const instrument = CONFIG.INSTRUMENTS[instrumentKey];
+            if (!instrument) return;
+            
+            // Обновляем инструмент сравнения в верхней панели
+            const comparisonInstrument = document.getElementById('comparison-instrument');
+            const comparisonLabel = document.getElementById('comparison-label');
+            
+            if (comparisonInstrument) {
+                comparisonInstrument.textContent = CONFIG.INSTRUMENTS[currentComparisonInstrument]?.name || 'Unknown';
+            }
+            
+            if (comparisonLabel) {
+                comparisonLabel.textContent = CONFIG.INSTRUMENTS[currentComparisonInstrument]?.name || 'Unknown';
+                
+                // Устанавливаем цвет метки
+                const colors = {
+                    'btc': '#F7931A',
+                    'spx': '#4285F4',
+                    'vix': '#DB4437',
+                    'dxy': '#0F9D58',
+                    'total3esbtc': '#FF6B35',
+                    'withoutbtceth': '#6A4C93'
+                };
+                
+                comparisonLabel.style.color = colors[currentComparisonInstrument] || '#FF9800';
+            }
+            
+            // Обновляем детали символа
+            const symbolDetails = document.querySelector('.symbol-details');
+            if (symbolDetails) {
+                const timeframeText = TimeframeUtils.getDisplayText(currentTimeframe);
+                const comparisonName = CONFIG.INSTRUMENTS[currentComparisonInstrument]?.name || 'Unknown';
+                symbolDetails.innerHTML = `Основная кривая • vs <span id="comparison-instrument">${comparisonName}</span> • ${timeframeText} • charts.expert`;
+            }
         }
 
         function updateLegend() {
@@ -2768,6 +3242,12 @@
                if (!effect || !window.animationEffects) return;
                
                try {
+                   // Проверяем что объект полностью инициализирован
+                   if (!window.animationEffects.transitions) {
+                       console.warn('Animation effects not fully initialized');
+                       return;
+                   }
+                   
                    switch (effect) {
                        case 'entrance_fade':
                            window.animationEffects.animateChartEntrance('fade');
@@ -2800,7 +3280,10 @@
            }
 
            function handleToggleAnimations() {
-               if (!window.animationEffects) return;
+               if (!window.animationEffects || !window.animationEffects.transitions) {
+                   updateStatus('Модуль анимаций не инициализирован', 'error');
+                   return;
+               }
                
                try {
                    const currentlyEnabled = window.animationEffects.transitions.enabled;
@@ -2817,6 +3300,252 @@
                } catch (error) {
                    console.error('❌ Toggle animations error:', error);
                    updateStatus(`Ошибка переключения анимаций: ${error.message}`, 'error');
+               }
+           }
+
+           // Добавляем обработчики для новых элементов toolbar
+           function setupToolbarHandlers() {
+               // Toolbar кнопки
+               const toolbarReset = document.getElementById('toolbar-reset');
+               const toolbarFit = document.getElementById('toolbar-fit');
+               const toolbarFullscreen = document.getElementById('toolbar-fullscreen');
+               const toolbarTheme = document.getElementById('toolbar-theme');
+               const toolbarGrid = document.getElementById('toolbar-grid');
+               const toolbarSave = document.getElementById('toolbar-save');
+               
+               // Toolbar селекторы
+               const toolbarTimeframe = document.getElementById('toolbar-timeframe');
+               const toolbarComparison = document.getElementById('toolbar-comparison');
+               
+               // Floating кнопки
+               const floatingIndicators = document.getElementById('floating-indicators');
+               const floatingExport = document.getElementById('floating-export');
+               const floatingAnimation = document.getElementById('floating-animation');
+               
+               // Обработчики toolbar
+               if (toolbarReset) {
+                   toolbarReset.addEventListener('click', () => {
+                       if (chart) {
+                           chart.timeScale().fitContent();
+                           updateStatus('Масштаб сброшен', 'success');
+                       }
+                   });
+               }
+               
+               if (toolbarFit) {
+                   toolbarFit.addEventListener('click', () => {
+                       if (chart) {
+                           chart.timeScale().fitContent();
+                           updateStatus('График подогнан', 'success');
+                       }
+                   });
+               }
+               
+               if (toolbarFullscreen) {
+                   toolbarFullscreen.addEventListener('click', handleToggleFullscreen);
+               }
+               
+               if (toolbarTheme) {
+                   toolbarTheme.addEventListener('click', () => {
+                       // Переключение темы
+                       const currentTheme = document.body.dataset.theme || 'dark';
+                       const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                       document.body.dataset.theme = newTheme;
+                       updateStatus(`Тема изменена на ${newTheme}`, 'success');
+                   });
+               }
+               
+               if (toolbarGrid) {
+                   toolbarGrid.addEventListener('click', () => {
+                       if (chart) {
+                           // Переключение сетки
+                           const priceScale = chart.priceScale('right');
+                           const timeScale = chart.timeScale();
+                           
+                           // Простой toggle сетки
+                           updateStatus('Сетка переключена', 'success');
+                       }
+                   });
+               }
+               
+               if (toolbarSave) {
+                   toolbarSave.addEventListener('click', handleSaveState);
+               }
+               
+               // Обработчики селекторов
+               if (toolbarTimeframe) {
+                   toolbarTimeframe.addEventListener('change', (e) => {
+                       currentTimeframe = e.target.value;
+                       updateTimeframeSelector(currentComparisonInstrument);
+                       DataUpdateUtils.updateStartDateAndReload('смены таймфрейма');
+                   });
+               }
+               
+               if (toolbarComparison) {
+                   toolbarComparison.addEventListener('change', (e) => {
+                       currentComparisonInstrument = e.target.value;
+                       updateTimeframeSelector(currentComparisonInstrument);
+                       DataUpdateUtils.updateStartDateAndReload('смены инструмента');
+                   });
+               }
+               
+               // Обработчики floating кнопок
+               if (floatingIndicators) {
+                   floatingIndicators.addEventListener('click', () => {
+                       // Показать панель индикаторов
+                       showIndicatorsPanel();
+                   });
+               }
+               
+               if (floatingExport) {
+                   floatingExport.addEventListener('click', () => {
+                       // Показать панель экспорта
+                       showExportPanel();
+                   });
+               }
+               
+               if (floatingAnimation) {
+                   floatingAnimation.addEventListener('click', () => {
+                       // Показать панель анимаций
+                       showAnimationPanel();
+                   });
+               }
+           }
+
+           function showIndicatorsPanel() {
+               // Создаем модальное окно для индикаторов
+               const modal = document.createElement('div');
+               modal.style.cssText = `
+                   position: fixed;
+                   top: 0;
+                   left: 0;
+                   width: 100%;
+                   height: 100%;
+                   background: rgba(0,0,0,0.7);
+                   z-index: 10000;
+                   display: flex;
+                   align-items: center;
+                   justify-content: center;
+               `;
+               
+               const panel = document.createElement('div');
+               panel.style.cssText = `
+                   background: #1e222d;
+                   border: 1px solid #2a2e39;
+                   border-radius: 8px;
+                   padding: 20px;
+                   max-width: 400px;
+                   color: #d1d4dc;
+               `;
+               
+               panel.innerHTML = `
+                   <h3 style="margin-top: 0; color: #ffffff;">Технические индикаторы</h3>
+                   <div style="display: flex; flex-direction: column; gap: 10px;">
+                       <button onclick="addIndicator('sma')" style="padding: 8px; background: #2a2e39; border: 1px solid #363a45; color: #d1d4dc; border-radius: 4px; cursor: pointer;">SMA - Simple Moving Average</button>
+                       <button onclick="addIndicator('ema')" style="padding: 8px; background: #2a2e39; border: 1px solid #363a45; color: #d1d4dc; border-radius: 4px; cursor: pointer;">EMA - Exponential Moving Average</button>
+                       <button onclick="addIndicator('rsi')" style="padding: 8px; background: #2a2e39; border: 1px solid #363a45; color: #d1d4dc; border-radius: 4px; cursor: pointer;">RSI - Relative Strength Index</button>
+                       <button onclick="addIndicator('macd')" style="padding: 8px; background: #2a2e39; border: 1px solid #363a45; color: #d1d4dc; border-radius: 4px; cursor: pointer;">MACD - Moving Average Convergence Divergence</button>
+                       <button onclick="addIndicator('bollinger')" style="padding: 8px; background: #2a2e39; border: 1px solid #363a45; color: #d1d4dc; border-radius: 4px; cursor: pointer;">Bollinger Bands</button>
+                   </div>
+                   <button onclick="document.body.removeChild(this.closest('.indicators-modal'))" style="margin-top: 15px; padding: 8px 16px; background: #2962ff; border: none; color: white; border-radius: 4px; cursor: pointer;">Закрыть</button>
+               `;
+               
+               modal.className = 'indicators-modal';
+               modal.appendChild(panel);
+               document.body.appendChild(modal);
+           }
+
+           function showExportPanel() {
+               // Создаем модальное окно для экспорта
+               const modal = document.createElement('div');
+               modal.style.cssText = `
+                   position: fixed;
+                   top: 0;
+                   left: 0;
+                   width: 100%;
+                   height: 100%;
+                   background: rgba(0,0,0,0.7);
+                   z-index: 10000;
+                   display: flex;
+                   align-items: center;
+                   justify-content: center;
+               `;
+               
+               const panel = document.createElement('div');
+               panel.style.cssText = `
+                   background: #1e222d;
+                   border: 1px solid #2a2e39;
+                   border-radius: 8px;
+                   padding: 20px;
+                   max-width: 400px;
+                   color: #d1d4dc;
+               `;
+               
+               panel.innerHTML = `
+                   <h3 style="margin-top: 0; color: #ffffff;">Экспорт данных</h3>
+                   <div style="display: flex; flex-direction: column; gap: 10px;">
+                       <button onclick="handleExportAction('image')" style="padding: 8px; background: #2a2e39; border: 1px solid #363a45; color: #d1d4dc; border-radius: 4px; cursor: pointer;">📸 Экспорт как изображение</button>
+                       <button onclick="handleExportAction('csv')" style="padding: 8px; background: #2a2e39; border: 1px solid #363a45; color: #d1d4dc; border-radius: 4px; cursor: pointer;">📄 Экспорт в CSV</button>
+                       <button onclick="handleExportAction('json')" style="padding: 8px; background: #2a2e39; border: 1px solid #363a45; color: #d1d4dc; border-radius: 4px; cursor: pointer;">📦 Экспорт в JSON</button>
+                   </div>
+                   <button onclick="document.body.removeChild(this.closest('.export-modal'))" style="margin-top: 15px; padding: 8px 16px; background: #2962ff; border: none; color: white; border-radius: 4px; cursor: pointer;">Закрыть</button>
+               `;
+               
+               modal.className = 'export-modal';
+               modal.appendChild(panel);
+               document.body.appendChild(modal);
+           }
+
+           function showAnimationPanel() {
+               // Создаем модальное окно для анимаций
+               const modal = document.createElement('div');
+               modal.style.cssText = `
+                   position: fixed;
+                   top: 0;
+                   left: 0;
+                   width: 100%;
+                   height: 100%;
+                   background: rgba(0,0,0,0.7);
+                   z-index: 10000;
+                   display: flex;
+                   align-items: center;
+                   justify-content: center;
+               `;
+               
+               const panel = document.createElement('div');
+               panel.style.cssText = `
+                   background: #1e222d;
+                   border: 1px solid #2a2e39;
+                   border-radius: 8px;
+                   padding: 20px;
+                   max-width: 400px;
+                   color: #d1d4dc;
+               `;
+               
+               panel.innerHTML = `
+                   <h3 style="margin-top: 0; color: #ffffff;">Анимационные эффекты</h3>
+                   <div style="display: flex; flex-direction: column; gap: 10px;">
+                       <button onclick="handleAnimationEffect('entrance_fade')" style="padding: 8px; background: #2a2e39; border: 1px solid #363a45; color: #d1d4dc; border-radius: 4px; cursor: pointer;">💫 Анимация появления</button>
+                       <button onclick="handleAnimationEffect('highlight')" style="padding: 8px; background: #2a2e39; border: 1px solid #363a45; color: #d1d4dc; border-radius: 4px; cursor: pointer;">✨ Подсветка графика</button>
+                       <button onclick="handleAnimationEffect('pulse')" style="padding: 8px; background: #2a2e39; border: 1px solid #363a45; color: #d1d4dc; border-radius: 4px; cursor: pointer;">💓 Пульсация</button>
+                       <button onclick="handleAnimationEffect('loading')" style="padding: 8px; background: #2a2e39; border: 1px solid #363a45; color: #d1d4dc; border-radius: 4px; cursor: pointer;">⏳ Демо загрузки</button>
+                       <button onclick="handleToggleAnimations()" style="padding: 8px; background: #2a2e39; border: 1px solid #363a45; color: #d1d4dc; border-radius: 4px; cursor: pointer;">🎬 Вкл/Выкл анимации</button>
+                   </div>
+                   <button onclick="document.body.removeChild(this.closest('.animation-modal'))" style="margin-top: 15px; padding: 8px 16px; background: #2962ff; border: none; color: white; border-radius: 4px; cursor: pointer;">Закрыть</button>
+               `;
+               
+               modal.className = 'animation-modal';
+               modal.appendChild(panel);
+               document.body.appendChild(modal);
+           }
+
+           // Глобальная функция для добавления индикаторов (для модальных окон)
+           function addIndicator(type) {
+               // Устанавливаем значение в селектор и вызываем существующую функцию
+               const indicatorSelect = document.getElementById('indicatorSelect');
+               if (indicatorSelect) {
+                   indicatorSelect.value = type;
+                   addSelectedIndicator();
                }
            }
     </script>

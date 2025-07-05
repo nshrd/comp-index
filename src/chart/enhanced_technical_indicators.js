@@ -406,4 +406,4 @@ if (typeof module !== 'undefined' && module.exports) {
 }
 
 // Создание глобального экземпляра
-const TechnicalIndicators = new EnhancedTechnicalIndicators(); 
+const EnhancedIndicators = new EnhancedTechnicalIndicators(); 

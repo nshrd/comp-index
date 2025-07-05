@@ -1,190 +1,151 @@
 """
-Configuration for CBMA14 Index project
-Cross-platform configuration with environment variables support
+Configuration management for CBMA14 Index
 """
 import os
-import sys
-from pathlib import Path
+from typing import Dict, Any, Optional
 from dataclasses import dataclass
-from typing import Optional
+from pathlib import Path
 from dotenv import load_dotenv
-
-# Добавляем корневую директорию в PYTHONPATH для импортов
-ROOT_DIR = Path(__file__).parent.absolute()
-if str(ROOT_DIR) not in sys.path:
-    sys.path.insert(0, str(ROOT_DIR))
 
 # Загружаем переменные из .env файла
 load_dotenv()
 
 
 @dataclass
-class CoinglassConfig:
-    """Конфигурация для Coinglass API"""
-    api_key: Optional[str] = None
-    base_url: str = "https://open-api-v4.coinglass.com"
-    request_delay: float = 0.5  # секунды между запросами
-    cache_duration: int = 300   # секунды кэширования
+class DatabaseConfig:
+    """Database configuration"""
+    host: str = "localhost"
+    port: int = 5432
+    database: str = "cbma14"
+    username: str = "postgres"
+    password: str = ""
     
-    def __post_init__(self):
-        if not self.api_key:
-            self.api_key = os.getenv('COINGLASS_API_KEY')
-        # Поддержка переменной окружения для базового URL
-        self.base_url = os.getenv('COINGLASS_BASE_URL', self.base_url)
-
 
 @dataclass
-class UDFConfig:
-    """Конфигурация для UDF сервера"""
+class APIConfig:
+    """API configuration"""
     host: str = "0.0.0.0"
-    port: int = 8001  # Исправлен порт на 8001
+    port: int = 8000  # Исправлен порт на 8000
     debug: bool = False
-    data_file: Optional[Path] = None
-    cbma14_symbol: str = "CBMA14"
-    btc_symbol: str = "BTCUSDT"
+    cors_enabled: bool = True
+    cors_origins: Optional[list] = None
     
     def __post_init__(self):
-        # Получаем значения из переменных окружения
-        self.host = os.getenv('UDF_HOST', self.host)
-        self.port = int(os.getenv('UDF_PORT', self.port))
-        self.debug = os.getenv('UDF_DEBUG', 'false').lower() == 'true'
-        
-        # Настраиваем путь к файлу данных
-        data_file_path = os.getenv('DATA_OUTPUT_FILE', 'data/CBMA14.json')
-        if not Path(data_file_path).is_absolute():
-            self.data_file = ROOT_DIR / data_file_path
-        else:
-            self.data_file = Path(data_file_path)
-
-
-@dataclass
-class ChartConfig:
-    """Конфигурация для веб-интерфейса"""
-    title: str = "CBMA14 Index - Cryptocurrency Composite Index"
-    udf_url: Optional[str] = None
-    auto_refresh_interval: int = 60000  # миллисекунды
-    chart_theme: str = "light"
-    
-    # Цвета для графика
-    btc_up_color: str = "#00D4AA"
-    btc_down_color: str = "#FF4976"
-    cbma14_color: str = "#2962FF"
-    background_color: str = "#ffffff"
-    text_color: str = "#1a202c"
-    grid_color: str = "rgba(197, 203, 206, 0.3)"
-    
-    def __post_init__(self):
-        # Получаем URL API из переменных окружения
-        self.udf_url = os.getenv('FRONTEND_API_URL', f'http://localhost:8001')
+        if self.cors_origins is None:
+            self.cors_origins = ["*"]
 
 
 @dataclass
 class BuilderConfig:
-    """Конфигурация для Builder"""
-    input_file: Optional[Path] = None
-    output_file: Optional[Path] = None
+    """Builder configuration"""
+    update_interval: int = 3600  # 1 час
     ma_period: int = 14
-    update_interval: int = 3600  # секунды (1 час)
-    
-    def __post_init__(self):
-        # Получаем значения из переменных окружения
-        self.ma_period = int(os.getenv('BUILDER_MA_PERIOD', self.ma_period))
-        self.update_interval = int(os.getenv('BUILDER_UPDATE_INTERVAL', self.update_interval))
-        
-        # Настраиваем пути к файлам
-        input_path = os.getenv('DATA_INPUT_FILE', 'data/data.json')
-        output_path = os.getenv('DATA_OUTPUT_FILE', 'data/CBMA14.json')
-        
-        if not Path(input_path).is_absolute():
-            self.input_file = ROOT_DIR / input_path
-        else:
-            self.input_file = Path(input_path)
-            
-        if not Path(output_path).is_absolute():
-            self.output_file = ROOT_DIR / output_path
-        else:
-            self.output_file = Path(output_path)
-
-
-@dataclass
-class NginxConfig:
-    """Конфигурация для Nginx"""
-    port: int = 8080
-    ssl_port: int = 8443
-    
-    def __post_init__(self):
-        self.port = int(os.getenv('NGINX_PORT', self.port))
-        self.ssl_port = int(os.getenv('NGINX_SSL_PORT', self.ssl_port))
+    data_input_file: str = "data/data.json"
+    data_output_file: str = "data/CBMA14.json"
 
 
 @dataclass
 class LoggingConfig:
-    """Конфигурация логирования"""
+    """Logging configuration"""
     level: str = "INFO"
-    log_dir: Optional[Path] = None
-    
-    def __post_init__(self):
-        self.level = os.getenv('LOG_LEVEL', self.level)
-        log_dir_path = os.getenv('LOG_DIR', 'logs')
-        
-        if not Path(log_dir_path).is_absolute():
-            self.log_dir = ROOT_DIR / log_dir_path
-        else:
-            self.log_dir = Path(log_dir_path)
-        
-        # Создаем директорию для логов
-        self.log_dir.mkdir(exist_ok=True)
+    format: str = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    log_dir: str = "logs"
 
 
-@dataclass
-class AppConfig:
-    """Основная конфигурация приложения"""
-    coinglass: CoinglassConfig
-    udf: UDFConfig
-    chart: ChartConfig
-    builder: BuilderConfig
-    nginx: NginxConfig
-    logging: LoggingConfig
+class Config:
+    """Main configuration class"""
     
-    # Метаданные проекта
-    project_name: str = "CBMA14 Index"
-    version: str = "2.1.0"
-    environment: str = "production"
-    
-    def __post_init__(self):
-        self.environment = os.getenv('FLASK_ENV', self.environment)
-    
-    @classmethod
-    def load(cls) -> 'AppConfig':
-        """Загрузить конфигурацию"""
-        return cls(
-            coinglass=CoinglassConfig(),
-            udf=UDFConfig(),
-            chart=ChartConfig(),
-            builder=BuilderConfig(),
-            nginx=NginxConfig(),
-            logging=LoggingConfig()
+    def __init__(self):
+        self.load_from_env()
+        
+    def load_from_env(self):
+        """Load configuration from environment variables"""
+        # API Configuration
+        self.api = APIConfig(
+            host=os.getenv('UDF_HOST', '0.0.0.0'),
+            port=int(os.getenv('UDF_PORT', 8000)),
+            debug=os.getenv('UDF_DEBUG', 'false').lower() == 'true',
+            cors_enabled=True,
+            cors_origins=["*"]
         )
-    
+        
+        # Builder Configuration
+        self.builder = BuilderConfig(
+            update_interval=int(os.getenv('BUILDER_UPDATE_INTERVAL', 3600)),
+            ma_period=int(os.getenv('BUILDER_MA_PERIOD', 14)),
+            data_input_file=os.getenv('DATA_INPUT_FILE', 'data/data.json'),
+            data_output_file=os.getenv('DATA_OUTPUT_FILE', 'data/CBMA14.json')
+        )
+        
+        # Logging Configuration
+        self.logging = LoggingConfig(
+            level=os.getenv('LOG_LEVEL', 'INFO'),
+            log_dir=os.getenv('LOG_DIR', 'logs')
+        )
+        
+        # External APIs
+        self.coinglass_api_key = os.getenv('COINGLASS_API_KEY')
+        self.coinglass_base_url = os.getenv('COINGLASS_BASE_URL', 'https://open-api-v4.coinglass.com')
+        
+        # Frontend Configuration
+        self.frontend_api_url = os.getenv('FRONTEND_API_URL', f'http://localhost:8000')
+        
+        # Docker Configuration
+        self.compose_project_name = os.getenv('COMPOSE_PROJECT_NAME', 'cbma14')
+        self.docker_restart_policy = os.getenv('DOCKER_RESTART_POLICY', 'unless-stopped')
+        
     def get_data_dir(self) -> Path:
-        """Получить директорию с данными"""
-        return ROOT_DIR / "data"
+        """Get data directory path"""
+        return Path(__file__).parent / "data"
+        
+    def get_log_dir(self) -> Path:
+        """Get log directory path"""
+        return Path(__file__).parent / self.logging.log_dir
     
-    def get_logs_dir(self) -> Path:
-        """Получить директорию с логами"""
-        return self.logging.log_dir or (ROOT_DIR / "logs")
-    
-    def is_development(self) -> bool:
-        """Проверить, запущено ли в режиме разработки"""
-        return self.environment.lower() in ['development', 'dev', 'debug']
-    
-    def is_production(self) -> bool:
-        """Проверить, запущено ли в продакшене"""
-        return self.environment.lower() in ['production', 'prod']
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert configuration to dictionary"""
+        return {
+            'api': {
+                'host': self.api.host,
+                'port': self.api.port,
+                'debug': self.api.debug,
+                'cors_enabled': self.api.cors_enabled
+            },
+            'builder': {
+                'update_interval': self.builder.update_interval,
+                'ma_period': self.builder.ma_period,
+                'data_input_file': self.builder.data_input_file,
+                'data_output_file': self.builder.data_output_file
+            },
+            'logging': {
+                'level': self.logging.level,
+                'log_dir': self.logging.log_dir
+            },
+            'external_apis': {
+                'coinglass_api_key': bool(self.coinglass_api_key),
+                'coinglass_base_url': self.coinglass_base_url
+            },
+            'frontend': {
+                'api_url': self.frontend_api_url
+            },
+            'docker': {
+                'project_name': self.compose_project_name,
+                'restart_policy': self.docker_restart_policy
+            }
+        }
 
 
-# Глобальная конфигурация
-config = AppConfig.load()
+# Global configuration instance
+config = Config()
 
-# Экспортируем для обратной совместимости
-AppConfig = AppConfig 
+
+def get_config() -> Config:
+    """Get global configuration instance"""
+    return config
+
+
+def reload_config() -> Config:
+    """Reload configuration from environment"""
+    global config
+    config = Config()
+    return config 

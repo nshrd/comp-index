@@ -37,7 +37,7 @@ nano .env  # Добавьте COINGLASS_API_KEY
 ./deploy.sh --nginx      # С веб-интерфейсом
 
 # 4. Открываем в браузере
-# http://localhost:8001 - API сервер
+# http://localhost:8000 - API сервер
 # http://localhost:8080 - Веб-интерфейс (с nginx)
 ```
 
@@ -57,7 +57,7 @@ cp env.example .env
 # Запускаем UDF сервер
 python -m src.udf.server
 
-# Открываем http://localhost:8001
+# Открываем http://localhost:8000
 ```
 
 ## 🏗️ Архитектура
@@ -83,7 +83,7 @@ graph TB
 
 ## 📊 API Endpoints
 
-### UDF Server (порт 8001)
+### UDF Server (порт 8000)
 
 ```bash
 GET /api/status          # Статус сервера
@@ -98,13 +98,13 @@ GET /api/crypto/ohlcv    # Данные криптовалют
 
 ```bash
 # Статус сервера
-curl http://localhost:8001/api/status
+curl http://localhost:8000/api/status
 
 # Данные BTC
-curl "http://localhost:8001/api/crypto/ohlcv?symbol=BTCUSDT&days=30"
+curl "http://localhost:8000/api/crypto/ohlcv?symbol=BTCUSDT&days=30"
 
 # История CBMA14
-curl "http://localhost:8001/api/history?symbol=CBMA14&from=1640995200&to=1672531200"
+curl "http://localhost:8000/api/history?symbol=CBMA14&from=1640995200&to=1672531200"
 ```
 
 ## 🔧 Конфигурация
@@ -126,7 +126,7 @@ BUILDER_UPDATE_INTERVAL=3600
 BUILDER_MA_PERIOD=14
 
 # Frontend
-FRONTEND_API_URL=http://localhost:8001
+FRONTEND_API_URL=http://localhost:8000
 
 # Docker
 COMPOSE_PROJECT_NAME=cbma14
@@ -136,8 +136,8 @@ DOCKER_RESTART_POLICY=unless-stopped
 ### Кроссплатформенная конфигурация
 
 Система автоматически определяет окружение:
-- **Локальная разработка** - `localhost:8001`
-- **VPS** - `http://YOUR_IP:8001`
+- **Локальная разработка** - `localhost:8000`
+- **VPS** - `http://YOUR_IP:8000`
 - **GitHub Pages** - `https://YOUR_IP:8443`
 
 ## 🚀 Развертывание
@@ -212,10 +212,10 @@ docker system prune -f
 curl http://localhost:8000/api/status
 
 # Проверка данных
-curl http://localhost:8001/api/crypto/ohlcv?symbol=BTCUSDT | jq
+curl http://localhost:8000/api/crypto/ohlcv?symbol=BTCUSDT | jq
 
 # Healthcheck
-curl http://localhost:8001/api/status
+curl http://localhost:8000/api/status
 ```
 
 ## 🧪 Тестирование
@@ -272,7 +272,7 @@ index/
 netstat -tlnp | grep :8000
 
 # Изменение порта
-echo "UDF_PORT=8001" >> .env
+echo "UDF_PORT=8000" >> .env
 docker compose up -d
 ```
 

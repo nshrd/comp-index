@@ -152,7 +152,7 @@ check_network_ports() {
     fi
     
     # Проверка порта 8000
-    if curl -s -I http://localhost:8001 >/dev/null 2>&1; then
+    if curl -s -I http://localhost:8000 >/dev/null 2>&1; then
         print_status "Порт 8000 (UDF API) доступен"
     else
         print_error "Порт 8000 (UDF API) недоступен"
@@ -251,14 +251,14 @@ check_api() {
     print_header "API проверка"
     
     echo "Проверка API статуса:"
-    if curl -s http://localhost:8001/api/status 2>/dev/null; then
+    if curl -s http://localhost:8000/api/status 2>/dev/null; then
         print_status "API доступен"
     else
         print_error "API недоступен"
     fi
     
     echo -e "\nПроверка CBMA14 данных:"
-    if curl -s "http://localhost:8001/api/history?symbol=CBMA14&resolution=D&from=0&to=$(date +%s)" 2>/dev/null | head -200; then
+    if curl -s "http://localhost:8000/api/history?symbol=CBMA14&resolution=D&from=0&to=$(date +%s)" 2>/dev/null | head -200; then
         print_status "CBMA14 данные доступны"
     else
         print_error "CBMA14 данные недоступны"
@@ -394,7 +394,7 @@ show_summary() {
         if [ "$api_issues" = true ]; then
             echo "  $priority. Проверить API и данные:"
             echo "     docker compose logs udf"
-            echo "     curl -I http://localhost:8001/api/status"
+            echo "     curl -I http://localhost:8000/api/status"
             ((priority++))
         fi
         
@@ -423,7 +423,7 @@ show_recommendations() {
     echo "   docker stats"
     echo ""
     echo "4. Тестирование подключений:"
-    echo "   curl -I http://localhost:8001/api/status"
+    echo "   curl -I http://localhost:8000/api/status"
     echo "   curl -I https://charts.expert"
     echo "   curl -I http://charts.expert"
     echo ""

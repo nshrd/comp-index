@@ -39,7 +39,7 @@ services:
       timeout: 10s
       retries: 3
 
-  # UDF API сервер (объединенный с веб-сервером)
+  # UDF API сервер
   udf:
     build:
       context: .
@@ -59,11 +59,11 @@ services:
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
     env_file:
       - .env
-    ports:
-      - "${UDF_PORT:-8000}:${UDF_PORT:-8000}"
+    expose:
+      - "8000"
     command: >
       bash -c "
-        echo 'Starting CBMA14 UDF Server (with static files)...'
+        echo 'Starting CBMA14 UDF Server...'
         gunicorn --bind 0.0.0.0:8000 --workers 2 --timeout 60 --access-logfile - --error-logfile - src.udf.server:app
       "
     restart: ${DOCKER_RESTART_POLICY:-unless-stopped}
@@ -74,6 +74,32 @@ services:
       - cbma14_network
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Nginx веб-сервер (production reverse proxy)
+  nginx:
+    image: nginx:1.25-alpine
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./src/chart:/usr/share/nginx/html:ro
+      - ./data:/app/data:ro
+      - ./logs/nginx:/var/log/nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - UDF_HOST=udf
+      - UDF_PORT=8000
+    restart: ${DOCKER_RESTART_POLICY:-unless-stopped}
+    depends_on:
+      udf:
+        condition: service_healthy
+    networks:
+      - cbma14_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
       interval: 30s
       timeout: 10s
       retries: 3

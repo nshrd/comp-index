@@ -11,7 +11,7 @@ class PerformanceOptimizations {
             maxVisibleDataPoints: 1000,
             bufferSize: 100,
             lazyLoading: true,
-            memoryLimit: 50 * 1024 * 1024 // 50MB
+            memoryLimit: 200 * 1024 * 1024 // 200MB
         };
         this.dataCache = new Map();
         this.memoryUsage = 0;
@@ -146,7 +146,7 @@ class PerformanceOptimizations {
             // Периодическая очистка кэша
             setInterval(() => {
                 this.cleanupCache();
-            }, 60000); // каждую минуту
+            }, 300000); // каждые 5 минут (было 60000 - 1 минута)
             
             console.log('✅ Memory management configured');
             
@@ -164,12 +164,12 @@ class PerformanceOptimizations {
                 const memory = window.performance.memory;
                 this.memoryUsage = memory.usedJSHeapSize;
                 
-                // Если превышен лимит памяти, очищаем кэш
+                // Если превышен лимит памяти, очищаем кеш
                 if (this.memoryUsage > this.viewportConfig.memoryLimit) {
-                    console.warn('⚠️ Memory limit exceeded, cleaning cache');
-                    this.forceCleanupCache();
+                    console.warn('⚠️ Memory limit exceeded, cleaning old cache entries');
+                    this.cleanupCache(); // мягкая очистка вместо полной
                 }
-            }, 10000); // каждые 10 секунд
+            }, 60000); // каждые 60 секунд (было 10 секунд)
         }
     }
 
