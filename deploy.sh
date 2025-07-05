@@ -519,6 +519,23 @@ server {
         add_header Content-Type text/plain;
     }
 }
+EOF
+
+    # Активируем сайт
+    if [ -f "/etc/nginx/sites-available/charts.expert" ]; then
+        ln -sf /etc/nginx/sites-available/charts.expert /etc/nginx/sites-enabled/
+        print_status "Nginx конфигурация создана и активирована"
+    fi
+    
+    # Тестируем конфигурацию
+    if nginx -t; then
+        systemctl reload nginx
+        print_status "Nginx перезагружен успешно"
+    else
+        print_error "Ошибка в конфигурации Nginx"
+        return 1
+    fi
+}
 
 # Получение SSL сертификата для charts.expert
 setup_ssl_charts_expert() {
