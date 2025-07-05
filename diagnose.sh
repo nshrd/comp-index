@@ -265,6 +265,9 @@ check_api() {
     fi
 }
 
+# Проверка универсальных модулей (LEGACY - удалено)
+# Common модули были удалены и заменены на встроенные решения
+
 # Проверка nginx конфигурации
 check_nginx_config() {
     print_header "Nginx конфигурация"
@@ -346,6 +349,7 @@ show_summary() {
         local docker_issues=false
         local ssl_issues=false
         local api_issues=false
+        local common_issues=false
         
         for error in "${ERRORS[@]}"; do
             if [[ "$error" == *"порт"* ]] || [[ "$error" == *"недоступен"* ]]; then
@@ -359,6 +363,9 @@ show_summary() {
             fi
             if [[ "$error" == *"API"* ]] || [[ "$error" == *"UDF"* ]]; then
                 api_issues=true
+            fi
+            if [[ "$error" == *"common"* ]] || [[ "$error" == *"модул"* ]] || [[ "$error" == *"импорт"* ]]; then
+                common_issues=true
             fi
         done
         
@@ -390,6 +397,8 @@ show_summary() {
             echo "     curl -I http://localhost:8000/api/status"
             ((priority++))
         fi
+        
+# Legacy common modules check removed
         
         echo "  $priority. Посмотреть логи для диагностики:"
         echo "     docker compose logs -f"

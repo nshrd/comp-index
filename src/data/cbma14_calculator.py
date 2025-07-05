@@ -3,9 +3,15 @@ CBMA14 Calculator - расчет индекса с применением 14-п�
 """
 import json
 import logging
+import sys
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, List, Tuple, Optional
+
+# Добавляем путь к common модулям
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+
+# Используем стандартные библиотеки Python вместо legacy модулей
 
 logger = logging.getLogger(__name__)
 
@@ -32,16 +38,27 @@ class CBMA14Calculator:
         return self._raw_data
     
     def parse_date(self, date_str: str) -> Optional[datetime]:
-        """Парсинг даты из строки"""
-        try:
-            return datetime.strptime(date_str, '%Y-%m-%d')
-        except ValueError:
-            logger.warning(f"Invalid date format: {date_str}")
-            return None
+        """Парсинг даты из строки (встроенная реализация)"""
+        formats = [
+            '%Y-%m-%d',
+            '%Y-%m-%dT%H:%M:%S',
+            '%Y-%m-%dT%H:%M:%SZ',
+            '%Y-%m-%d %H:%M:%S',
+            '%d.%m.%Y',
+            '%d/%m/%Y'
+        ]
+        
+        for fmt in formats:
+            try:
+                return datetime.strptime(date_str, fmt)
+            except ValueError:
+                continue
+        
+        return None
     
     def calculate_moving_average(self, values: List[float], period: int = 14) -> List[float]:
         """
-        Расчет простой скользящей средней
+        Расчет простой скользящей средней (оптимизированная версия)
         
         Args:
             values: Список значений
@@ -50,16 +67,20 @@ class CBMA14Calculator:
         Returns:
             Список значений скользящей средней
         """
-        if len(values) < period:
+        if not values or len(values) < period:
             return []
         
-        ma_values = []
-        for i in range(period - 1, len(values)):
-            window = values[i - period + 1:i + 1]
-            ma_value = sum(window) / len(window)
-            ma_values.append(ma_value)
+        # Оптимизированный алгоритм SMA с скользящим окном
+        result = []
+        window_sum = sum(values[:period])
+        result.append(window_sum / period)
         
-        return ma_values
+        # Скользящее окно для остальных значений
+        for i in range(period, len(values)):
+            window_sum = window_sum - values[i - period] + values[i]
+            result.append(window_sum / period)
+        
+        return result
     
     def process_data(self, use_finance: bool = False, ma_period: int = 14) -> List[Dict]:
         """

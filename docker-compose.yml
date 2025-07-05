@@ -64,7 +64,7 @@ services:
     command: >
       bash -c "
         echo 'Starting UDF Server...'
-        gunicorn --bind 0.0.0.0:8000 --workers 2 --timeout 60 --access-logfile - --error-logfile - src.udf.server:app
+        gunicorn --bind 0.0.0.0:8001 --workers 2 --timeout 60 --access-logfile - --error-logfile - src.udf.server:app
       "
     restart: ${DOCKER_RESTART_POLICY:-unless-stopped}
     depends_on:
@@ -73,7 +73,7 @@ services:
     networks:
       - cbma14_network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:${UDF_PORT:-8000}/api/status"]
+      test: ["CMD", "curl", "-f", "http://localhost:8001/api/status"]
       interval: 30s
       timeout: 10s
       retries: 3

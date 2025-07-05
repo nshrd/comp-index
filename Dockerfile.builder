@@ -24,7 +24,7 @@ COPY src/data/__init__.py src/data/
 COPY src/data/*.py src/data/
 COPY builder/ builder/
 
-# Копируем тесты
+# Копируем тесты (опционально)
 COPY tests/ tests/
 
 # Устанавливаем переменные окружения

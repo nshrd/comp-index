@@ -1,9 +1,16 @@
-import pandas as pd
+"""
+CBMA14 Builder - построение индекса с использованием универсальных модулей
+"""
 import json
 import pathlib
-import time
-import datetime as dt
+import sys
 import logging
+from datetime import datetime
+
+# Добавляем путь к common модулям
+sys.path.insert(0, str(pathlib.Path(__file__).parent.parent))
+
+from src.data.cbma14_calculator import CBMA14Calculator
 
 # Настройка логирования
 logging.basicConfig(
@@ -14,54 +21,73 @@ logger = logging.getLogger(__name__)
 
 SRC = pathlib.Path("/app/data/data.json")
 DST = pathlib.Path("/app/data/CBMA14.json")
-MA = 14
+DEFAULT_MA_PERIOD = 14
 
 def main():
-    """Строит MA14 индекс из data.json и сохраняет в формате UDF"""
+    """Строит CBMA14 индекс используя универсальные модули"""
     try:
-        # Читаем исходные данные
-        logger.info(f"Читаем данные из {SRC}")
-        df = pd.read_json(SRC, orient="index")
-        df.index = pd.to_datetime(df.index)
+        logger.info(f"Строим CBMA14 индекс из {SRC}")
         
-        # Берем колонку Overall (или Finance как fallback)
-        if "Overall" in df.columns:
-            rank = df["Overall"].astype(float)
-            logger.info("Используем колонку Overall")
-        elif "Finance" in df.columns:
-            rank = df["Finance"].astype(float)
-            logger.info("Используем колонку Finance (Overall не найден)")
-        else:
-            logger.error("Не найдены колонки Overall или Finance")
-            return
+        # Проверяем существование исходного файла
+        if not SRC.exists():
+            logger.error(f"Исходный файл не найден: {SRC}")
+            return 1
         
-        # Вычисляем MA14
-        ma14 = rank.rolling(MA, min_periods=1).mean().dropna()
-        logger.info(f"Вычислена MA{MA} для {len(ma14)} точек")
+        # Создаем калькулятор CBMA14
+        calculator = CBMA14Calculator(SRC)
+        
+        # Обрабатываем данные с использованием универсальных модулей
+        logger.info(f"Обрабатываем данные с MA{DEFAULT_MA_PERIOD}...")
+        processed_data = calculator.process_data(use_finance=False, ma_period=DEFAULT_MA_PERIOD)
+        
+        if not processed_data:
+            logger.error("Не удалось обработать данные")
+            return 1
+        
+        logger.info(f"Обработано {len(processed_data)} точек данных")
         
         # Формируем данные в формате UDF
-        t = [int(ts.timestamp()) for ts in ma14.index]  # секунды с эпохи
-        v = ma14.round(2).tolist()
+        times = []
+        values = []
+        
+        for item in processed_data:
+            times.append(item['timestamp'])
+            values.append(item['cbma14'])
         
         # UDF формат для history endpoint
         payload = {
             "s": "ok",
-            "t": t,
-            "o": v,  # open
-            "h": v,  # high
-            "l": v,  # low
-            "c": v,  # close
-            "v": [0] * len(v)  # volume (для индекса = 0)
+            "t": times,
+            "o": values,  # open
+            "h": values,  # high
+            "l": values,  # low
+            "c": values,  # close
+            "v": [0] * len(values)  # volume (для индекса = 0)
         }
         
-        # Сохраняем
+        # Сохраняем результат
         DST.parent.mkdir(parents=True, exist_ok=True)
-        DST.write_text(json.dumps(payload))
-        logger.info(f"Обновлен {DST} в {dt.datetime.utcnow()}")
+        with open(DST, 'w', encoding='utf-8') as f:
+            json.dump(payload, f, indent=2, ensure_ascii=False)
+        
+        logger.info(f"Индекс CBMA14 сохранен в {DST}")
+        
+        # Показываем статистику
+        stats = calculator.get_statistics()
+        logger.info(f"Статистика CBMA14:")
+        logger.info(f"  Всего точек: {stats['total_points']}")
+        logger.info(f"  Период: {stats['date_range']['from']} - {stats['date_range']['to']}")
+        logger.info(f"  Диапазон CBMA14: {stats['cbma14']['min']:.2f} - {stats['cbma14']['max']:.2f}")
+        logger.info(f"  Последнее значение: {stats['cbma14']['latest']:.2f}")
+        
+        logger.info(f"✅ Индекс успешно построен в {datetime.now()}")
+        return 0
         
     except Exception as e:
         logger.error(f"Ошибка при построении индекса: {e}")
-        raise
+        import traceback
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        return 1
 
 if __name__ == "__main__":
-    main() 
+    exit(main()) 

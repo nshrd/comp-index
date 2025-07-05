@@ -14,7 +14,6 @@ function getApiConfig() {
         return {
             UDF_BASE_URL: 'http://localhost:8000',
             API_BASE_URL: 'http://localhost:8000/api',
-            COINGLASS_API_URL: 'https://open-api-v4.coinglass.com/api/spot/price/history',
             UDF_ENDPOINT: '/api', // Прямые API вызовы
             IS_DEVELOPMENT: true,
             CORS_ENABLED: true
@@ -36,8 +35,19 @@ function getApiConfig() {
     // GitHub Pages или другие хостинги
     if (hostname.includes('github.io') || hostname.includes('github.com')) {
         return {
-            UDF_BASE_URL: 'https://64.226.108.150', // VPS без порта для HTTPS
-            API_BASE_URL: 'https://64.226.108.150/api',
+            UDF_BASE_URL: 'https://charts.expert', // Используем наш домен с SSL
+            API_BASE_URL: 'https://charts.expert/api',
+            UDF_ENDPOINT: '/api',
+            IS_DEVELOPMENT: false,
+            CORS_ENABLED: true
+        };
+    }
+    
+    // Основной домен charts.expert
+    if (hostname.includes('charts.expert')) {
+        return {
+            UDF_BASE_URL: `${protocol}//${hostname}`,
+            API_BASE_URL: `${protocol}//${hostname}/api`,
             UDF_ENDPOINT: '/api',
             IS_DEVELOPMENT: false,
             CORS_ENABLED: true
@@ -60,25 +70,7 @@ const CONFIG = {
     ...getApiConfig(),
     
     // Настройки приложения
-    DEFAULT_SYMBOL: 'BTC',
     DEFAULT_MA_PERIOD: 14,
-    AVAILABLE_SYMBOLS: ['BTC', 'ETH', 'SOL', 'BNB', 'ADA', 'XRP'],
-    AVAILABLE_MA_PERIODS: [7, 14, 30],
-    
-    // Настройки UI
-    CHART_HEIGHT: 600,
-    CHART_WIDTH: '100%',
-    REFRESH_INTERVAL: 60000, // 1 минута
-    
-    // Цвета
-    COLORS: {
-        BTC_UP: '#00D4AA',
-        BTC_DOWN: '#FF4976',
-        CBMA14_LINE: '#2962FF',
-        BACKGROUND: '#f8fafc',
-        TEXT: '#1a202c',
-        GRID: 'rgba(197, 203, 206, 0.3)'
-    },
     
     // Сообщения
     MESSAGES: {
@@ -91,10 +83,80 @@ const CONFIG = {
     }
 };
 
-// Экспорт для использования в других файлах
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = CONFIG;
-} else {
+// Конфигурация для множественных инструментов
+const INSTRUMENTS = {
+    coinbase: {
+        name: 'Coinbase Index',
+        dataSource: 'json', // специальный формат JSON
+        path: '/data/data.json',
+        color: '#2962FF',
+        priceScaleId: 'left',
+        seriesType: 'line',
+        supportedTimeframes: ['D', '3D', 'W'] // JSON данные не поддерживают 4H
+    },
+    spx: {
+        name: 'S&P 500',
+        dataSource: 'csv',
+        path: '/data/spx/',
+        color: '#FF6B35',
+        priceScaleId: 'right',
+        seriesType: 'line',
+        supportedTimeframes: ['D', '3D', 'W'] // CSV данные обычно дневные
+    },
+    vix: {
+        name: 'VIX',
+        dataSource: 'csv',
+        path: '/data/vix/',
+        color: '#6A4C93',
+        priceScaleId: 'right',
+        seriesType: 'line',
+        supportedTimeframes: ['D', '3D', 'W'] // CSV данные обычно дневные
+    },
+    dxy: {
+        name: 'DXY',
+        dataSource: 'csv',
+        path: '/data/dxy/',
+        color: '#1B998B',
+        priceScaleId: 'right',
+        seriesType: 'line',
+        supportedTimeframes: ['D', '3D', 'W'] // CSV данные обычно дневные
+    },
+    btc: {
+        name: 'BTC',
+        dataSource: 'api',
+        apiSymbol: 'BTCUSDT',
+        color: '#F7931A',
+        priceScaleId: 'right',
+        seriesType: 'candlestick',
+        supportedTimeframes: ['240', 'D', '3D', 'W'] // API поддерживает все таймфреймы
+    },
+    total3esbtc: {
+        name: 'Total3 - BTC',
+        dataSource: 'csv',
+        path: '/data/total3esbtc/',
+        color: '#F72585',
+        priceScaleId: 'right',
+        seriesType: 'line',
+        supportedTimeframes: ['D', '3D', 'W'] // CSV данные обычно дневные
+    },
+    withoutbtceth: {
+        name: 'Without BTC/ETH',
+        dataSource: 'csv',
+        path: '/data/withoutbtceth/',
+        color: '#4361EE',
+        priceScaleId: 'right',
+        seriesType: 'line',
+        supportedTimeframes: ['D', '3D', 'W'] // CSV данные обычно дневные
+    }
+};
+
+    // Добавляем инструменты в глобальную конфигурацию
+    CONFIG.INSTRUMENTS = INSTRUMENTS;
+    
+    // Экспорт для использования в других файлах
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = CONFIG;
+    } else {
     window.CONFIG = CONFIG;
 }
 

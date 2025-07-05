@@ -1,0 +1,36 @@
+# Пример конфигурации Nginx для test.charts.expert
+
+server {
+    listen 80;
+    listen 443 ssl;
+    server_name test.charts.expert;
+    
+    root /var/www/test.charts.expert;
+    index index.html;
+    
+    # CORS заголовки
+    add_header Access-Control-Allow-Origin "*" always;
+    add_header Access-Control-Allow-Methods "GET, POST, OPTIONS" always;
+    add_header Access-Control-Allow-Headers "Content-Type" always;
+    
+    # Кэширование
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+    
+    location ~* \.(json)$ {
+        expires 1h;
+        add_header Cache-Control "public";
+    }
+    
+    # Основная локация
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+    
+    # Сжатие
+    gzip on;
+    gzip_types text/plain text/css application/json application/javascript text/javascript;
+}
+

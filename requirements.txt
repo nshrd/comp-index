@@ -1,17 +1,21 @@
-# CBMA14 Index - Минимальные зависимости
-# Обновлено после анализа фактического использования
+# CBMA14 Index - Python Dependencies
 
-# Основные библиотеки
-pandas>=2.0.0              # Для обработки данных в builder
-requests>=2.31.0           # Для API запросов (Coinglass)
-python-dotenv>=1.0.0       # Для переменных окружения
-
-# Flask и веб-сервер
-flask>=3.0.0               # UDF API сервер
+# Core web framework
+flask>=3.0.0               # UDF API сервер  
 flask-cors>=4.0.0          # CORS поддержка
+flask-socketio>=5.3.0      # WebSocket поддержка для real-time данных
 gunicorn>=21.2.0           # WSGI сервер для production
 
-# Тестирование
-pytest>=6.0.0             # Для Docker интеграционных тестов
-pytest-cov>=4.0.0         # Покрытие кода тестами
-pytest-mock>=3.10.0       # Моки для тестирования 
+# Data processing
+numpy>=1.24.0              # Математические операции
+
+# HTTP и API
+requests>=2.31.0           # Для API запросов (Coinglass)
+
+# Configuration
+python-dotenv>=1.0.0       # Переменные окружения
+
+# Testing (development)
+pytest>=6.0.0             # Для тестирования
+pytest-cov>=4.0.0         # Покрытие кода
+pytest-mock>=3.10.0       # Моки для тестов 
