@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug - Charts.expert</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #131722;
+            color: #fff;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success { background: #4caf50; }
+        .error { background: #f44336; }
+        .warning { background: #ff9800; }
+        .info { background: #2196f3; }
+        pre {
+            background: #1e1e1e;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        button {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Диагностика Charts.expert</h1>
+        
+        <div class="status info">
+            <h3>Базовая информация</h3>
+            <p>Время: <span id="current-time"></span></p>
+            <p>URL: <span id="current-url"></span></p>
+            <p>User Agent: <span id="user-agent"></span></p>
+        </div>
+
+        <div class="status" id="js-status">
+            <h3>✅ JavaScript работает</h3>
+        </div>
+
+        <div class="status" id="dom-status">
+            <h3>DOM загружен</h3>
+        </div>
+
+        <div class="status" id="network-status">
+            <h3>🔄 Проверка сетевых запросов...</h3>
+        </div>
+
+        <div class="status" id="api-status">
+            <h3>🔄 Проверка API...</h3>
+        </div>
+
+        <div class="status" id="files-status">
+            <h3>🔄 Проверка файлов...</h3>
+        </div>
+
+        <div class="status" id="lightweights-status">
+            <h3>🔄 Проверка TradingView библиотеки...</h3>
+        </div>
+
+        <h3>Действия</h3>
+        <button onclick="window.location.href='/'">🏠 Вернуться на главную</button>
+        <button onclick="testAPI()">🔄 Тест API</button>
+        <button onclick="testFiles()">📁 Тест файлов</button>
+        <button onclick="location.reload()">🔄 Перезагрузить</button>
+
+        <h3>Логи</h3>
+        <pre id="logs"></pre>
+    </div>
+
+    <script>
+        // Логирование
+        function log(message, type = 'info') {
+            const timestamp = new Date().toISOString();
+            const logElement = document.getElementById('logs');
+            const logEntry = `[${timestamp}] [${type.toUpperCase()}] ${message}\n`;
+            logElement.textContent += logEntry;
+            console.log(logEntry);
+        }
+
+        // Базовая информация
+        document.getElementById('current-time').textContent = new Date().toLocaleString();
+        document.getElementById('current-url').textContent = window.location.href;
+        document.getElementById('user-agent').textContent = navigator.userAgent;
+
+        // Проверка DOM
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('dom-status').className = 'status success';
+            document.getElementById('dom-status').innerHTML = '<h3>✅ DOM загружен успешно</h3>';
+            log('DOM загружен', 'success');
+        });
+
+        // Проверка сети
+        async function checkNetwork() {
+            try {
+                const response = await fetch('/health');
+                if (response.ok) {
+                    document.getElementById('network-status').className = 'status success';
+                    document.getElementById('network-status').innerHTML = '<h3>✅ Сеть работает</h3>';
+                    log('Сеть работает', 'success');
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                document.getElementById('network-status').className = 'status error';
+                document.getElementById('network-status').innerHTML = `<h3>❌ Ошибка сети: ${error.message}</h3>`;
+                log(`Ошибка сети: ${error.message}`, 'error');
+            }
+        }
+
+        // Проверка API
+        async function checkAPI() {
+            try {
+                const response = await fetch('/api/status');
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('api-status').className = 'status success';
+                    document.getElementById('api-status').innerHTML = `<h3>✅ API работает</h3><p>Версия: ${data.version}</p><p>Статус: ${data.status}</p>`;
+                    log(`API работает: ${data.version}`, 'success');
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                document.getElementById('api-status').className = 'status error';
+                document.getElementById('api-status').innerHTML = `<h3>❌ API не работает: ${error.message}</h3>`;
+                log(`API ошибка: ${error.message}`, 'error');
+            }
+        }
+
+        // Проверка файлов
+        async function checkFiles() {
+            const files = [
+                'config.js', 'optimized_utils.js', 'enhanced_technical_indicators.js',
+                'indicators_manager.js', 'timescale_integration.js', 'advanced_chart_features.js',
+                'datafeed_optimization.js', 'events_and_export.js', 'advanced_series_and_scale.js',
+                'mobile_responsive.js', 'candlestick_bar_series.js', 'advanced_time_features.js',
+                'performance_optimizations.js', 'animation_effects.js', 'custom_crosshair.js'
+            ];
+
+            let successCount = 0;
+            const errors = [];
+
+            for (const file of files) {
+                try {
+                    const response = await fetch(`/${file}`);
+                    if (response.ok) {
+                        successCount++;
+                        log(`Файл ${file}: OK`, 'success');
+                    } else {
+                        errors.push(`${file}: HTTP ${response.status}`);
+                        log(`Файл ${file}: HTTP ${response.status}`, 'error');
+                    }
+                } catch (error) {
+                    errors.push(`${file}: ${error.message}`);
+                    log(`Файл ${file}: ${error.message}`, 'error');
+                }
+            }
+
+            if (errors.length === 0) {
+                document.getElementById('files-status').className = 'status success';
+                document.getElementById('files-status').innerHTML = `<h3>✅ Все файлы доступны (${successCount}/${files.length})</h3>`;
+            } else {
+                document.getElementById('files-status').className = 'status warning';
+                document.getElementById('files-status').innerHTML = `<h3>⚠️ Проблемы с файлами (${successCount}/${files.length})</h3><p>${errors.join(', ')}</p>`;
+            }
+        }
+
+        // Проверка TradingView
+        async function checkTradingView() {
+            try {
+                const response = await fetch('https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js');
+                if (response.ok) {
+                    document.getElementById('lightweights-status').className = 'status success';
+                    document.getElementById('lightweights-status').innerHTML = '<h3>✅ TradingView CDN доступен</h3>';
+                    log('TradingView CDN доступен', 'success');
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                document.getElementById('lightweights-status').className = 'status error';
+                document.getElementById('lightweights-status').innerHTML = `<h3>❌ TradingView CDN недоступен: ${error.message}</h3>`;
+                log(`TradingView CDN ошибка: ${error.message}`, 'error');
+            }
+        }
+
+        // Функции для кнопок
+        function testAPI() {
+            checkAPI();
+        }
+
+        function testFiles() {
+            checkFiles();
+        }
+
+        // Запуск проверок
+        log('Начинаю диагностику...', 'info');
+        checkNetwork();
+        checkAPI();
+        checkFiles();
+        checkTradingView();
+    </script>
+</body>
+</html> 
