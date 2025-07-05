@@ -45,12 +45,18 @@ class CBMA14Calculator:
             '%Y-%m-%dT%H:%M:%SZ',
             '%Y-%m-%d %H:%M:%S',
             '%d.%m.%Y',
-            '%d/%m/%Y'
+            '%d/%m/%Y',
+            '%a, %b %d, %y',  # Поддержка формата "Fri, Jul 4, 25"
+            '%A, %B %d, %Y',  # Поддержка формата "Friday, July 4, 2025"
         ]
         
         for fmt in formats:
             try:
-                return datetime.strptime(date_str, fmt)
+                parsed = datetime.strptime(date_str, fmt)
+                # Если год меньше 100, добавляем 2000 (для формата %y)
+                if parsed.year < 100:
+                    parsed = parsed.replace(year=parsed.year + 2000)
+                return parsed
             except ValueError:
                 continue
         
@@ -87,7 +93,7 @@ class CBMA14Calculator:
         Обработка данных и расчет CBMA14
         
         Args:
-            use_finance: Использовать Finance или Overall данные
+            use_finance: Использовать Finance или Overall данные (игнорируется в новом формате)
             ma_period: Период для скользящей средней (7, 14, 30)
             
         Returns:
@@ -97,23 +103,41 @@ class CBMA14Calculator:
         if not raw_data:
             return []
         
-        # Сортируем данные по дате
-        sorted_items = []
-        for date_str, values in raw_data.items():
-            parsed_date = self.parse_date(date_str)
-            if parsed_date and (use_finance and 'Finance' in values or not use_finance and 'Overall' in values):
-                value = values.get('Finance' if use_finance else 'Overall', 0)
-                sorted_items.append({
-                    'date': parsed_date,
-                    'date_str': date_str,
-                    'value': float(value),
-                    'timestamp': int(parsed_date.timestamp())
-                })
+        # Проверяем новый формат данных с массивом data
+        if 'data' in raw_data and isinstance(raw_data['data'], list):
+            # Новый формат с массивом data
+            sorted_items = []
+            for item in raw_data['data']:
+                if 'date' in item and 'rank' in item:
+                    parsed_date = self.parse_date(item['date'])
+                    if parsed_date:
+                        sorted_items.append({
+                            'date': parsed_date,
+                            'date_str': item['date'],
+                            'value': float(item['rank']),
+                            'timestamp': int(parsed_date.timestamp())
+                        })
+        else:
+            # Старый формат (словарь с датами как ключами)
+            sorted_items = []
+            for date_str, values in raw_data.items():
+                parsed_date = self.parse_date(date_str)
+                if parsed_date and (use_finance and 'Finance' in values or not use_finance and 'Overall' in values):
+                    value = values.get('Finance' if use_finance else 'Overall', 0)
+                    sorted_items.append({
+                        'date': parsed_date,
+                        'date_str': date_str,
+                        'value': float(value),
+                        'timestamp': int(parsed_date.timestamp())
+                    })
         
         # Сортируем по дате
         sorted_items.sort(key=lambda x: x['date'])
         
-        logger.info(f"Sorted {len(sorted_items)} data points from {sorted_items[0]['date_str'] if sorted_items else 'N/A'} to {sorted_items[-1]['date_str'] if sorted_items else 'N/A'}")
+        if sorted_items:
+            logger.info(f"Sorted {len(sorted_items)} data points from {sorted_items[0]['date_str']} to {sorted_items[-1]['date_str']}")
+        else:
+            logger.info("Sorted 0 data points from N/A to N/A")
         
         # Извлекаем значения для расчета MA
         values = [item['value'] for item in sorted_items]

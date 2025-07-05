@@ -95,6 +95,9 @@ services:
       - UDF_HOST=udf
       - UDF_PORT=${UDF_PORT:-8001}
     restart: ${DOCKER_RESTART_POLICY:-unless-stopped}
+    depends_on:
+      udf:
+        condition: service_healthy
     networks:
       - cbma14_network
     healthcheck:
