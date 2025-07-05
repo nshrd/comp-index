@@ -23,8 +23,8 @@ __pycache__/
 *.zip
 *~
 *$py.class
-/data/
-!/data/data.json
+# /data/
+!# /data/data.json
 # Временные файлы
 # Тестовые файлы
 # Браузер и драйверы
