@@ -483,15 +483,13 @@
                 crosshairMarkerBackgroundColor: '#2962FF',
             });
 
-            comparisonSeries = chart.addLineSeries({
-                color: '#F7931A',
-                lineWidth: 2,
+            comparisonSeries = chart.addCandlestickSeries({
+                upColor: '#26a69a',
+                downColor: '#ef5350',
+                borderVisible: false,
+                wickUpColor: '#26a69a',
+                wickDownColor: '#ef5350',
                 priceScaleId: 'right',
-                title: 'BTC',
-                crosshairMarkerVisible: true,
-                crosshairMarkerRadius: 4,
-                crosshairMarkerBorderColor: '#F7931A',
-                crosshairMarkerBackgroundColor: '#F7931A',
             });
 
             // Обработка изменения размера окна
@@ -585,22 +583,24 @@
                 // Применение скользящей средней
                 const maData = applyMovingAverage(processedData, currentMaPeriod);
                 
-                coinbaseData = maData;
+                // агрегируем если нужно
+                const displayData = aggregateData(maData, currentTimeframe);
+                coinbaseData = displayData;
                 if (coinbaseSeries) {
-                    coinbaseSeries.setData(maData);
+                    coinbaseSeries.setData(displayData);
                     coinbaseSeries.applyOptions({
                         title: 'Coinbase MA' + currentMaPeriod,
                     });
                 }
 
                 // Обновление информации в хедере
-                if (maData.length > 0) {
-                    const latestRank = maData[maData.length - 1].value;
+                if (displayData.length > 0) {
+                    const latestRank = displayData[displayData.length - 1].value;
                     const rankEl = document.getElementById('rank-value');
                     if (rankEl) rankEl.textContent = latestRank.toFixed(0);
                 }
 
-                console.log(`✅ Coinbase data loaded: ${maData.length} points`);
+                console.log(`✅ Coinbase data loaded: ${displayData.length} points`);
                 
             } catch (error) {
                 console.error('Error loading Coinbase data:', error);
@@ -632,22 +632,27 @@
                 if (data.s === 'ok' && data.t && data.c) {
                     const processedData = data.t.map((time, index) => ({
                         time: time,
-                        value: parseFloat(data.c[index])
+                        open: parseFloat(data.o[index]),
+                        high: parseFloat(data.h[index]),
+                        low: parseFloat(data.l[index]),
+                        close: parseFloat(data.c[index])
                     }));
 
-                    comparisonData = processedData;
+                    // агрегируем если нужно
+                    const displayData = aggregateCandleData(processedData, currentTimeframe);
+                    comparisonData = displayData;
                     if (comparisonSeries) {
-                        comparisonSeries.setData(processedData);
+                        comparisonSeries.setData(displayData);
                     }
 
                     // Обновление информации в хедере
-                    if (processedData.length > 0) {
-                        const latestValue = processedData[processedData.length - 1].value;
+                    if (displayData.length > 0) {
+                        const latestValue = displayData[displayData.length - 1].value;
                         const btcEl = document.getElementById('btc-value');
                         if (btcEl) btcEl.textContent = '$' + latestValue.toLocaleString();
                     }
 
-                    console.log(`✅ ${instrument.name} data loaded: ${processedData.length} points`);
+                    console.log(`✅ ${instrument.name} data loaded: ${displayData.length} points`);
                 } else if (data.s === 'no_data') {
                     console.error(`Coinglass API: no data for ${instrument.apiSymbol}`, data);
                     if (comparisonSeries) {
@@ -746,6 +751,45 @@
             document.querySelectorAll('.instrument-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.instrument === currentComparison);
             });
+        }
+
+        // Агрегация дневных данных в 3-дневные или недельные свечи
+        function aggregateData(data, timeframe) {
+            if (!Array.isArray(data) || data.length === 0) return data;
+
+            const stepMap = { '3D': 3, '1W': 7 };
+            const step = stepMap[timeframe] || 1;
+            if (step === 1) return data;
+
+            const result = [];
+            for (let i = 0; i < data.length; i += step) {
+                const slice = data.slice(i, i + step);
+                if (!slice.length) continue;
+                // усредняем значения; можно заменить на close последнего
+                const avg = slice.reduce((sum, p) => sum + p.value, 0) / slice.length;
+                result.push({ time: slice[slice.length - 1].time, value: avg });
+            }
+            return result;
+        }
+
+        // агрегируем свечи
+        function aggregateCandleData(data, timeframe) {
+            const stepMap = { '3D': 3, '1W': 7 };
+            const step = stepMap[timeframe] || 1;
+            if (step === 1) return data;
+            const out = [];
+            for (let i = 0; i < data.length; i += step) {
+                const slice = data.slice(i, i + step);
+                if (!slice.length) continue;
+                out.push({
+                    time: slice[slice.length - 1].time,
+                    open: slice[0].open,
+                    close: slice[slice.length - 1].close,
+                    high: Math.max(...slice.map(s => s.high)),
+                    low: Math.min(...slice.map(s => s.low))
+                });
+            }
+            return out;
         }
     </script>
 </body>
