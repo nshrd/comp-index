@@ -371,6 +371,10 @@
         let comparisonData = [];
         let isLoading = false;
 
+        // Кэш данных и серий для инструментов
+        const DATA_CACHE = {};   // ключ: `${instrument}_${tf}`  → массив свечей/линии
+        const SERIES_CACHE = {}; // ключ: instrument → созданная серия
+
         // Инициализация приложения
         document.addEventListener('DOMContentLoaded', function() {
             console.log('✅ TradingView Lightweight Charts loaded successfully');
@@ -613,16 +617,51 @@
             const instrument = CONFIG.INSTRUMENTS[currentComparison];
             if (!instrument) return;
 
-            try {
-                if (instrument.dataSource === 'api') {
-                    await loadApiData(instrument);
-                } else {
-                    await loadFileData(instrument);
-                }
-            } catch (error) {
-                console.error('Error loading comparison data:', error);
-                throw error;
+            // Скрываем все созданные ранее серии
+            Object.values(SERIES_CACHE).forEach(s => s.applyOptions({ visible: false }));
+
+            // Получаем / создаём серию для текущего инструмента
+            if (!SERIES_CACHE[currentComparison]) {
+                SERIES_CACHE[currentComparison] = instrument.seriesType === 'line'
+                    ? chart.addLineSeries({
+                        color: instrument.color,
+                        priceScaleId: 'right',
+                        lineWidth: 2,
+                    })
+                    : chart.addCandlestickSeries({
+                        upColor: '#26a69a',
+                        downColor: '#ef5350',
+                        borderVisible: false,
+                        wickUpColor: '#26a69a',
+                        wickDownColor: '#ef5350',
+                        priceScaleId: 'right',
+                    });
             }
+            comparisonSeries = SERIES_CACHE[currentComparison];
+            comparisonSeries.applyOptions({ visible: true });
+
+            // Ключ кэша данных учитывает таймфрейм, т.к. при 1D/1W разные массивы
+            const dataKey = `${currentComparison}_${currentTimeframe}`;
+
+            if (DATA_CACHE[dataKey]) {
+                comparisonSeries.setData(DATA_CACHE[dataKey]);
+            } else {
+                try {
+                    if (instrument.dataSource === 'api') {
+                        await loadApiData(instrument);
+                    } else {
+                        await loadFileData(instrument);
+                    }
+                    // Сохраняем копию текущих данных в кэш
+                    DATA_CACHE[dataKey] = comparisonData;
+                } catch (error) {
+                    console.error('Error loading comparison data:', error);
+                    throw error;
+                }
+            }
+
+            // Автомасштаб правой оси под видимую серию
+            if (chart) chart.priceScale('right').fitContent();
         }
 
         async function loadApiData(instrument) {
