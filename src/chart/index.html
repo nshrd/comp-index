@@ -218,16 +218,13 @@
 
         .status {
             position: absolute;
-            bottom: 16px;
-            left: 16px;
-            right: 16px;
-            padding: 8px 12px;
-            background: rgba(30, 34, 45, 0.9);
-            border: 1px solid #2A2E39;
-            border-radius: 6px;
+            top: 12px;
+            right: 18px;
+            padding: 4px 10px;
+            border-radius: 4px;
             font-size: 12px;
-            z-index: 1000;
-            backdrop-filter: blur(8px);
+            font-weight: 600;
+            box-shadow: 0 0 4px rgba(0,0,0,0.2);
         }
 
         .status.success {
@@ -354,8 +351,8 @@
         <!-- Область графика -->
         <div class="chart-area">
             <div class="chart-container" id="chart-container"></div>
-            <div class="status info" id="status">Загрузка данных...</div>
         </div>
+        <div class="status info" id="status">Загрузка данных...</div>
     </div>
 
     <script>
