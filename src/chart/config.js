@@ -132,6 +132,7 @@ const INSTRUMENTS = {
         name: 'Without BTC/ETH',
         dataSource: 'csv',
         path: '/data/withoutbtceth/',
+        filePattern: 'CRYPTOCAP_TOTAL3, {tf}.csv',
         color: '#4361EE',
         priceScaleId: 'right',
         seriesType: 'line',
