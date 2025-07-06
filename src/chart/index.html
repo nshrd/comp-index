@@ -645,6 +645,8 @@
                 crosshairMarkerRadius: 6,
                 crosshairMarkerBorderColor: '#2962FF',
                 crosshairMarkerBackgroundColor: '#2962FF',
+                lastValueVisible:false,
+                priceLineVisible:false,
             });
 
             comparisonSeries = chart.addCandlestickSeries({
@@ -655,7 +657,9 @@
                 wickUpColor:'#26a69a',
                 wickDownColor:'#ef5350',
                 borderVisible:true,
-                wickVisible:true
+                wickVisible:true,
+                lastValueVisible:false,
+                priceLineVisible:false,
             });
 
             // Надёжный ресайз через ResizeObserver (ловит любые изменения контейнера)
@@ -781,10 +785,11 @@
             }
 
             comparisonSeries = instrument.seriesType === 'line'
-                ? chart.addLineSeries({ color: instrument.color, priceScaleId: 'right', lineWidth: 2 })
+                ? chart.addLineSeries({ color: instrument.color, priceScaleId: 'right', lineWidth: 2, lastValueVisible:false, priceLineVisible:false })
                 : chart.addCandlestickSeries({
                     upColor: '#26a69a', downColor: '#ef5350', borderVisible: false,
-                    wickUpColor: '#26a69a', wickDownColor: '#ef5350', priceScaleId: 'right'
+                    wickUpColor: '#26a69a', wickDownColor: '#ef5350', priceScaleId: 'right',
+                    lastValueVisible:false, priceLineVisible:false,
                 });
 
             let dataKey = `${currentComparison}`; // we'll append tfFile later for csv
