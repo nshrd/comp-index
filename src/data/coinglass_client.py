@@ -195,11 +195,7 @@ class CoinglassClient:
         params = {
             "exchange": "Binance",
             "symbol": symbol.upper(),
-            "interval": "1d",
-            "start_time": start_time,
-            "end_time": end_time,
-            # Увеличиваем лимит для данных с 2017
-            "limit": min(days_since_start + 10, 3000)
+            "interval": "1d"
         }
 
         # Используем spot API для получения точных исторических данных
@@ -208,6 +204,11 @@ class CoinglassClient:
             f"Requesting {symbol} data from Coinglass Spot API "
             f"with params: {params}")
         data = self._make_request(endpoint, params)
+
+        # Если данных нет, пробуем без exchange параметра (некоторые рынки так требуют)
+        if not data:
+            params.pop("exchange", None)
+            data = self._make_request(endpoint, params)
 
         logger.info(
             f"API response for {symbol}: type={type(data)}, "
