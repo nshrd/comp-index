@@ -294,6 +294,12 @@
             background: #1E222D;
             color: #FFFFFF;
         }
+
+        /* скрываем интерфейс при fullscreen */
+        .fullscreen-mode .toolbar,
+        .fullscreen-mode .controls {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
@@ -408,6 +414,7 @@
                 btn.addEventListener('click', function() {
                     const timeframe = this.dataset.timeframe;
                     currentTimeframe = timeframe;
+                    updateTimeframeButtons();
                     loadData();
                 });
             });
@@ -744,11 +751,18 @@
                     };
                 });
 
-                const displayData = aggregateCandleData(parsed, currentTimeframe);
+                let displayData = [];
+                if (instrument.seriesType === 'line') {
+                    const lineData = parsed.map(p => ({ time: p.time, value: p.close }));
+                    displayData = aggregateData(lineData, currentTimeframe);
+                    if (comparisonSeries) comparisonSeries.setData(displayData);
+                    console.log(`✅ CSV data loaded for ${instrument.name}: ${displayData.length} points`);
+                } else {
+                    displayData = aggregateCandleData(parsed, currentTimeframe);
+                    if (comparisonSeries) comparisonSeries.setData(displayData);
+                    console.log(`✅ CSV data loaded for ${instrument.name}: ${displayData.length} candles`);
+                }
                 comparisonData = displayData;
-                if (comparisonSeries) comparisonSeries.setData(displayData);
-
-                console.log(`✅ CSV data loaded for ${instrument.name}: ${displayData.length} candles`);
             } catch (e) {
                 console.error(`Error loading CSV for ${instrument.name}:`, e);
             }
@@ -779,6 +793,7 @@
             document.getElementById('ma-period-input').value = currentMaPeriod;
             
             updateComparisonInfo();
+            updateTimeframeButtons();
             loadData();
         }
 
@@ -792,6 +807,13 @@
 
         // Обработчик изменения полноэкранного режима
         document.addEventListener('fullscreenchange', () => {
+            // переключаем CSS-класс, чтобы скрыть/показать UI
+            if (document.fullscreenElement) {
+                document.body.classList.add('fullscreen-mode');
+            } else {
+                document.body.classList.remove('fullscreen-mode');
+            }
+
             if (!chart) return;
             setTimeout(() => {
                 const container = document.getElementById('chart-container');
