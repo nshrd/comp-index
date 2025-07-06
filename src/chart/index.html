@@ -462,6 +462,16 @@
             
             // Загрузка данных
             loadData();
+
+            // Первый ресайз после того как layout стабилизировался
+            requestAnimationFrame(()=>{
+                const cont=document.getElementById('chart-container');
+                if(chart&&cont){
+                    chart.resize(cont.clientWidth,cont.clientHeight);
+                    chart.timeScale().fitContent();
+                    applySpacing && applySpacing();
+                }
+            });
         });
 
         function initializeControls() {
