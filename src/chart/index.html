@@ -336,6 +336,14 @@
         /* гибкая область графика */
         .chart-area{display:flex;flex-direction:column;}
         #chart-container{flex:1 1 auto;}
+
+        /* кнопка-поиск (BTC) */
+        #search-btn::after{
+            content:'\1F50D'; /* Unicode 🔍 */
+            margin-left:4px;
+            font-size:14px;
+        }
+        /* при активном вводе инпут заменяет кнопку */
     </style>
 </head>
 <body>
@@ -448,6 +456,7 @@
                 .then(r=>r.json())
                 .then(resp=>{
                     if(Array.isArray(resp)) supportedSymbols=resp;
+                    else if(Array.isArray(resp?.symbols)) supportedSymbols=resp.symbols.map(s=>s.symbol||s);
                     else if(Array.isArray(resp?.data)) supportedSymbols=resp.data;
                     else if(resp && typeof resp==='object') supportedSymbols=Object.keys(resp);
                     else supportedSymbols=[];
