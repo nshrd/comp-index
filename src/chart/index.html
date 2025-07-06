@@ -450,14 +450,15 @@
                 crosshair: {
                     mode: LightweightCharts.CrosshairMode.Normal,
                 },
-                rightPriceScale: {
+                leftPriceScale: {
+                    visible: true,
                     borderColor: '#2A2E39',
                     scaleMargins: {
                         top: 0.05,
                         bottom: 0.05,
                     },
                 },
-                leftPriceScale: {
+                rightPriceScale: {
                     borderColor: '#2A2E39',
                     scaleMargins: {
                         top: 0.05,
@@ -488,8 +489,7 @@
                 downColor: '#ef5350',
                 borderVisible: false,
                 wickUpColor: '#26a69a',
-                wickDownColor: '#ef5350',
-                priceScaleId: 'right',
+                wickDownColor: '#ef5350'
             });
 
             // Обработка изменения размера окна
