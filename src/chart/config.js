@@ -145,6 +145,39 @@ const INSTRUMENTS = {
         priceScaleId: 'right',
         seriesType: 'candlestick',
         supportedTimeframes: ['D', '3D', 'W']
+    },
+    withoutbtc: {
+        name: 'Without BTC',
+        dataSource: 'csv',
+        path: '/data/withoutbtc/',
+        symbol: 'CRYPTOCAP_TOTAL2',
+        filePattern: 'CRYPTOCAP_TOTAL2, {tf}.csv',
+        color: '#ff7f0e',
+        priceScaleId: 'right',
+        seriesType: 'candlestick',
+        supportedTimeframes: ['D', '3D', 'W']
+    },
+    others: {
+        name: 'Others',
+        dataSource: 'csv',
+        path: '/data/others/',
+        symbol: 'CRYPTOCAP_OTHERS',
+        filePattern: 'CRYPTOCAP_OTHERS, {tf}.csv',
+        color: '#8e44ad',
+        priceScaleId: 'right',
+        seriesType: 'candlestick',
+        supportedTimeframes: ['D', '3D', 'W']
+    },
+    othersbtc: {
+        name: 'Others BTC',
+        dataSource: 'csv',
+        path: '/data/othersbtc/',
+        symbol: 'CRYPTOCAP_OTHERSBTC',
+        filePattern: 'CRYPTOCAP_OTHERSBTC, {tf}.csv',
+        color: '#2ecc71',
+        priceScaleId: 'right',
+        seriesType: 'candlestick',
+        supportedTimeframes: ['D', '3D', 'W']
     }
 };
 
