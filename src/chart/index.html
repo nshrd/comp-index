@@ -520,13 +520,28 @@
                 wickDownColor: '#ef5350'
             });
 
-            // Обработка изменения размера окна
-            window.addEventListener('resize', function() {
-                chart.applyOptions({
-                    width: chartContainer.clientWidth,
-                    height: chartContainer.clientHeight,
+            // Надёжный ресайз через ResizeObserver (ловит любые изменения контейнера)
+            if (window.ResizeObserver) {
+                const ro = new ResizeObserver(entries => {
+                    for (const e of entries) {
+                        const { width, height } = e.contentRect;
+                        if (typeof chart.resize === 'function') {
+                            chart.resize(width, height); // v4+
+                        } else {
+                            chart.applyOptions({ width, height }); // v3 fallback
+                        }
+                    }
                 });
-            });
+                ro.observe(chartContainer);
+            } else {
+                // fallback на событие window.resize для старых браузеров
+                window.addEventListener('resize', () => {
+                    const w = chartContainer.clientWidth;
+                    const h = chartContainer.clientHeight;
+                    if (typeof chart.resize === 'function') chart.resize(w, h);
+                    else chart.applyOptions({ width: w, height: h });
+                });
+            }
 
             console.log('✅ Chart initialized successfully');
         }
