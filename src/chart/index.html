@@ -344,6 +344,9 @@
             font-size:14px;
         }
         /* при активном вводе инпут заменяет кнопку */
+        :root{ --chart-top:112px; }
+        .chart-area{position:absolute;left:0;right:0;bottom:0;top:var(--chart-top);} 
+        .fullscreen-mode .chart-area{top:0;}
     </style>
 </head>
 <body>
@@ -400,7 +403,6 @@
                 <input type="date" id="date-to" class="date-input">
             </div>
 
-            <button class="control-btn" id="update-btn">🔄 Обновить</button>
             <button class="control-btn" id="reset-btn">↩ Сбросить</button>
             <button class="control-btn" id="fullscreen-btn">⛶ Полный экран</button>
         </div>
@@ -430,6 +432,15 @@
 
         // Кэш данных и серий для инструментов
         const DATA_CACHE = {};   // cache raw daily/weekly arrays per instrument+tfFile
+
+        // фиксированное расстояние между свечами для каждого таймфрейма
+        const BAR_SPACING = { '4h': 3, '1D': 4, '3D': 6, '1W': 8 };
+
+        function applySpacing() {
+            if (!chart) return;
+            const spacing = BAR_SPACING[currentTimeframe] || 4;
+            chart.timeScale().setBarSpacing(spacing);
+        }
 
         // Инициализация приложения
         document.addEventListener('DOMContentLoaded', function() {
@@ -526,7 +537,6 @@
                 loadData();
             });
 
-            document.getElementById('update-btn').addEventListener('click', loadData);
             document.getElementById('reset-btn').addEventListener('click', resetChart);
             document.getElementById('fullscreen-btn').addEventListener('click', toggleFullscreen);
 
@@ -626,22 +636,8 @@
             });
 
             // Надёжный ресайз через ResizeObserver (ловит любые изменения контейнера)
-            if (window.ResizeObserver) {
-                const ro = new ResizeObserver(entries => {
-                    for (const e of entries) {
-                        const { width, height } = e.contentRect;
-                        if (typeof chart.resize === 'function') {
-                            chart.resize(width, height); // v4+
-                        } else {
-                            chart.applyOptions({ width, height }); // v3 fallback
-                        }
-                    }
-                });
-                ro.observe(chartContainer);
-            } else {
-                // fallback на событие window.resize для старых браузеров
-                window.addEventListener('resize', recalcChartHeight);
-            }
+            window.addEventListener('resize', calculateHeaderHeight);
+            calculateHeaderHeight();
 
             console.log('✅ Chart initialized successfully');
         }
@@ -798,6 +794,7 @@
             if (chart) {
                 chart.priceScale('right').applyOptions({ autoScale: true });
                 chart.timeScale().fitContent();
+                applySpacing();
             }
         }
 
@@ -953,33 +950,17 @@
             if (typeof chart.resize === 'function') chart.resize(w, h);
             else chart.applyOptions({ width: w, height: h });
             chart.timeScale().fitContent();
-        }
-
-        // Ждём, пока высота стабилизируется (не меняется несколько кадров)
-        function waitStableHeight() {
-            let lastH = -1;
-            let stableFrames = 0;
-            function step() {
-                const cont = document.getElementById('chart-container');
-                if (!cont) return;
-                const h = cont.clientHeight;
-                if (h !== lastH) {
-                    lastH = h;
-                    resizeChartToContainer();
-                    stableFrames = 0;
-                    requestAnimationFrame(step);
-                } else if (stableFrames < 5) { // ждём ещё 5 кадров для уверенности
-                    stableFrames++;
-                    requestAnimationFrame(step);
-                }
-            }
-            requestAnimationFrame(step);
+            applySpacing();
         }
 
         // Обработчик изменения полноэкранного режима
         document.addEventListener('fullscreenchange', () => {
             document.body.classList.toggle('fullscreen-mode', !!document.fullscreenElement);
-            waitStableHeight();
+            if(document.fullscreenElement){
+                document.documentElement.style.setProperty('--chart-top','0px');
+            }else{
+                calculateHeaderHeight();
+            }
         });
 
         const TF_MAP = { '4h': '240', '1D': 'D', '3D': '3D', '1W': 'W' };
@@ -1053,28 +1034,13 @@
             return out;
         }
 
-        // Функция перерасчёта фактического размера графика
-        function recalcChartHeight(){
-            if(!chart) return;
-            const topBar  = document.querySelector('.toolbar');
-            const controls= document.querySelector('.controls');
-            const totalTop = (topBar?.offsetHeight||0) + (controls?.offsetHeight||0);
-            const width  = document.getElementById('chart-container').clientWidth;
-            const height = window.innerHeight - totalTop;
-            if(typeof chart.resize==='function') chart.resize(width,height);
-            else chart.applyOptions({width,height});
-            chart.timeScale().fitContent();
-        }
-
-        // функция ожидания стабильной высоты
-        function waitFinalHeight(){
-            const cont=document.getElementById('chart-container');
-            if(!cont||!chart) return;
-            let last=cont.clientHeight,stable=0;
-            function tick(){
-                const h=cont.clientHeight;
-                if(h!==last){last=h;stable=0;resizeChartToContainer();requestAnimationFrame(tick);}else if(stable<4){stable++;requestAnimationFrame(tick);} }
-            tick();
+        // ---- header height calc ----
+        function calculateHeaderHeight(){
+            const toolbar=document.querySelector('.toolbar');
+            const controls=document.querySelector('.controls');
+            const top=(toolbar?.offsetHeight||0)+(controls?.offsetHeight||0);
+            document.documentElement.style.setProperty('--chart-top', top+'px');
+            if(chart){ const cont=document.getElementById('chart-container'); chart.resize(cont.clientWidth, cont.clientHeight); chart.timeScale().fitContent(); applySpacing(); }
         }
     </script>
 </body>
