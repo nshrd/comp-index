@@ -431,6 +431,7 @@
         let currentComparison = 'btc';
         let currentTimeframe = '1W';
         let currentMaPeriod = 14;
+        let coinbaseRaw = [];   // сырые rank значения без MA/агрегации
 
         // Состояние данных
         let coinbaseData = [];
@@ -551,7 +552,7 @@
             // Обработчики событий
             document.getElementById('ma-period-input').addEventListener('change', function() {
                 currentMaPeriod = Math.max(1, parseInt(this.value) || 30);
-                loadData();
+                updateCoinbaseMA();
             });
 
             document.getElementById('reset-btn').addEventListener('click', resetChart);
@@ -750,27 +751,19 @@
                 // Сортировка по времени
                 processedData.sort((a, b) => a.time - b.time);
 
-                // Применение скользящей средней
-                const maData = applyMovingAverage(processedData, currentMaPeriod);
-                
-                // агрегируем если нужно
-                const displayData = aggregateData(maData, currentTimeframe);
-                coinbaseData = displayData;
-                if (coinbaseSeries) {
-                    coinbaseSeries.setData(displayData);
-                    coinbaseSeries.applyOptions({
-                        title: 'Coinbase MA' + currentMaPeriod,
-                    });
-                }
+                // сохраняем сырые данные для быстрого пересчёта MA
+                coinbaseRaw = processedData;
+
+                updateCoinbaseMA();
 
                 // Обновление информации в хедере
-                if (displayData.length > 0) {
-                    const latestRank = displayData[displayData.length - 1].value;
+                if (processedData.length > 0) {
+                    const latestRank = processedData[processedData.length - 1].value;
                     const rankEl = document.getElementById('rank-value');
                     if (rankEl) rankEl.textContent = latestRank.toFixed(0);
                 }
 
-                console.log(`✅ Coinbase data loaded: ${displayData.length} points`);
+                console.log(`✅ Coinbase data loaded: ${processedData.length} points`);
                 
             } catch (error) {
                 console.error('Error loading Coinbase data:', error);
@@ -1049,6 +1042,20 @@
                 });
             }
             return out;
+        }
+
+        // Обновляет MA и пересчитывает агрегированную серию без повторных запросов
+        function updateCoinbaseMA(){
+            if(!coinbaseRaw.length) return; // данные ещё не загружены
+
+            const maData = applyMovingAverage(coinbaseRaw, currentMaPeriod);
+            const displayData = aggregateData(maData, currentTimeframe);
+            coinbaseData = displayData;
+
+            if(coinbaseSeries){
+                coinbaseSeries.setData(displayData);
+                coinbaseSeries.applyOptions({ title: 'Coinbase MA'+currentMaPeriod });
+            }
         }
 
         // ---- header height calc ----
