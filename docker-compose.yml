@@ -10,7 +10,6 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
       - PYTHONPATH=/app
-      - COINGLASS_API_KEY=${COINGLASS_API_KEY}
       - BUILDER_UPDATE_INTERVAL=${BUILDER_UPDATE_INTERVAL:-3600}
       - BUILDER_MA_PERIOD=${BUILDER_MA_PERIOD:-14}
       - DATA_INPUT_FILE=${DATA_INPUT_FILE:-data/data.json}
@@ -54,7 +53,6 @@ services:
       - UDF_HOST=${UDF_HOST:-0.0.0.0}
       - UDF_PORT=${UDF_PORT:-8000}
       - UDF_DEBUG=${UDF_DEBUG:-false}
-      - COINGLASS_API_KEY=${COINGLASS_API_KEY}
       - DATA_OUTPUT_FILE=${DATA_OUTPUT_FILE:-data/CBMA.json}
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
     env_file:
