@@ -1,13 +1,13 @@
-# 📊 CBMA14 Index - Cryptocurrency Composite Index
+# 📊 CBMA Index - Cryptocurrency Composite Index
 
-![CBMA14](https://img.shields.io/badge/CBMA14-Crypto%20Index-2962FF.svg)
+![CBMA](https://img.shields.io/badge/CBMA-Crypto%20Index-2962FF.svg)
 ![License](https://img.shields.io/badge/license-Proprietary-red.svg)
 ![Docker](https://img.shields.io/badge/docker-ready-blue.svg)
 ![Cross Platform](https://img.shields.io/badge/cross--platform-✓-success.svg)
 
 ## 🚀 О проекте
 
-**CBMA14** (Coinbase Composite Moving Average 14-day Index) - это композитный индекс криптовалютного рынка, основанный на 14-дневной скользящей средней рейтингов криптовалют с биржи Coinbase.
+**CBMA** (Coinbase Composite Moving Average 14-day Index) - это композитный индекс криптовалютного рынка, основанный на 14-дневной скользящей средней рейтингов криптовалют с биржи Coinbase.
 
 ### ✨ Особенности
 
@@ -65,7 +65,7 @@ python -m src.udf.server
 ```mermaid
 graph TB
     A[Coinglass API] --> B[Builder Service]
-    B --> C[CBMA14.json]
+    B --> C[CBMA.json]
     C --> D[UDF Server]
     D --> E[Web Interface]
     F[Nginx] --> E
@@ -76,7 +76,7 @@ graph TB
 
 ### Компоненты
 
-- **Builder Service** - Генерирует CBMA14 индекс из исходных данных
+- **Builder Service** - Генерирует CBMA индекс из исходных данных
 - **UDF Server** - Flask API сервер с UDF endpoints
 - **Web Interface** - Интерактивный frontend с графиками
 - **Nginx** - Веб-сервер и reverse proxy (опционально)
@@ -103,8 +103,8 @@ curl http://localhost:8000/api/status
 # Данные BTC
 curl "http://localhost:8000/api/crypto/ohlcv?symbol=BTCUSDT&days=30"
 
-# История CBMA14
-curl "http://localhost:8000/api/history?symbol=CBMA14&from=1640995200&to=1672531200"
+# История CBMA
+curl "http://localhost:8000/api/history?symbol=CBMA&from=1640995200&to=1672531200"
 ```
 
 ## 🔧 Конфигурация
@@ -250,7 +250,7 @@ index/
 │   │   └── config.js        # Frontend конфигурация
 │   ├── data/
 │   │   ├── coinglass_client.py    # API клиент
-│   │   ├── cbma14_provider.py     # CBMA14 провайдер
+│   │   ├── cbma14_provider.py     # CBMA провайдер
 │   │   └── cbma14_calculator.py   # Калькулятор индекса
 │   └── udf/
 │       └── server.py        # UDF API сервер

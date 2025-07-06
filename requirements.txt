@@ -1,4 +1,4 @@
-# CBMA14 Index - Python Dependencies
+# CBMA Index - Python Dependencies
 
 # Core web framework
 flask>=3.0.0               # UDF API сервер  

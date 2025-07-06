@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# CBMA14 Index - Production Deployment Script
+# CBMA Index - Production Deployment Script
 # Скрипт для быстрого развертывания на VPS
 
 set -e
@@ -159,7 +159,7 @@ clone_repository() {
     
     # Определяем целевую директорию
     if [ -z "$INSTALL_DIR" ]; then
-        read -p "Введите путь для установки (по умолчанию: /opt/$PROJECT_NAME): " USER_INSTALL_DIR
+        read -r -p "Введите путь для установки (по умолчанию: /opt/$PROJECT_NAME): " USER_INSTALL_DIR
         INSTALL_DIR="${USER_INSTALL_DIR:-/opt/$PROJECT_NAME}"
     fi
     
@@ -189,7 +189,7 @@ create_config() {
     if [ ! -f ".env" ]; then
         print_status "Создание .env файла..."
         cat > .env << EOF
-# CBMA14 Index - Environment Variables
+# CBMA Index - Environment Variables
 DOMAIN=your-domain.com
 COINGLASS_API_KEY=your_coinglass_api_key_here
 UDF_HOST=0.0.0.0
@@ -257,8 +257,8 @@ setup_ssl() {
     read -p "Настроить SSL сертификат? (y/n): " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        read -p "Введите ваш домен: " DOMAIN
-        read -p "Введите ваш email: " EMAIL
+        read -r -p "Введите ваш домен: " DOMAIN
+        read -r -p "Введите ваш email: " EMAIL
         
         if [ -z "$DOMAIN" ] || [ -z "$EMAIL" ]; then
             print_error "Домен и email не могут быть пустыми"
@@ -268,8 +268,8 @@ setup_ssl() {
         # Получение SSL сертификата
         print_status "Получение SSL сертификата для $DOMAIN..."
         docker run -it --rm \
-            -v cbma14_certbot_data:/etc/letsencrypt \
-            -v cbma14_certbot_www:/var/www/certbot \
+            -v cbma_certbot_data:/etc/letsencrypt \
+            -v cbma_certbot_www:/var/www/certbot \
             certbot/certbot certonly \
             --webroot \
             --webroot-path=/var/www/certbot \
@@ -293,7 +293,7 @@ create_maintenance_scripts() {
     print_header "Создание скриптов обслуживания"
     
     # Скрипт бэкапа
-    cat > /usr/local/bin/cbma14-backup << EOF
+    cat > /usr/local/bin/cbma-backup << EOF
 #!/bin/bash
 DATE=\$(date +%Y%m%d_%H%M%S)
 SCRIPT_DIR="\$(cd "\$(dirname "\${BASH_SOURCE[0]}")" && pwd)"
@@ -301,8 +301,8 @@ SCRIPT_DIR="\$(cd "\$(dirname "\${BASH_SOURCE[0]}")" && pwd)"
 # Ищем директорию проекта
 if [ -f "/opt/cbma/docker-compose.yml" ]; then
     INSTALL_DIR="/opt/cbma"
-elif [ -f "/opt/cbma14/docker-compose.yml" ]; then
-    INSTALL_DIR="/opt/cbma14"
+elif [ -f "/opt/cbma/docker-compose.yml" ]; then
+    INSTALL_DIR="/opt/cbma"
 else
     # Ищем в стандартных местах
     for dir in /opt/*/docker-compose.yml; do
@@ -337,13 +337,13 @@ echo "Backup directory: \$BACKUP_DIR"
 EOF
     
     # Скрипт обновления
-    cat > /usr/local/bin/cbma14-update << EOF
+    cat > /usr/local/bin/cbma-update << EOF
 #!/bin/bash
 # Автоопределение директории проекта
 if [ -f "/opt/cbma/docker-compose.yml" ]; then
     INSTALL_DIR="/opt/cbma"
-elif [ -f "/opt/cbma14/docker-compose.yml" ]; then
-    INSTALL_DIR="/opt/cbma14"
+elif [ -f "/opt/cbma/docker-compose.yml" ]; then
+    INSTALL_DIR="/opt/cbma"
 else
     # Ищем в стандартных местах
     for dir in /opt/*/docker-compose.yml; do
@@ -387,13 +387,13 @@ echo "Update completed: \$(date)"
 EOF
     
     # Скрипт мониторинга
-    cat > /usr/local/bin/cbma14-status << EOF
+    cat > /usr/local/bin/cbma-status << EOF
 #!/bin/bash
 # Автоопределение директории проекта
 if [ -f "/opt/cbma/docker-compose.yml" ]; then
     INSTALL_DIR="/opt/cbma"
-elif [ -f "/opt/cbma14/docker-compose.yml" ]; then
-    INSTALL_DIR="/opt/cbma14"
+elif [ -f "/opt/cbma/docker-compose.yml" ]; then
+    INSTALL_DIR="/opt/cbma"
 else
     # Ищем в стандартных местах
     for dir in /opt/*/docker-compose.yml; do
@@ -421,7 +421,7 @@ else
     exit 1
 fi
 
-echo "=== CBMA14 Index Status ==="
+echo "=== CBMA Index Status ==="
 echo "Project directory: \$INSTALL_DIR"
 \$DOCKER_COMPOSE_CMD -f docker-compose.yml ps
 echo ""
@@ -433,16 +433,16 @@ echo "=== Logs (last 20 lines) ==="
 EOF
     
     # Права выполнения
-    chmod +x /usr/local/bin/cbma14-*
+    chmod +x /usr/local/bin/cbma-*
     
     # Добавление в cron
-    (crontab -l 2>/dev/null; echo "0 2 * * * /usr/local/bin/cbma14-backup") | crontab -
-    (crontab -l 2>/dev/null; echo "0 3 * * 0 /usr/local/bin/cbma14-update") | crontab -
+    (crontab -l 2>/dev/null; echo "0 2 * * * /usr/local/bin/cbma-backup") | crontab -
+    (crontab -l 2>/dev/null; echo "0 3 * * 0 /usr/local/bin/cbma-update") | crontab -
     
     print_status "Скрипты обслуживания созданы:"
-    print_status "  - cbma14-backup  (бэкап)"
-    print_status "  - cbma14-update  (обновление)"
-    print_status "  - cbma14-status  (статус)"
+    print_status "  - cbma-backup  (бэкап)"
+    print_status "  - cbma-update  (обновление)"
+    print_status "  - cbma-status  (статус)"
 }
 
 # Проверка Docker сервисов
@@ -479,7 +479,7 @@ setup_ssl_docker() {
     read -p "Настроить SSL сертификат для charts.expert? (y/n): " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        read -p "Введите ваш email: " EMAIL
+        read -r -p "Введите ваш email: " EMAIL
         
         if [ -z "$EMAIL" ]; then
             print_error "Email не может быть пустым"
@@ -491,18 +491,16 @@ setup_ssl_docker() {
         
         # Получение сертификата через Docker
         print_status "Получение SSL сертификата для charts.expert..."
-        docker run --rm \
-            -v $(pwd)/ssl:/etc/letsencrypt \
-            -v $(pwd)/src/chart:/var/www/certbot \
+        if docker run --rm \
+            -v "$(pwd)/ssl:/etc/letsencrypt" \
+            -v "$(pwd)/src/chart:/var/www/certbot" \
             -p 80:80 \
             certbot/certbot certonly \
             --standalone \
             --email "$EMAIL" \
             --agree-tos \
             --no-eff-email \
-            -d charts.expert -d www.charts.expert
-        
-        if [ $? -eq 0 ]; then
+            -d charts.expert -d www.charts.expert; then
             # Обновляем nginx конфигурацию для SSL
             print_status "Обновление nginx конфигурации для SSL..."
             
@@ -528,7 +526,7 @@ show_deployment_info() {
     
     IP=$(curl -s ifconfig.me 2>/dev/null || echo "YOUR_SERVER_IP")
     
-    echo -e "${GREEN}✅ CBMA14 Index успешно развернут на charts.expert!${NC}"
+    echo -e "${GREEN}✅ CBMA Index успешно развернут на charts.expert!${NC}"
     echo ""
     echo "🌐 Ваш сайт доступен по адресу:"
     echo "   📊 Основной: https://charts.expert"
@@ -540,9 +538,9 @@ show_deployment_info() {
     echo "   docker compose logs                         # Логи всех сервисов"
     echo "   docker compose logs nginx                   # Логи Nginx"
     echo "   docker compose logs udf                     # Логи API"
-    echo "   cbma14-status                               # Быстрый статус"
-    echo "   cbma14-backup                               # Бэкап"
-    echo "   cbma14-update                               # Обновление"
+    echo "   cbma-status                               # Быстрый статус"
+    echo "   cbma-backup                               # Бэкап"
+    echo "   cbma-update                               # Обновление"
     echo ""
     echo "🐳 Docker сервисы:"
     echo "   📊 Frontend: Nginx контейнер (порт 80/443)"
@@ -550,8 +548,8 @@ show_deployment_info() {
     echo "   🔧 Builder: Генератор индекса"
     echo ""
     echo "📁 Файлы проекта:"
-    echo "   🗂️  Исходники: ${INSTALL_DIR:-\$(pwd)}/src/chart/"
-    echo "   ⚙️  Nginx конфиг: ${INSTALL_DIR:-\$(pwd)}/nginx/nginx.conf"
+    echo "   🗂️  Исходники: ${INSTALL_DIR:-$(pwd)}/src/chart/"
+    echo "   ⚙️  Nginx конфиг: ${INSTALL_DIR:-$(pwd)}/nginx/nginx.conf"
     echo "   📋 Docker логи: docker compose logs"
     echo ""
     echo "🔒 SSL сертификат:"
@@ -567,30 +565,30 @@ show_deployment_info() {
     echo "   🌐 Nginx проксирует к UDF API"
     echo ""
     echo "🔄 Обновление:"
-    echo "   1. git pull origin main (в ${INSTALL_DIR:-\$(pwd)}/)"
+    echo "   1. git pull origin main (в ${INSTALL_DIR:-$(pwd)}/)"
     echo "   2. bash deploy.sh update"
     echo "   3. Проверьте: https://charts.expert/"
 }
 
 # Основная функция
 main() {
-    print_header "CBMA14 Index - Docker Deployment for charts.expert"
+    print_header "CBMA Index - Docker Deployment for charts.expert"
     
     # Проверка аргументов
     case "${1:-}" in
         "ssl")
-            cd "${INSTALL_DIR:-\$(pwd)}" 2>/dev/null || cd "${INSTALL_DIR:-\$(pwd)}"
+            cd "${INSTALL_DIR:-$(pwd)}" 2>/dev/null || cd "${INSTALL_DIR:-$(pwd)}"
             setup_ssl_docker
             exit 0
             ;;
         "check")
-            cd "${INSTALL_DIR:-\$(pwd)}"
+            cd "${INSTALL_DIR:-$(pwd)}"
             check_docker_services
             exit 0
             ;;
         "update")
-            cd "${INSTALL_DIR:-\$(pwd)}"
-            /usr/local/bin/cbma14-update 2>/dev/null || {
+            cd "${INSTALL_DIR:-$(pwd)}"
+            /usr/local/bin/cbma-update 2>/dev/null || {
                 print_status "Обновление кода..."
                 git pull origin main
                 print_status "Перезапуск Docker контейнеров..."
@@ -601,10 +599,10 @@ main() {
             exit 0
             ;;
         "status")
-            cd "${INSTALL_DIR:-\$(pwd)}"
-            /usr/local/bin/cbma14-status 2>/dev/null || {
-                echo "=== CBMA14 Docker Status ==="
-                echo "Project directory: \$(pwd)"
+            cd "${INSTALL_DIR:-$(pwd)}"
+            /usr/local/bin/cbma-status 2>/dev/null || {
+                echo "=== CBMA Docker Status ==="
+                echo "Project directory: $(pwd)"
                 if command -v docker &> /dev/null; then
                     docker compose ps 2>/dev/null || echo "Docker not running"
                     echo ""
@@ -614,18 +612,18 @@ main() {
                     echo "Docker not available"
                 fi
                 echo ""
-                echo "Site check: \$(curl -s -o /dev/null -w "%{http_code}" http://localhost/ || echo "N/A")"
+                echo "Site check: $(curl -s -o /dev/null -w '%{http_code}' http://localhost/ || echo 'N/A')"
             }
             exit 0
             ;;
         "backup")
-            /usr/local/bin/cbma14-backup 2>/dev/null || {
-                DATE=\$(date +%Y%m%d_%H%M%S)
-                PROJECT_NAME="\$(basename "\$(pwd)")"
-                BACKUP_DIR="/opt/backups/\$PROJECT_NAME"
-                mkdir -p \$BACKUP_DIR
-                tar -czf \$BACKUP_DIR/\${PROJECT_NAME}_docker_\$DATE.tar.gz . --exclude=logs --exclude=.git 2>/dev/null
-                print_status "Backup completed: \${PROJECT_NAME}_docker_\$DATE.tar.gz"
+            /usr/local/bin/cbma-backup 2>/dev/null || {
+                DATE=$(date +%Y%m%d_%H%M%S)
+                PROJECT_NAME="$(basename "$(pwd)")"
+                BACKUP_DIR="/opt/backups/$PROJECT_NAME"
+                mkdir -p "$BACKUP_DIR"
+                tar -czf "$BACKUP_DIR/${PROJECT_NAME}_docker_$DATE.tar.gz" . --exclude=logs --exclude=.git 2>/dev/null
+                print_status "Backup completed: ${PROJECT_NAME}_docker_$DATE.tar.gz"
             }
             exit 0
             ;;

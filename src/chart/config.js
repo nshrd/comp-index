@@ -1,5 +1,5 @@
 /**
- * CBMA14 Frontend Configuration
+ * CBMA Frontend Configuration
  * Automatically detects environment and sets appropriate API endpoints
  */
 

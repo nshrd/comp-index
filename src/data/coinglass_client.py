@@ -14,50 +14,54 @@ logger = logging.getLogger(__name__)
 
 class CoinglassClient:
     """Клиент для получения данных BTC через Coinglass API"""
-    
+
     def __init__(self, api_key: Optional[str] = None):
         self.api_key = api_key or config.coinglass_api_key or ''
         self.base_url = config.coinglass_base_url
         self.request_delay = 0.5  # секунды между запросами
-        
+
         self.headers = {
             "accept": "application/json"
         }
-        
+
         # Добавляем ключ только если он есть
         if self.api_key:
             self.headers["CG-API-KEY"] = self.api_key
-        
+
         # Rate limiting
         self.last_request_time = 0
-        
+
         # Кэш для списка доступных символов
         self._symbols_cache = {
             "data": None,
             "last_update": 0,
             "cache_duration": 3600  # 1 час
         }
-        
+
     def _wait_for_rate_limit(self):
         """Обеспечить соблюдение rate limit"""
         current_time = time.time()
         time_since_last = current_time - self.last_request_time
-        
+
         if time_since_last < self.request_delay:
             sleep_time = self.request_delay - time_since_last
             logger.debug(f"Rate limiting: sleeping {sleep_time:.2f}s")
             time.sleep(sleep_time)
-            
-    def _make_request(self, endpoint: str, params: Optional[Dict] = None) -> Optional[Any]:
+
+    def _make_request(
+            self,
+            endpoint: str,
+            params: Optional[Dict] = None) -> Optional[Any]:
         """Выполнить запрос к API"""
         self._wait_for_rate_limit()
-        
+
         url = f"{self.base_url}{endpoint}"
-        
+
         try:
-            response = requests.get(url, headers=self.headers, params=params, timeout=30)
+            response = requests.get(url, headers=self.headers,
+                                    params=params, timeout=30)
             self.last_request_time = time.time()
-            
+
             if response.status_code == 200:
                 data = response.json()
                 # Проверяем разные форматы ответа
@@ -73,24 +77,24 @@ class CoinglassClient:
             else:
                 logger.error(f"HTTP {response.status_code}: {response.text}")
                 return None
-                
+
         except Exception as e:
             logger.error(f"Request error: {e}")
             return None
-    
+
     def get_available_symbols(self) -> List[Dict[str, str]]:
         """
         Получить список доступных символов
-        
+
         Returns:
             Список символов с их описаниями
         """
         # Проверяем кэш
         current_time = time.time()
-        if (self._symbols_cache["data"] and 
-            (current_time - self._symbols_cache["last_update"]) < self._symbols_cache["cache_duration"]):
+        if (self._symbols_cache["data"] and (
+                current_time - self._symbols_cache["last_update"]) < self._symbols_cache["cache_duration"]):
             return self._symbols_cache["data"]
-        
+
         # Популярные криптовалюты, доступные на Binance
         popular_symbols = [
             {"symbol": "BTCUSDT", "name": "Bitcoin", "description": "Bitcoin / USDT"},
@@ -124,85 +128,90 @@ class CoinglassClient:
             {"symbol": "YFIUSDT", "name": "Yearn.finance", "description": "Yearn.finance / USDT"},
             {"symbol": "SNXUSDT", "name": "Synthetix", "description": "Synthetix / USDT"}
         ]
-        
+
         # Обновляем кэш
         self._symbols_cache["data"] = popular_symbols
         self._symbols_cache["last_update"] = current_time
-        
+
         logger.info(f"Available symbols cached: {len(popular_symbols)}")
         return popular_symbols
-    
+
     def search_symbols(self, query: str, limit: int = 10) -> List[Dict[str, str]]:
         """
         Поиск символов по запросу
-        
+
         Args:
             query: Поисковый запрос
             limit: Максимальное количество результатов
-            
+
         Returns:
             Список найденных символов
         """
         query = query.upper().strip()
         if not query:
             return []
-        
+
         symbols = self.get_available_symbols()
         results = []
-        
+
         for symbol_info in symbols:
             symbol = symbol_info["symbol"]
             name = symbol_info["name"].upper()
             description = symbol_info["description"].upper()
-            
+
             # Поиск по символу, названию или описанию
-            if (query in symbol or 
-                query in name or 
+            if (query in symbol or
+                query in name or
                 query in description or
                 symbol.startswith(query) or
-                name.startswith(query)):
+                    name.startswith(query)):
                 results.append(symbol_info)
-                
+
         return results[:limit]
-            
+
     def get_crypto_ohlcv(self, symbol: str, days: int = 365) -> Optional[List[Dict]]:
         """
         Получить OHLCV данные для любой криптовалюты
-        
+
         Args:
             symbol: Символ криптовалюты (например, ETHUSDT)
             days: Количество дней истории
-            
+
         Returns:
             Список OHLCV данных
         """
         # Убеждаемся что символ в правильном формате
         if not symbol.endswith('USDT'):
             symbol = symbol.replace('USD', 'USDT')
-        
-        # Начинаем с первой доступной даты CBMA14: 2017-05-01 00:00:00 UTC
+
+        # Начинаем с первой доступной даты CBMA: 2017-05-01 00:00:00 UTC
         start_date = datetime(2017, 5, 1, 0, 0, 0)
         start_time = int(start_date.timestamp() * 1000)  # В миллисекундах
         end_time = int(time.time() * 1000)  # Текущее время в миллисекундах
-        
+
         # Рассчитываем количество дней с 2017-05-01
         days_since_start = int((end_time - start_time) / (24 * 60 * 60 * 1000))
-        
+
         params = {
             "exchange": "Binance",
-            "symbol": symbol.upper(), 
+            "symbol": symbol.upper(),
             "interval": "1d",
             "start_time": start_time,
             "end_time": end_time,
-            "limit": min(days_since_start + 10, 3000)   # Увеличиваем лимит для данных с 2017
+            # Увеличиваем лимит для данных с 2017
+            "limit": min(days_since_start + 10, 3000)
         }
-        
+
         # Используем spot API для получения точных исторических данных
         endpoint = "/api/spot/price/history"
-        logger.info(f"Requesting {symbol} data from Coinglass Spot API with params: {params}")
+        logger.info(
+            f"Requesting {symbol} data from Coinglass Spot API "
+            f"with params: {params}")
         data = self._make_request(endpoint, params)
-        
-        logger.info(f"API response for {symbol}: type={type(data)}, length={len(data) if isinstance(data, (list, dict)) else 'N/A'}")
+
+        logger.info(
+            f"API response for {symbol}: type={type(data)}, "
+            f"length={len(data) if isinstance(data, (list, dict)) else 'N/A'}")
         if data and isinstance(data, list) and len(data) > 0:
             logger.info(f"First element: {data[0]}")
         elif data and isinstance(data, dict):
@@ -210,14 +219,15 @@ class CoinglassClient:
         else:
             logger.warning(f"No data received for {symbol}")
             return None
-        
+
         if data:
             # Преобразуем в удобный формат
             result = []
-            
+
             # Проверяем формат данных - возможно это список списков
             if isinstance(data, list) and len(data) > 0:
-                # Если первый элемент - список, то это формат [[timestamp, open, high, low, close, volume], ...]
+                # Если первый элемент - список, то это формат [[timestamp, open, high,
+                # low, close, volume], ...]
                 if isinstance(data[0], list):
                     for candle in data:
                         if len(candle) >= 5:  # Минимум timestamp, o, h, l, c
@@ -244,19 +254,19 @@ class CoinglassClient:
                             'close': float(candle.get('close', 0)),
                             'volume': float(candle.get('volume_usd', candle.get('volume', 0)))
                         })
-            
+
             return sorted(result, key=lambda x: x['time']) if result else None
-        
+
         return None
 
     def get_btc_ohlcv(self, days: int = 365) -> Optional[List[Dict]]:
         """
         Получить OHLCV данные для BTC (обратная совместимость)
-        
+
         Args:
             days: Количество дней истории
-            
+
         Returns:
             Список OHLCV данных
         """
-        return self.get_crypto_ohlcv("BTCUSDT", days) 
+        return self.get_crypto_ohlcv("BTCUSDT", days)

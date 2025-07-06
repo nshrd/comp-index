@@ -30,7 +30,7 @@ class PriceScaleMode(Enum):
 @dataclass
 class TradingViewSymbolInfo:
     """Стандартная информация о символе для TradingView"""
-    
+
     # Основные поля
     name: str
     ticker: str
@@ -38,12 +38,12 @@ class TradingViewSymbolInfo:
     type: str
     session: str = "24x7"
     timezone: str = "Etc/UTC"
-    
+
     # Настройки отображения
     minmov: int = 1
     pricescale: int = 100
     minmove2: int = 0
-    
+
     # Поддерживаемые разрешения
     supported_resolutions: List[str] = None
     has_intraday: bool = True
@@ -51,16 +51,16 @@ class TradingViewSymbolInfo:
     has_weekly_and_monthly: bool = True
     has_empty_bars: bool = True
     has_no_volume: bool = False
-    
+
     # Точность
     volume_precision: int = 8
     currency_code: str = "USD"
-    
+
     # Дополнительные поля
     exchange: str = ""
     listed_exchange: str = ""
     full_name: str = ""
-    
+
     def __post_init__(self):
         if self.supported_resolutions is None:
             self.supported_resolutions = ["240", "1D", "1W", "1M"]
@@ -96,29 +96,29 @@ class TradingViewSymbolInfo:
 @dataclass
 class TradingViewConfig:
     """Стандартная конфигурация UDF сервера"""
-    
+
     supports_search: bool = True
     supports_group_request: bool = False
     supports_marks: bool = False
     supports_timescale_marks: bool = False
     supports_time: bool = True
     supports_streaming: bool = True
-    
+
     supported_resolutions: List[str] = None
     exchanges: List[Dict[str, str]] = None
     symbols_types: List[Dict[str, str]] = None
-    
+
     def __post_init__(self):
         if self.supported_resolutions is None:
             self.supported_resolutions = ["240", "1D", "1W", "1M"]
-            
+
         if self.exchanges is None:
             self.exchanges = [
                 {"value": "", "name": "All Exchanges", "desc": ""},
                 {"value": "Binance", "name": "Binance", "desc": "Binance Exchange"},
                 {"value": "Coinbase", "name": "Coinbase", "desc": "Coinbase Exchange"}
             ]
-            
+
         if self.symbols_types is None:
             self.symbols_types = [
                 {"name": "All types", "value": ""},
@@ -145,13 +145,13 @@ class TradingViewConfig:
 
 class TradingViewFormatter:
     """Утилиты для форматирования данных согласно TradingView стандартам"""
-    
+
     @staticmethod
-    def create_cbma14_symbol() -> TradingViewSymbolInfo:
-        """Создать стандартную информацию о символе CBMA14"""
+    def create_cbma_symbol() -> TradingViewSymbolInfo:
+        """Создать стандартную информацию о символе CBMA"""
         return TradingViewSymbolInfo(
-            name="CBMA14",
-            ticker="CBMA14",
+            name="CBMA",
+            ticker="CBMA",
             description="Coinbase Moving Average Index (Dynamic MA)",
             type=SymbolType.INDEX.value,
             session="24x7",
@@ -168,13 +168,15 @@ class TradingViewFormatter:
             listed_exchange="",
             full_name="Coinbase Moving Average Index"
         )
-    
+
     @staticmethod
-    def create_crypto_symbol(symbol: str, base_asset: str = None) -> TradingViewSymbolInfo:
+    def create_crypto_symbol(
+            symbol: str,
+            base_asset: str = None) -> TradingViewSymbolInfo:
         """Создать стандартную информацию о криптовалютном символе"""
         if not base_asset:
             base_asset = symbol.replace("USDT", "").replace("USD", "")
-        
+
         return TradingViewSymbolInfo(
             name=symbol,
             ticker=symbol,
@@ -195,13 +197,15 @@ class TradingViewFormatter:
             full_name=f"{base_asset} / USD",
             currency_code="USD"
         )
-    
+
     @staticmethod
-    def create_stock_symbol(symbol: str, company_name: str = None) -> TradingViewSymbolInfo:
+    def create_stock_symbol(
+            symbol: str,
+            company_name: str = None) -> TradingViewSymbolInfo:
         """Создать стандартную информацию о фондовом символе"""
         if not company_name:
             company_name = symbol
-        
+
         return TradingViewSymbolInfo(
             name=symbol,
             ticker=symbol,
@@ -222,10 +226,10 @@ class TradingViewFormatter:
             full_name=company_name,
             currency_code="USD"
         )
-    
+
     @staticmethod
     def format_history_response(
-        data: List[Dict[str, Any]], 
+        data: List[Dict[str, Any]],
         status: str = "ok",
         next_time: Optional[int] = None
     ) -> Dict[str, Any]:
@@ -235,16 +239,16 @@ class TradingViewFormatter:
                 "s": status,
                 "errmsg": "No data available" if status == "no_data" else None
             }
-        
+
         # Сортируем данные по времени
         sorted_data = sorted(data, key=lambda x: x.get('time', 0))
-        
+
         response = {
             "s": "ok",
             "t": [item['time'] for item in sorted_data],
             "c": [item.get('close', item.get('value', 0)) for item in sorted_data]
         }
-        
+
         # Добавляем OHLC данные если доступны
         if any('open' in item for item in sorted_data):
             response.update({
@@ -252,17 +256,17 @@ class TradingViewFormatter:
                 "h": [item.get('high', item.get('close', item.get('value', 0))) for item in sorted_data],
                 "l": [item.get('low', item.get('close', item.get('value', 0))) for item in sorted_data]
             })
-        
+
         # Добавляем объем если доступен
         if any('volume' in item for item in sorted_data):
             response["v"] = [item.get('volume', 0) for item in sorted_data]
-        
+
         # Добавляем next_time если есть еще данные
         if next_time:
             response["nextTime"] = next_time
-        
+
         return response
-    
+
     @staticmethod
     def format_search_response(
         query: str,
@@ -272,13 +276,13 @@ class TradingViewFormatter:
         """Форматировать ответ search согласно UDF спецификации"""
         results = []
         query_upper = query.upper()
-        
+
         for symbol in symbols:
             # Проверяем соответствие запросу
-            if (query_upper in symbol.name.upper() or 
+            if (query_upper in symbol.name.upper() or
                 query_upper in symbol.description.upper() or
-                query_upper in symbol.ticker.upper()):
-                
+                    query_upper in symbol.ticker.upper()):
+
                 results.append({
                     "symbol": symbol.ticker,
                     "full_name": symbol.full_name,
@@ -287,12 +291,12 @@ class TradingViewFormatter:
                     "ticker": symbol.ticker,
                     "type": symbol.type
                 })
-                
+
                 if len(results) >= limit:
                     break
-        
+
         return results
-    
+
     @staticmethod
     def format_symbol_info_response(
         symbols: List[TradingViewSymbolInfo]
@@ -300,7 +304,7 @@ class TradingViewFormatter:
         """Форматировать ответ symbol_info согласно UDF спецификации"""
         if not symbols:
             return {}
-        
+
         return {
             "symbol": [s.ticker for s in symbols],
             "description": [s.description for s in symbols],
@@ -317,24 +321,24 @@ class TradingViewFormatter:
             "session-regular": [s.session for s in symbols],
             "supported_resolutions": [s.supported_resolutions for s in symbols]
         }
-    
+
     @staticmethod
     def get_server_time() -> str:
         """Получить время сервера в формате UDF"""
         return str(int(time.time()))
-    
+
     @staticmethod
     def validate_resolution(resolution: str) -> bool:
         """Проверить валидность разрешения"""
         valid_resolutions = ["1", "5", "15", "30", "60", "240", "1D", "1W", "1M"]
         return resolution in valid_resolutions
-    
+
     @staticmethod
     def normalize_resolution(resolution: str) -> str:
         """Нормализовать разрешение к стандартному формату"""
         resolution_map = {
             "1": "1",
-            "5": "5", 
+            "5": "5",
             "15": "15",
             "30": "30",
             "60": "60",
@@ -352,11 +356,11 @@ class TradingViewFormatter:
 
 # Предопределенные символы для использования
 PREDEFINED_SYMBOLS = {
-    "CBMA14": TradingViewFormatter.create_cbma14_symbol(),
+    "CBMA": TradingViewFormatter.create_cbma_symbol(),
     "BTCUSDT": TradingViewFormatter.create_crypto_symbol("BTCUSDT", "Bitcoin"),
     "ETHUSDT": TradingViewFormatter.create_crypto_symbol("ETHUSDT", "Ethereum"),
     "BNBUSDT": TradingViewFormatter.create_crypto_symbol("BNBUSDT", "Binance Coin"),
 }
 
 # Стандартная конфигурация
-STANDARD_CONFIG = TradingViewConfig() 
+STANDARD_CONFIG = TradingViewConfig()

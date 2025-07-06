@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# CBMA14 Index - Diagnostic Script
+# CBMA Index - Diagnostic Script
 # Скрипт для диагностики проблем с развертыванием
 
 set -e
@@ -58,7 +58,7 @@ check_system_info() {
     
     echo "Операционная система:"
     if [ -f /etc/os-release ]; then
-        cat /etc/os-release | head -3
+        head -3 /etc/os-release
     fi
     
     echo -e "\nВерсия Docker:"
@@ -211,20 +211,20 @@ check_data_files() {
     echo "Структура директории data:"
     ls -la "$SCRIPT_DIR/data/" 2>/dev/null || print_warning "Директория data не найдена"
     
-    if [ -f "$SCRIPT_DIR/data/CBMA14.json" ]; then
-        print_status "CBMA14.json найден"
+    if [ -f "$SCRIPT_DIR/data/CBMA.json" ]; then
+        print_status "CBMA.json найден"
         
-        echo "Размер файла: $(du -h "$SCRIPT_DIR/data/CBMA14.json" | cut -f1)"
-        echo "Последнее изменение: $(stat -c %y "$SCRIPT_DIR/data/CBMA14.json")"
+        echo "Размер файла: $(du -h "$SCRIPT_DIR/data/CBMA.json" | cut -f1)"
+        echo "Последнее изменение: $(stat -c %y "$SCRIPT_DIR/data/CBMA.json")"
         
         # Проверка содержимого JSON
-        if python3 -c "import json; json.load(open('$SCRIPT_DIR/data/CBMA14.json'))" 2>/dev/null; then
+        if python3 -c "import json; json.load(open('$SCRIPT_DIR/data/CBMA.json'))" 2>/dev/null; then
             print_status "JSON файл валиден"
         else
             print_error "JSON файл поврежден"
         fi
     else
-        print_error "CBMA14.json не найден"
+        print_error "CBMA.json не найден"
     fi
     
     if [ -f "$SCRIPT_DIR/data/data.json" ]; then
@@ -261,11 +261,11 @@ check_api() {
         print_error "API недоступен"
     fi
     
-    echo -e "\nПроверка CBMA14 данных:"
-    if curl -s "http://localhost:8000/api/history?symbol=CBMA14&resolution=D&from=0&to=$(date +%s)" 2>/dev/null | head -200; then
-        print_status "CBMA14 данные доступны"
+    echo -e "\nПроверка CBMA данных:"
+    if curl -s "http://localhost:8000/api/history?symbol=CBMA&resolution=D&from=0&to=$(date +%s)" 2>/dev/null | head -200; then
+        print_status "CBMA данные доступны"
     else
-        print_error "CBMA14 данные недоступны"
+        print_error "CBMA данные недоступны"
     fi
 }
 
@@ -313,99 +313,40 @@ show_summary() {
     echo ""
     
     # Статус системы
-    if [ $error_count -eq 0 ] && [ $warning_count -eq 0 ]; then
-        echo -e "${GREEN}🎉 СИСТЕМА РАБОТАЕТ ОТЛИЧНО!${NC}"
-        echo "Все проверки прошли успешно. CBMA14 Index готов к работе."
-    elif [ $error_count -eq 0 ] && [ $warning_count -gt 0 ]; then
-        echo -e "${YELLOW}⚠️  СИСТЕМА РАБОТАЕТ С ПРЕДУПРЕЖДЕНИЯМИ${NC}"
-        echo "Основная функциональность работает, но есть рекомендации для улучшения."
-    elif [ $error_count -gt 0 ]; then
-        echo -e "${RED}🚨 ОБНАРУЖЕНЫ КРИТИЧЕСКИЕ ПРОБЛЕМЫ!${NC}"
-        echo "Система может работать некорректно. Требуется вмешательство."
+    if [ "$error_count" -eq 0 ] && [ "$warning_count" -eq 0 ]; then
+        print_status "✅ Все проверки пройдены успешно!"
+        print_status "Система готова к работе"
+    elif [ "$error_count" -eq 0 ] && [ "$warning_count" -gt 0 ]; then
+        print_status "⚠️  Есть предупреждения, но система должна работать"
+        print_status "Рекомендуется устранить предупреждения для оптимальной работы"
+    elif [ "$error_count" -gt 0 ]; then
+        print_status "❌ Найдены критические ошибки"
+        print_status "Система может работать некорректно"
     fi
     
     echo ""
+    echo "💡 Результаты диагностики:"
     
-    # Детальный список ошибок
-    if [ $error_count -gt 0 ]; then
-        echo -e "${RED}🔴 КРИТИЧЕСКИЕ ОШИБКИ:${NC}"
-        for i in "${!ERRORS[@]}"; do
-            echo -e "  $((i+1)). ${RED}${ERRORS[i]}${NC}"
-        done
+    if [ "$error_count" -gt 0 ]; then
+        echo "   🔴 Критические ошибки: $error_count"
+        echo "   📋 Требуется немедленное внимание"
+        echo "   🛠️  Рекомендуется перезапуск после исправления"
         echo ""
     fi
     
-    # Детальный список предупреждений
-    if [ $warning_count -gt 0 ]; then
-        echo -e "${YELLOW}🟡 ПРЕДУПРЕЖДЕНИЯ:${NC}"
-        for i in "${!WARNINGS[@]}"; do
-            echo -e "  $((i+1)). ${YELLOW}${WARNINGS[i]}${NC}"
-        done
+    if [ "$warning_count" -gt 0 ]; then
+        echo "   🟡 Предупреждения: $warning_count"
+        echo "   📋 Рекомендуется устранить для оптимальной работы"
+        echo "   🔧 Не критично для базовой функциональности"
         echo ""
     fi
     
-    # Приоритетные действия
-    if [ $error_count -gt 0 ] || [ $warning_count -gt 0 ]; then
-        echo -e "${BLUE}🔧 ПРИОРИТЕТНЫЕ ДЕЙСТВИЯ:${NC}"
-        
-        # Анализ типов ошибок и специфичные рекомендации
-        local port_issues=false
-        local docker_issues=false
-        local ssl_issues=false
-        local api_issues=false
-        local common_issues=false
-        
-        for error in "${ERRORS[@]}"; do
-            if [[ "$error" == *"порт"* ]] || [[ "$error" == *"недоступен"* ]]; then
-                port_issues=true
-            fi
-            if [[ "$error" == *"контейнер"* ]] || [[ "$error" == *"Docker"* ]]; then
-                docker_issues=true
-            fi
-            if [[ "$error" == *"SSL"* ]] || [[ "$error" == *"сертификат"* ]]; then
-                ssl_issues=true
-            fi
-            if [[ "$error" == *"API"* ]] || [[ "$error" == *"UDF"* ]]; then
-                api_issues=true
-            fi
-            if [[ "$error" == *"common"* ]] || [[ "$error" == *"модул"* ]] || [[ "$error" == *"импорт"* ]]; then
-                common_issues=true
-            fi
-        done
-        
-        local priority=1
-        
-        if [ "$docker_issues" = true ]; then
-            echo "  $priority. Перезапустить Docker контейнеры:"
-            echo "     docker compose down && docker compose up -d --build"
-            ((priority++))
-        fi
-        
-        if [ "$port_issues" = true ]; then
-            echo "  $priority. Проверить firewall и порты:"
-            echo "     ufw allow 80/tcp && ufw allow 443/tcp"
-            echo "     ss -tlnp | grep -E ':80|:443'"
-            ((priority++))
-        fi
-        
-        if [ "$ssl_issues" = true ]; then
-            echo "  $priority. Проверить SSL сертификаты:"
-            echo "     ls -la /etc/ssl/certs/charts.expert.crt"
-            echo "     ls -la /etc/ssl/private/charts.expert.key"
-            ((priority++))
-        fi
-        
-        if [ "$api_issues" = true ]; then
-            echo "  $priority. Проверить API и данные:"
-            echo "     docker compose logs udf"
-            echo "     curl -I http://localhost:8000/api/status"
-            ((priority++))
-        fi
-        
-# Legacy common modules check removed
-        
-        echo "  $priority. Посмотреть логи для диагностики:"
-        echo "     docker compose logs -f"
+    if [ "$error_count" -gt 0 ] || [ "$warning_count" -gt 0 ]; then
+        echo "🔧 Следующие шаги:"
+        echo "   1. Изучите детали ошибок выше"
+        echo "   2. Устраните критические проблемы"
+        echo "   3. Перезапустите систему при необходимости"
+        echo "   4. Повторите диагностику"
         echo ""
     fi
 }
@@ -457,7 +398,7 @@ main() {
     fi
     
     if [ "$quiet_mode" = false ]; then
-        print_header "CBMA14 Index - Диагностика"
+        print_header "CBMA Index - Диагностика"
         print_info "Время начала: $(date)"
         print_info "Директория проекта: $SCRIPT_DIR"
         print_info "Название проекта: $PROJECT_NAME"
@@ -520,7 +461,7 @@ main() {
     
     # Финальный статус
     local error_count=${#ERRORS[@]}
-    if [ $error_count -eq 0 ]; then
+    if [ "$error_count" -eq 0 ]; then
         if [ "$quiet_mode" = false ]; then
             print_header "✅ ДИАГНОСТИКА ЗАВЕРШЕНА УСПЕШНО"
         fi

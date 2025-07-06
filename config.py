@@ -1,5 +1,5 @@
 """
-Configuration management for CBMA14 Index
+Configuration management for CBMA Index
 """
 import os
 from typing import Dict, Any, Optional
@@ -16,10 +16,10 @@ class DatabaseConfig:
     """Database configuration"""
     host: str = "localhost"
     port: int = 5432
-    database: str = "cbma14"
+    database: str = "cbma"
     username: str = "postgres"
     password: str = ""
-    
+
 
 @dataclass
 class APIConfig:
@@ -29,7 +29,7 @@ class APIConfig:
     debug: bool = False
     cors_enabled: bool = True
     cors_origins: Optional[list] = None
-    
+
     def __post_init__(self):
         if self.cors_origins is None:
             self.cors_origins = ["*"]
@@ -41,7 +41,7 @@ class BuilderConfig:
     update_interval: int = 3600  # 1 час
     ma_period: int = 14
     data_input_file: str = "data/data.json"
-    data_output_file: str = "data/CBMA14.json"
+    data_output_file: str = "data/CBMA.json"
 
 
 @dataclass
@@ -54,10 +54,10 @@ class LoggingConfig:
 
 class Config:
     """Main configuration class"""
-    
+
     def __init__(self):
         self.load_from_env()
-        
+
     def load_from_env(self):
         """Load configuration from environment variables"""
         # API Configuration
@@ -68,40 +68,43 @@ class Config:
             cors_enabled=True,
             cors_origins=["*"]
         )
-        
+
         # Builder Configuration
         self.builder = BuilderConfig(
             update_interval=int(os.getenv('BUILDER_UPDATE_INTERVAL', 3600)),
             ma_period=int(os.getenv('BUILDER_MA_PERIOD', 14)),
             data_input_file=os.getenv('DATA_INPUT_FILE', 'data/data.json'),
-            data_output_file=os.getenv('DATA_OUTPUT_FILE', 'data/CBMA14.json')
+            data_output_file=os.getenv('DATA_OUTPUT_FILE', 'data/CBMA.json')
         )
-        
+
         # Logging Configuration
         self.logging = LoggingConfig(
             level=os.getenv('LOG_LEVEL', 'INFO'),
             log_dir=os.getenv('LOG_DIR', 'logs')
         )
-        
+
         # External APIs
         self.coinglass_api_key = os.getenv('COINGLASS_API_KEY')
-        self.coinglass_base_url = os.getenv('COINGLASS_BASE_URL', 'https://open-api-v4.coinglass.com')
-        
+        self.coinglass_base_url = os.getenv(
+            'COINGLASS_BASE_URL',
+            'https://open-api-v4.coinglass.com')
+
         # Frontend Configuration
-        self.frontend_api_url = os.getenv('FRONTEND_API_URL', f'http://localhost:8000')
-        
+        self.frontend_api_url = os.getenv('FRONTEND_API_URL', 'http://localhost:8000')
+
         # Docker Configuration
-        self.compose_project_name = os.getenv('COMPOSE_PROJECT_NAME', 'cbma14')
-        self.docker_restart_policy = os.getenv('DOCKER_RESTART_POLICY', 'unless-stopped')
-        
+        self.compose_project_name = os.getenv('COMPOSE_PROJECT_NAME', 'cbma')
+        self.docker_restart_policy = os.getenv(
+            'DOCKER_RESTART_POLICY', 'unless-stopped')
+
     def get_data_dir(self) -> Path:
         """Get data directory path"""
         return Path(__file__).parent / "data"
-        
+
     def get_log_dir(self) -> Path:
         """Get log directory path"""
         return Path(__file__).parent / self.logging.log_dir
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert configuration to dictionary"""
         return {
@@ -148,4 +151,4 @@ def reload_config() -> Config:
     """Reload configuration from environment"""
     global config
     config = Config()
-    return config 
+    return config
