@@ -502,7 +502,7 @@
                 CONFIG.INSTRUMENTS.custom={
                     name:sym,
                     dataSource:'api',
-                    apiSymbol:`${sym}USDT`,
+                    apiSymbol:sym,
                     color:'#F7931A',
                     priceScaleId:'right',
                     seriesType:'candlestick',
@@ -816,6 +816,11 @@
                 const response = await fetch(`/api/history?symbol=${instrument.apiSymbol}&resolution=${currentTimeframe}&from=1&to=${Math.floor(Date.now() / 1000)}`);
                 const data = await response.json();
                 
+                // обрабатываем варианты ошибок от сервера
+                if (data.error || data.s === 'error') {
+                    throw new Error(data.errmsg || data.error || 'API error');
+                }
+
                 if (data.s === 'ok' && data.t && data.c) {
                     const processedData = data.t.map((time, index) => ({
                         time: time,
