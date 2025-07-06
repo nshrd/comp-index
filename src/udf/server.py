@@ -242,9 +242,9 @@ def udf_history():
             if symbol in symbol_names:
                 # Определяем интервал для Coinglass в зависимости от запрошенного resolution
                 resolution_map = {
-                    '240': '4h', '4H': '4h',
-                    'D': '4h', '1D': '4h', '3D': '4h',
-                    '1W': '4h'
+                    '240': '1d', '4H': '1d',
+                    'D': '1d', '1D': '1d', '3D': '1d',
+                    '1W': '1d'
                 }
                 interval = resolution_map.get(resolution.upper(), '4h')
                 data = coinglass_client.get_crypto_ohlcv(symbol, days=365, interval=interval)
