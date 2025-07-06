@@ -696,6 +696,13 @@
                     }
 
                     console.log(`✅ ${instrument.name} data loaded: ${processedData.length} points`);
+                } else if (data.s === 'no_data') {
+                    console.warn(`⚠️  No data for ${instrument.apiSymbol}`);
+                    // Очищаем серию, чтобы не оставались старые точки
+                    if (comparisonSeries) {
+                        comparisonSeries.setData([]);
+                    }
+                    return; // не бросаем ошибку
                 } else {
                     throw new Error('Invalid API response');
                 }
