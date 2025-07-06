@@ -836,17 +836,20 @@
             document.body.classList.toggle('fullscreen-mode', isFs);
 
             if (!chart) return;
-            // ждём кадр, чтобы DOM перерасчитал layout
+            // Двойной rAF даёт браузеру 2 кадра на перерасчёт layout,
+            // иначе высота может быть вычислена некорректно сразу после выхода
             requestAnimationFrame(() => {
-                const container = document.getElementById('chart-container');
-                const w = container.clientWidth;
-                const h = container.clientHeight;
-                if (typeof chart.resize === 'function') {
-                    chart.resize(w, h);
-                } else {
-                    chart.applyOptions({ width: w, height: h });
-                }
-                chart.timeScale().fitContent();
+                requestAnimationFrame(() => {
+                    const container = document.getElementById('chart-container');
+                    const w = container.clientWidth;
+                    const h = container.clientHeight;
+                    if (typeof chart.resize === 'function') {
+                        chart.resize(w, h);
+                    } else {
+                        chart.applyOptions({ width: w, height: h });
+                    }
+                    chart.timeScale().fitContent();
+                });
             });
         });
 
