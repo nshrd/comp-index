@@ -24,20 +24,17 @@ COPY src/data/__init__.py src/data/
 COPY src/data/*.py src/data/
 COPY builder/ builder/
 
-# Копируем тесты (опционально)
-COPY tests/ tests/
-
 # Устанавливаем переменные окружения
 ENV PYTHONPATH=/app
 ENV PYTHONUNBUFFERED=1
 
 # Создаем пользователя для безопасности
-RUN useradd -m -u 1000 cbma14 && chown -R cbma14:cbma14 /app
-USER cbma14
+RUN useradd -m -u 1000 cbma && chown -R cbma:cbma /app
+USER cbma
 
 # Проверка здоровья
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-  CMD test -f /app/data/CBMA14.json || exit 1
+  CMD test -f /app/data/CBMA.json || exit 1
 
 # Команда по умолчанию
 CMD ["python", "builder/build_index.py"] 

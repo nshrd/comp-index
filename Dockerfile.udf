@@ -26,17 +26,14 @@ COPY src/udf/__init__.py src/udf/
 COPY src/udf/*.py src/udf/
 COPY src/chart/ src/chart/
 
-# Копируем тесты (опционально)
-COPY tests/ tests/
-
 # Устанавливаем переменные окружения
 ENV PYTHONPATH=/app
 ENV PYTHONUNBUFFERED=1
 ENV FLASK_ENV=production
 
 # Создаем пользователя для безопасности
-RUN useradd -m -u 1000 cbma14 && chown -R cbma14:cbma14 /app
-USER cbma14
+RUN useradd -m -u 1000 cbma && chown -R cbma:cbma /app
+USER cbma
 
 # Открываем порт
 EXPOSE 8000
