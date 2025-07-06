@@ -860,6 +860,10 @@
                         chart.applyOptions({ width: w, height: h });
                     }
                     chart.timeScale().fitContent();
+                    // контрольный resize спустя 300ms – гарантирует подгонку после полного layout
+                    setTimeout(() => {
+                        window.dispatchEvent(new Event('resize'));
+                    }, 300);
                 });
             });
         });
