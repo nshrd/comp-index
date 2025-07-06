@@ -240,7 +240,15 @@ def udf_history():
             symbol_names = {s['symbol']: s['name'] for s in available_symbols}
 
             if symbol in symbol_names:
-                data = coinglass_client.get_crypto_ohlcv(symbol, days=365)
+                # Определяем интервал для Coinglass в зависимости от запрошенного resolution
+                resolution_map = {
+                    '1': '1h', '5': '1h', '15': '1h', '30': '1h', '60': '1h',
+                    '240': '4h', '4H': '4h',
+                    'D': '4h', '1D': '4h', '3D': '4h',
+                    '1W': '4h'
+                }
+                interval = resolution_map.get(resolution.upper(), '4h')
+                data = coinglass_client.get_crypto_ohlcv(symbol, days=365, interval=interval)
 
                 if data:
                     # Фильтруем по времени

@@ -169,13 +169,14 @@ class CoinglassClient:
 
         return results[:limit]
 
-    def get_crypto_ohlcv(self, symbol: str, days: int = 365) -> Optional[List[Dict]]:
+    def get_crypto_ohlcv(self, symbol: str, days: int = 365, interval: str = "4h") -> Optional[List[Dict]]:
         """
         Получить OHLCV данные для любой криптовалюты
 
         Args:
             symbol: Символ криптовалюты (например, ETHUSDT)
             days: Количество дней истории
+            interval: Интервал времени для данных
 
         Returns:
             Список OHLCV данных
@@ -195,7 +196,7 @@ class CoinglassClient:
         params = {
             "exchange": "Binance",
             "symbol": symbol.upper(),
-            "interval": "1d"
+            "interval": interval
         }
 
         # Используем spot API для получения точных исторических данных
@@ -260,14 +261,15 @@ class CoinglassClient:
 
         return None
 
-    def get_btc_ohlcv(self, days: int = 365) -> Optional[List[Dict]]:
+    def get_btc_ohlcv(self, days: int = 365, interval: str = "4h") -> Optional[List[Dict]]:
         """
         Получить OHLCV данные для BTC (обратная совместимость)
 
         Args:
             days: Количество дней истории
+            interval: Интервал времени для данных
 
         Returns:
             Список OHLCV данных
         """
-        return self.get_crypto_ohlcv("BTCUSDT", days)
+        return self.get_crypto_ohlcv("BTCUSDT", days, interval)
