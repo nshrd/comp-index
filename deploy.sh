@@ -551,10 +551,10 @@ show_deployment_info() {
     echo "   📋 Docker логи: docker compose logs"
     echo ""
     echo "🔒 SSL сертификат:"
-    if [ -d "ssl/live/charts.expert" ]; then
-        echo "   ✅ SSL активен в Docker"
+    if [ -f "/etc/ssl/certs/charts.expert.crt" ] || [ -f "./ssl/charts.expert.crt" ]; then
+        echo "   ✅ SSL сертификат найден"
     else
-        echo "   ⚠️  SSL не настроен - запустите: bash deploy.sh ssl"
+        echo "   ⚠️  SSL файл charts.expert.crt не найден — проверьте конфигурацию"
     fi
     echo ""
     echo "📊 Архитектура:"
