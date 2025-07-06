@@ -158,10 +158,9 @@ clone_repository() {
     print_header "Клонирование репозитория"
     
     # Определяем целевую директорию
-    if [ -z "$INSTALL_DIR" ]; then
-        read -r -p "Введите путь для установки (по умолчанию: /opt/$PROJECT_NAME): " USER_INSTALL_DIR
-        INSTALL_DIR="${USER_INSTALL_DIR:-/opt/$PROJECT_NAME}"
-    fi
+    DEFAULT_DIR="$(pwd)"
+    read -r -p "Введите путь для установки (по умолчанию: $DEFAULT_DIR): " USER_INSTALL_DIR
+    INSTALL_DIR="${USER_INSTALL_DIR:-$DEFAULT_DIR}"
     
     if [ -d "$INSTALL_DIR" ]; then
         print_status "Обновление существующего репозитория в $INSTALL_DIR..."
