@@ -626,7 +626,7 @@
 
         async function loadApiData(instrument) {
             try {
-                const response = await fetch(`/api/history?symbol=${instrument.apiSymbol}&resolution=D&from=1&to=${Math.floor(Date.now() / 1000)}`);
+                const response = await fetch(`/api/history?symbol=${instrument.apiSymbol}&resolution=${currentTimeframe}&from=1&to=${Math.floor(Date.now() / 1000)}`);
                 const data = await response.json();
                 
                 if (data.s === 'ok' && data.t && data.c) {
@@ -649,13 +649,13 @@
 
                     console.log(`✅ ${instrument.name} data loaded: ${processedData.length} points`);
                 } else if (data.s === 'no_data') {
-                    console.warn(`⚠️  No data for ${instrument.apiSymbol}`);
-                    // Очищаем серию, чтобы не оставались старые точки
+                    console.error(`Coinglass API: no data for ${instrument.apiSymbol}`, data);
                     if (comparisonSeries) {
                         comparisonSeries.setData([]);
                     }
-                    return; // не бросаем ошибку
+                    return;
                 } else {
+                    console.error('Coinglass API: unexpected response', data);
                     throw new Error('Invalid API response');
                 }
                 
