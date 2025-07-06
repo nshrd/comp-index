@@ -86,6 +86,8 @@ services:
       - ./src/chart:/usr/share/nginx/html:ro
       - ./data:/app/data:ro
       - ./logs/nginx:/var/log/nginx
+      - /etc/ssl/certs/charts.expert.crt:/etc/ssl/certs/charts.expert.crt:ro
+      - /etc/ssl/private/charts.expert.key:/etc/ssl/private/charts.expert.key:ro
     ports:
       - "80:80"
       - "443:443"
