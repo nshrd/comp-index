@@ -5,6 +5,10 @@
 
 set -e
 
+# Определение базовой директории проекта
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_NAME="$(basename "$SCRIPT_DIR")"
+
 # Цвета для вывода
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -133,7 +137,7 @@ check_network_ports() {
     print_header "Сетевые порты"
     
     echo "Слушающие порты:"
-    netstat -tlnp | grep -E ':80|:443|:8000' || print_warning "Порты 80, 443, 8000 не слушаются"
+    ss -tlnp | grep -E ':80|:443|:8000' || print_warning "Порты 80, 443, 8000 не слушаются"
     
     echo -e "\nПроверка доступности портов:"
     
@@ -205,16 +209,16 @@ check_data_files() {
     print_header "Файлы данных"
     
     echo "Структура директории data:"
-    ls -la /opt/cbma14/data/ 2>/dev/null || print_warning "Директория data не найдена"
+    ls -la "$SCRIPT_DIR/data/" 2>/dev/null || print_warning "Директория data не найдена"
     
-    if [ -f "/opt/cbma14/data/CBMA14.json" ]; then
+    if [ -f "$SCRIPT_DIR/data/CBMA14.json" ]; then
         print_status "CBMA14.json найден"
         
-        echo "Размер файла: $(du -h /opt/cbma14/data/CBMA14.json | cut -f1)"
-        echo "Последнее изменение: $(stat -c %y /opt/cbma14/data/CBMA14.json)"
+        echo "Размер файла: $(du -h "$SCRIPT_DIR/data/CBMA14.json" | cut -f1)"
+        echo "Последнее изменение: $(stat -c %y "$SCRIPT_DIR/data/CBMA14.json")"
         
         # Проверка содержимого JSON
-        if python3 -c "import json; json.load(open('/opt/cbma14/data/CBMA14.json'))" 2>/dev/null; then
+        if python3 -c "import json; json.load(open('$SCRIPT_DIR/data/CBMA14.json'))" 2>/dev/null; then
             print_status "JSON файл валиден"
         else
             print_error "JSON файл поврежден"
@@ -223,9 +227,9 @@ check_data_files() {
         print_error "CBMA14.json не найден"
     fi
     
-    if [ -f "/opt/cbma14/data/data.json" ]; then
+    if [ -f "$SCRIPT_DIR/data/data.json" ]; then
         print_status "data.json найден"
-        echo "Размер файла: $(du -h /opt/cbma14/data/data.json | cut -f1)"
+        echo "Размер файла: $(du -h "$SCRIPT_DIR/data/data.json" | cut -f1)"
     else
         print_error "data.json не найден"
     fi
@@ -272,21 +276,21 @@ check_api() {
 check_nginx_config() {
     print_header "Nginx конфигурация"
     
-    if [ -f "/opt/cbma14/nginx/nginx.conf" ]; then
+    if [ -f "$SCRIPT_DIR/nginx/nginx.conf" ]; then
         print_status "nginx.conf найден"
         
         echo -e "\nПроверка синтаксиса конфигурации:"
-        if docker run --rm -v /opt/cbma14/nginx/nginx.conf:/etc/nginx/nginx.conf:ro nginx:1.25-alpine nginx -t 2>/dev/null; then
+        if docker run --rm -v "$SCRIPT_DIR/nginx/nginx.conf:/etc/nginx/nginx.conf:ro" nginx:1.25-alpine nginx -t 2>/dev/null; then
             print_status "Конфигурация nginx корректна"
         else
             print_error "Ошибка в конфигурации nginx"
         fi
         
         echo -e "\nServer names в конфигурации:"
-        grep -n "server_name" /opt/cbma14/nginx/nginx.conf || print_info "server_name не найден"
+        grep -n "server_name" "$SCRIPT_DIR/nginx/nginx.conf" || print_info "server_name не найден"
         
         echo -e "\nSSL настройки:"
-        grep -n "ssl_certificate" /opt/cbma14/nginx/nginx.conf || print_info "SSL не настроен"
+        grep -n "ssl_certificate" "$SCRIPT_DIR/nginx/nginx.conf" || print_info "SSL не настроен"
     else
         print_error "nginx.conf не найден"
     fi
@@ -380,7 +384,7 @@ show_summary() {
         if [ "$port_issues" = true ]; then
             echo "  $priority. Проверить firewall и порты:"
             echo "     ufw allow 80/tcp && ufw allow 443/tcp"
-            echo "     netstat -tlnp | grep -E ':80|:443'"
+            echo "     ss -tlnp | grep -E ':80|:443'"
             ((priority++))
         fi
         
@@ -428,7 +432,7 @@ show_recommendations() {
     echo "   curl -I http://charts.expert"
     echo ""
     echo "5. Обновление до последней версии:"
-    echo "   cd /opt/cbma14 && git pull origin main"
+    echo "   cd $SCRIPT_DIR && git pull origin main"
     echo ""
     echo "6. Полная переустановка:"
     echo "   ./deploy.sh"
@@ -455,13 +459,19 @@ main() {
     if [ "$quiet_mode" = false ]; then
         print_header "CBMA14 Index - Диагностика"
         print_info "Время начала: $(date)"
+        print_info "Директория проекта: $SCRIPT_DIR"
+        print_info "Название проекта: $PROJECT_NAME"
     fi
     
     # Проверка, что скрипт запущен в правильной директории
-    if [ ! -f "docker-compose.yml" ]; then
-        print_error "Скрипт должен быть запущен из директории /opt/cbma14"
+    if [ ! -f "$SCRIPT_DIR/docker-compose.yml" ]; then
+        print_error "Файл docker-compose.yml не найден в $SCRIPT_DIR"
+        print_error "Убедитесь, что скрипт запущен из корневой директории проекта"
         exit 1
     fi
+    
+    # Переходим в директорию проекта
+    cd "$SCRIPT_DIR"
     
     # Выполнение всех проверок
     if [ "$quiet_mode" = false ]; then

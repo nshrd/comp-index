@@ -148,18 +148,27 @@ setup_firewall() {
     fi
 }
 
+# Определение базовой директории проекта
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_NAME="$(basename "$SCRIPT_DIR")"
+BACKUP_DIR="/opt/backups/$PROJECT_NAME"
+
 # Клонирование репозитория
 clone_repository() {
     print_header "Клонирование репозитория"
     
-    INSTALL_DIR="/opt/cbma14"
+    # Определяем целевую директорию
+    if [ -z "$INSTALL_DIR" ]; then
+        read -p "Введите путь для установки (по умолчанию: /opt/$PROJECT_NAME): " USER_INSTALL_DIR
+        INSTALL_DIR="${USER_INSTALL_DIR:-/opt/$PROJECT_NAME}"
+    fi
     
     if [ -d "$INSTALL_DIR" ]; then
-        print_status "Обновление существующего репозитория..."
+        print_status "Обновление существующего репозитория в $INSTALL_DIR..."
         cd "$INSTALL_DIR"
         git pull origin main
     else
-        print_status "Клонирование репозитория..."
+        print_status "Клонирование репозитория в $INSTALL_DIR..."
         git clone https://github.com/nshrd/comp-index.git "$INSTALL_DIR"
         cd "$INSTALL_DIR"
     fi
@@ -167,6 +176,9 @@ clone_repository() {
     # Права доступа
     chown -R 1000:1000 "$INSTALL_DIR"
     chmod +x "$INSTALL_DIR/deploy.sh"
+    
+    # Экспортируем для других функций
+    export INSTALL_DIR
 }
 
 # Создание конфигурации
@@ -267,7 +279,7 @@ setup_ssl() {
             -d "$DOMAIN"
         
         # Обновление nginx конфигурации
-        sed -i "s/your-domain.com/$DOMAIN/g" nginx/prod.conf
+        sed -i "s/your-domain.com/$DOMAIN/g" nginx/nginx.conf
         
         # Перезапуск nginx
         $DOCKER_COMPOSE_CMD -f docker-compose.yml restart nginx
@@ -281,30 +293,73 @@ create_maintenance_scripts() {
     print_header "Создание скриптов обслуживания"
     
     # Скрипт бэкапа
-    cat > /usr/local/bin/cbma14-backup << 'EOF'
+    cat > /usr/local/bin/cbma14-backup << EOF
 #!/bin/bash
-DATE=$(date +%Y%m%d_%H%M%S)
-BACKUP_DIR="/opt/backups/cbma14"
-INSTALL_DIR="/opt/cbma14"
+DATE=\$(date +%Y%m%d_%H%M%S)
+SCRIPT_DIR="\$(cd "\$(dirname "\${BASH_SOURCE[0]}")" && pwd)"
 
-mkdir -p $BACKUP_DIR
-cd $INSTALL_DIR
+# Ищем директорию проекта
+if [ -f "/opt/cbma/docker-compose.yml" ]; then
+    INSTALL_DIR="/opt/cbma"
+elif [ -f "/opt/cbma14/docker-compose.yml" ]; then
+    INSTALL_DIR="/opt/cbma14"
+else
+    # Ищем в стандартных местах
+    for dir in /opt/*/docker-compose.yml; do
+        if [ -f "\$dir" ] && grep -q "cbma" "\$dir"; then
+            INSTALL_DIR="\$(dirname "\$dir")"
+            break
+        fi
+    done
+fi
+
+if [ -z "\$INSTALL_DIR" ] || [ ! -d "\$INSTALL_DIR" ]; then
+    echo "Ошибка: Директория проекта не найдена"
+    exit 1
+fi
+
+PROJECT_NAME="\$(basename "\$INSTALL_DIR")"
+BACKUP_DIR="/opt/backups/\$PROJECT_NAME"
+
+mkdir -p \$BACKUP_DIR
+cd \$INSTALL_DIR
 
 # Бэкап данных
-tar -czf $BACKUP_DIR/data_$DATE.tar.gz data/
-tar -czf $BACKUP_DIR/logs_$DATE.tar.gz logs/
+tar -czf \$BACKUP_DIR/data_\$DATE.tar.gz data/
+tar -czf \$BACKUP_DIR/logs_\$DATE.tar.gz logs/
 
 # Удаление старых бэкапов
-find $BACKUP_DIR -name "*.tar.gz" -mtime +7 -delete
+find \$BACKUP_DIR -name "*.tar.gz" -mtime +7 -delete
 
-echo "Backup completed: $DATE"
+echo "Backup completed: \$DATE"
+echo "Project directory: \$INSTALL_DIR"
+echo "Backup directory: \$BACKUP_DIR"
 EOF
     
     # Скрипт обновления
-    cat > /usr/local/bin/cbma14-update << 'EOF'
+    cat > /usr/local/bin/cbma14-update << EOF
 #!/bin/bash
-INSTALL_DIR="/opt/cbma14"
-cd $INSTALL_DIR
+# Автоопределение директории проекта
+if [ -f "/opt/cbma/docker-compose.yml" ]; then
+    INSTALL_DIR="/opt/cbma"
+elif [ -f "/opt/cbma14/docker-compose.yml" ]; then
+    INSTALL_DIR="/opt/cbma14"
+else
+    # Ищем в стандартных местах
+    for dir in /opt/*/docker-compose.yml; do
+        if [ -f "\$dir" ] && grep -q "cbma" "\$dir"; then
+            INSTALL_DIR="\$(dirname "\$dir")"
+            break
+        fi
+    done
+fi
+
+if [ -z "\$INSTALL_DIR" ] || [ ! -d "\$INSTALL_DIR" ]; then
+    echo "Ошибка: Директория проекта не найдена"
+    exit 1
+fi
+
+cd \$INSTALL_DIR
 
 # Определение команды Docker Compose
 if docker compose version &> /dev/null; then
@@ -316,24 +371,45 @@ else
     exit 1
 fi
 
+echo "Обновление проекта в: \$INSTALL_DIR"
+
 # Обновление кода
 git pull origin main
 
 # Обновление контейнеров
-$DOCKER_COMPOSE_CMD -f docker-compose.yml pull
-$DOCKER_COMPOSE_CMD -f docker-compose.yml up -d --build
+\$DOCKER_COMPOSE_CMD -f docker-compose.yml pull
+\$DOCKER_COMPOSE_CMD -f docker-compose.yml up -d --build
 
 # Очистка старых образов
 docker image prune -f
 
-echo "Update completed: $(date)"
+echo "Update completed: \$(date)"
 EOF
     
     # Скрипт мониторинга
-    cat > /usr/local/bin/cbma14-status << 'EOF'
+    cat > /usr/local/bin/cbma14-status << EOF
 #!/bin/bash
-INSTALL_DIR="/opt/cbma14"
-cd $INSTALL_DIR
+# Автоопределение директории проекта
+if [ -f "/opt/cbma/docker-compose.yml" ]; then
+    INSTALL_DIR="/opt/cbma"
+elif [ -f "/opt/cbma14/docker-compose.yml" ]; then
+    INSTALL_DIR="/opt/cbma14"
+else
+    # Ищем в стандартных местах
+    for dir in /opt/*/docker-compose.yml; do
+        if [ -f "\$dir" ] && grep -q "cbma" "\$dir"; then
+            INSTALL_DIR="\$(dirname "\$dir")"
+            break
+        fi
+    done
+fi
+
+if [ -z "\$INSTALL_DIR" ] || [ ! -d "\$INSTALL_DIR" ]; then
+    echo "Ошибка: Директория проекта не найдена"
+    exit 1
+fi
+
+cd \$INSTALL_DIR
 
 # Определение команды Docker Compose
 if docker compose version &> /dev/null; then
@@ -346,13 +422,14 @@ else
 fi
 
 echo "=== CBMA14 Index Status ==="
-$DOCKER_COMPOSE_CMD -f docker-compose.yml ps
+echo "Project directory: \$INSTALL_DIR"
+\$DOCKER_COMPOSE_CMD -f docker-compose.yml ps
 echo ""
 echo "=== Resource Usage ==="
 docker stats --no-stream
 echo ""
 echo "=== Logs (last 20 lines) ==="
-$DOCKER_COMPOSE_CMD -f docker-compose.yml logs --tail=20
+\$DOCKER_COMPOSE_CMD -f docker-compose.yml logs --tail=20
 EOF
     
     # Права выполнения
@@ -445,8 +522,6 @@ setup_ssl_docker() {
     fi
 }
 
-
-
 # Показ информации о развертывании
 show_deployment_info() {
     print_header "Развертывание завершено!"
@@ -475,8 +550,8 @@ show_deployment_info() {
     echo "   🔧 Builder: Генератор индекса"
     echo ""
     echo "📁 Файлы проекта:"
-    echo "   🗂️  Исходники: /opt/cbma14/src/chart/"
-    echo "   ⚙️  Nginx конфиг: /opt/cbma14/nginx/nginx.conf"
+    echo "   🗂️  Исходники: ${INSTALL_DIR:-\$(pwd)}/src/chart/"
+    echo "   ⚙️  Nginx конфиг: ${INSTALL_DIR:-\$(pwd)}/nginx/nginx.conf"
     echo "   📋 Docker логи: docker compose logs"
     echo ""
     echo "🔒 SSL сертификат:"
@@ -492,7 +567,7 @@ show_deployment_info() {
     echo "   🌐 Nginx проксирует к UDF API"
     echo ""
     echo "🔄 Обновление:"
-    echo "   1. git pull origin main (в /opt/cbma14/)"
+    echo "   1. git pull origin main (в ${INSTALL_DIR:-\$(pwd)}/)"
     echo "   2. bash deploy.sh update"
     echo "   3. Проверьте: https://charts.expert/"
 }
@@ -504,17 +579,17 @@ main() {
     # Проверка аргументов
     case "${1:-}" in
         "ssl")
-            cd /opt/cbma14 2>/dev/null || cd /opt/cbma14
+            cd "${INSTALL_DIR:-\$(pwd)}" 2>/dev/null || cd "${INSTALL_DIR:-\$(pwd)}"
             setup_ssl_docker
             exit 0
             ;;
         "check")
-            cd /opt/cbma14 2>/dev/null || cd /opt/cbma14
+            cd "${INSTALL_DIR:-\$(pwd)}"
             check_docker_services
             exit 0
             ;;
         "update")
-            cd /opt/cbma14 2>/dev/null || cd /opt/cbma14
+            cd "${INSTALL_DIR:-\$(pwd)}"
             /usr/local/bin/cbma14-update 2>/dev/null || {
                 print_status "Обновление кода..."
                 git pull origin main
@@ -526,9 +601,10 @@ main() {
             exit 0
             ;;
         "status")
-            cd /opt/cbma14 2>/dev/null || cd /opt/cbma14
+            cd "${INSTALL_DIR:-\$(pwd)}"
             /usr/local/bin/cbma14-status 2>/dev/null || {
                 echo "=== CBMA14 Docker Status ==="
+                echo "Project directory: \$(pwd)"
                 if command -v docker &> /dev/null; then
                     docker compose ps 2>/dev/null || echo "Docker not running"
                     echo ""
@@ -538,18 +614,18 @@ main() {
                     echo "Docker not available"
                 fi
                 echo ""
-                echo "Site check: $(curl -s -o /dev/null -w "%{http_code}" http://localhost/ || echo "N/A")"
+                echo "Site check: \$(curl -s -o /dev/null -w "%{http_code}" http://localhost/ || echo "N/A")"
             }
             exit 0
             ;;
         "backup")
             /usr/local/bin/cbma14-backup 2>/dev/null || {
-                DATE=$(date +%Y%m%d_%H%M%S)
-                BACKUP_DIR="/opt/backups/cbma14"
-                mkdir -p $BACKUP_DIR
-                cd /opt/cbma14 2>/dev/null || cd /opt/cbma14
-                tar -czf $BACKUP_DIR/cbma14_docker_$DATE.tar.gz . --exclude=logs --exclude=.git 2>/dev/null
-                print_status "Backup completed: cbma14_docker_$DATE.tar.gz"
+                DATE=\$(date +%Y%m%d_%H%M%S)
+                PROJECT_NAME="\$(basename "\$(pwd)")"
+                BACKUP_DIR="/opt/backups/\$PROJECT_NAME"
+                mkdir -p \$BACKUP_DIR
+                tar -czf \$BACKUP_DIR/\${PROJECT_NAME}_docker_\$DATE.tar.gz . --exclude=logs --exclude=.git 2>/dev/null
+                print_status "Backup completed: \${PROJECT_NAME}_docker_\$DATE.tar.gz"
             }
             exit 0
             ;;
