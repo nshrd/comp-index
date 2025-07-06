@@ -566,8 +566,13 @@
                 // Загрузка данных для сравнения
                 await loadComparisonData();
                 
-                // Подгоняем масштаб по всей области данных
-                if (chart) {
+                // Синхронизируем начало/конец по пересечению временных рядов
+                if (chart && coinbaseData.length && comparisonData.length) {
+                    const start = Math.max(coinbaseData[0].time, comparisonData[0].time);
+                    const end   = Math.min(coinbaseData[coinbaseData.length - 1].time,
+                                        comparisonData[comparisonData.length - 1].time);
+                    chart.timeScale().setVisibleRange({ from: start, to: end });
+                } else if (chart) {
                     chart.timeScale().fitContent();
                 }
 
