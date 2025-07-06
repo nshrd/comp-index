@@ -640,7 +640,6 @@
                 color: '#2962FF',
                 lineWidth: 3,
                 priceScaleId: 'left',
-                title: 'Coinbase MA' + currentMaPeriod,
                 crosshairMarkerVisible: true,
                 crosshairMarkerRadius: 6,
                 crosshairMarkerBorderColor: '#2962FF',
@@ -1059,7 +1058,7 @@
 
             if(coinbaseSeries){
                 coinbaseSeries.setData(displayData);
-                coinbaseSeries.applyOptions({ title: 'Coinbase MA'+currentMaPeriod });
+                coinbaseSeries.applyOptions({});
             }
         }
 
