@@ -434,12 +434,12 @@
         const DATA_CACHE = {};   // cache raw daily/weekly arrays per instrument+tfFile
 
         // фиксированное расстояние между свечами для каждого таймфрейма
-        const BAR_SPACING = { '4h': 3, '1D': 4, '3D': 6, '1W': 8 };
+        const BAR_SPACING = { '4h': 2, '1D': 3, '3D': 5, '1W': 7 };
 
         function applySpacing() {
             if (!chart) return;
-            const spacing = BAR_SPACING[currentTimeframe] || 4;
-            chart.timeScale().setBarSpacing(spacing);
+            const spacing = BAR_SPACING[currentTimeframe] || 3;
+            chart.timeScale().applyOptions({ barSpacing: spacing });
         }
 
         // Инициализация приложения
