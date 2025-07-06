@@ -744,16 +744,19 @@
         }
 
         // Обработчик изменения полноэкранного режима
-        document.addEventListener('fullscreenchange', function() {
-            if (chart) {
-                setTimeout(() => {
-                    const container = document.getElementById('chart-container');
-                    chart.applyOptions({
-                        width: container.clientWidth,
-                        height: container.clientHeight,
-                    });
-                }, 100);
-            }
+        document.addEventListener('fullscreenchange', () => {
+            if (!chart) return;
+            setTimeout(() => {
+                const container = document.getElementById('chart-container');
+                const w = container.clientWidth;
+                const h = container.clientHeight;
+                if (typeof chart.resize === 'function') {
+                    chart.resize(w, h); // v4+
+                } else {
+                    chart.applyOptions({ width: w, height: h }); // v3 fallback
+                }
+                chart.timeScale().fitContent();
+            }, 50);
         });
 
         function updateTimeframeButtons() {
