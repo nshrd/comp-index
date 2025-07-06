@@ -421,8 +421,7 @@
                 });
             });
 
-            // Установка дат по умолчанию
-            setDefaultDates();
+            // Даты будут выставлены после initial loadData (fitContent)
             updateComparisonInfo();
             updateTimeframeButtons();
             updateInstrumentButtons();
@@ -519,15 +518,6 @@
             }
         }
 
-        function setDefaultDates() {
-            const today = new Date();
-            const oneWeekAgo = new Date(today);
-            oneWeekAgo.setDate(today.getDate() - 7);
-
-            document.getElementById('date-from').value = oneWeekAgo.toISOString().split('T')[0];
-            document.getElementById('date-to').value = today.toISOString().split('T')[0];
-        }
-
         function setStatus(message, type = 'info') {
             const statusElement = document.getElementById('status');
             statusElement.textContent = message;
@@ -547,6 +537,19 @@
                 // Загрузка данных для сравнения
                 await loadComparisonData();
                 
+                // Подгоняем масштаб по всей области данных
+                if (chart) {
+                    chart.timeScale().fitContent();
+                }
+
+                // Обновляем поля дат полным диапазоном
+                if (coinbaseData.length > 0) {
+                    const firstDateStr = new Date(coinbaseData[0].time * 1000).toISOString().split('T')[0];
+                    const lastDateStr = new Date(coinbaseData[coinbaseData.length - 1].time * 1000).toISOString().split('T')[0];
+                    document.getElementById('date-from').value = firstDateStr;
+                    document.getElementById('date-to').value = lastDateStr;
+                }
+
                 setStatus('Данные загружены успешно', 'success');
                 
             } catch (error) {
@@ -709,7 +712,6 @@
         }
 
         function resetChart() {
-            setDefaultDates();
             currentComparison = 'btc';
             currentTimeframe = '1W';
             currentMaPeriod = 14;
