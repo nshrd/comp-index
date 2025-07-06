@@ -429,8 +429,7 @@
         let isLoading = false;
 
         // Кэш данных и серий для инструментов
-        const DATA_CACHE = {};   // key = `${instrument}_${tfFile}`
-        const SERIES_CACHE = {}; // key = `${instrument}_${timeframe}` → серия
+        const DATA_CACHE = {};   // cache raw daily/weekly arrays per instrument+tfFile
 
         // Инициализация приложения
         document.addEventListener('DOMContentLoaded', function() {
@@ -601,6 +600,8 @@
                     borderColor: '#2A2E39',
                     timeVisible: true,
                     secondsVisible: false,
+                    barSpacing: 4,        /* меньшее расстояние между свечами */
+                    minBarSpacing: 2
                 },
             });
 
@@ -763,34 +764,19 @@
             const instrument = CONFIG.INSTRUMENTS[currentComparison];
             if (!instrument) return;
 
-            // Ключ серии с учётом таймфрейма
-            const seriesKey = `${currentComparison}_${currentTimeframe}`;
-
-            // Скрываем все серии
-            Object.values(SERIES_CACHE).forEach(s => s.applyOptions({ visible: false }));
-
-            // Получаем / создаём серию для пары инструмент+таймфрейм
-            if (!SERIES_CACHE[seriesKey]) {
-                SERIES_CACHE[seriesKey] = instrument.seriesType === 'line'
-                    ? chart.addLineSeries({
-                        color: instrument.color,
-                        priceScaleId: 'right',
-                        lineWidth: 2,
-                    })
-                    : chart.addCandlestickSeries({
-                        upColor: '#26a69a',
-                        downColor: '#ef5350',
-                        borderVisible: false,
-                        wickUpColor: '#26a69a',
-                        wickDownColor: '#ef5350',
-                        priceScaleId: 'right',
-                    });
+            // Удаляем предыдущую серию, если была
+            if (comparisonSeries) {
+                chart.removeSeries(comparisonSeries);
             }
-            comparisonSeries = SERIES_CACHE[seriesKey];
-            comparisonSeries.applyOptions({ visible: true });
 
-            // Ключ кэша данных: используем timeframe (1D/1W) файла; зададим позже
-            let dataKey = `${currentComparison}_${currentTimeframe}`; // временно
+            comparisonSeries = instrument.seriesType === 'line'
+                ? chart.addLineSeries({ color: instrument.color, priceScaleId: 'right', lineWidth: 2 })
+                : chart.addCandlestickSeries({
+                    upColor: '#26a69a', downColor: '#ef5350', borderVisible: false,
+                    wickUpColor: '#26a69a', wickDownColor: '#ef5350', priceScaleId: 'right'
+                });
+
+            let dataKey = `${currentComparison}`; // we'll append tfFile later for csv
             
             if (DATA_CACHE[dataKey]) {
                 comparisonSeries.setData(DATA_CACHE[dataKey]);
@@ -798,12 +784,10 @@
                 try {
                     if (instrument.dataSource === 'api') {
                         await loadApiData(instrument);
-                        DATA_CACHE[dataKey] = comparisonData;
+                        DATA_CACHE[`${currentComparison}_${currentTimeframe}`] = comparisonData;
                     } else {
-                        // loadFileData возвращает фактический tfFile через глобал
-                        const tfUsed = await loadFileData(instrument); // modify to return tfFile
-                        dataKey = `${currentComparison}_${tfUsed}`;
-                        DATA_CACHE[dataKey] = comparisonData;
+                        const tfUsed = await loadFileData(instrument);
+                        DATA_CACHE[`${currentComparison}_${tfUsed}`] = comparisonData;
                     }
                 } catch (error) {
                     console.error('Error loading comparison data:', error);
@@ -811,10 +795,9 @@
                 }
             }
             
-            // Автомасштаб
             if (chart) {
-                chart.timeScale().fitContent();
                 chart.priceScale('right').applyOptions({ autoScale: true });
+                chart.timeScale().fitContent();
             }
         }
 
@@ -904,8 +887,7 @@
                 });
 
                 let displayData = [];
-                const isDailyFile = tfFile === '1D';
-                const needsAggregation = (currentTimeframe === '3D') || (currentTimeframe === '1W' && isDailyFile);
+                const needsAggregation = (currentTimeframe === '3D');
 
                 if (instrument.seriesType === 'line') {
                     const lineData = parsed.map(p => ({ time: p.time, value: p.close }));
@@ -918,7 +900,7 @@
                     console.log(`✅ CSV data loaded for ${instrument.name}: ${displayData.length} candles`);
                 }
                 comparisonData = displayData;
-                return tfFile; // вернуть фактический файл timeframe
+                return tfFile;
             } catch (e) {
                 console.error(`Error loading CSV for ${instrument.name}:`, e);
                 return '1D';
@@ -1082,6 +1064,17 @@
             if(typeof chart.resize==='function') chart.resize(width,height);
             else chart.applyOptions({width,height});
             chart.timeScale().fitContent();
+        }
+
+        // функция ожидания стабильной высоты
+        function waitFinalHeight(){
+            const cont=document.getElementById('chart-container');
+            if(!cont||!chart) return;
+            let last=cont.clientHeight,stable=0;
+            function tick(){
+                const h=cont.clientHeight;
+                if(h!==last){last=h;stable=0;resizeChartToContainer();requestAnimationFrame(tick);}else if(stable<4){stable++;requestAnimationFrame(tick);} }
+            tick();
         }
     </script>
 </body>
