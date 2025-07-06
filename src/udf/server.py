@@ -242,7 +242,6 @@ def udf_history():
             if symbol in symbol_names:
                 # Определяем интервал для Coinglass в зависимости от запрошенного resolution
                 resolution_map = {
-                    '1': '1h', '5': '1h', '15': '1h', '30': '1h', '60': '1h',
                     '240': '4h', '4H': '4h',
                     'D': '4h', '1D': '4h', '3D': '4h',
                     '1W': '4h'
