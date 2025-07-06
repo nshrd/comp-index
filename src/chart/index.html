@@ -300,6 +300,15 @@
         .fullscreen-mode .controls {
             display: none !important;
         }
+
+        /* растягиваем область графика на весь экран */
+        .fullscreen-mode .chart-area {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 999;
+        }
     </style>
 </head>
 <body>
@@ -807,25 +816,23 @@
 
         // Обработчик изменения полноэкранного режима
         document.addEventListener('fullscreenchange', () => {
-            // переключаем CSS-класс, чтобы скрыть/показать UI
-            if (document.fullscreenElement) {
-                document.body.classList.add('fullscreen-mode');
-            } else {
-                document.body.classList.remove('fullscreen-mode');
-            }
+            // переключаем CSS-класс
+            const isFs = !!document.fullscreenElement;
+            document.body.classList.toggle('fullscreen-mode', isFs);
 
             if (!chart) return;
-            setTimeout(() => {
+            // ждём кадр, чтобы DOM перерасчитал layout
+            requestAnimationFrame(() => {
                 const container = document.getElementById('chart-container');
                 const w = container.clientWidth;
                 const h = container.clientHeight;
                 if (typeof chart.resize === 'function') {
-                    chart.resize(w, h); // v4+
+                    chart.resize(w, h);
                 } else {
-                    chart.applyOptions({ width: w, height: h }); // v3 fallback
+                    chart.applyOptions({ width: w, height: h });
                 }
                 chart.timeScale().fitContent();
-            }, 50);
+            });
         });
 
         function updateTimeframeButtons() {
