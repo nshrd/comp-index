@@ -660,8 +660,8 @@
                 }
             }
 
-            // Автомасштаб правой оси под видимую серию
-            if (chart) chart.priceScale('right').fitContent();
+            // Автомасштаб по времени (цена масштабируется автоматически)
+            if (chart) chart.timeScale().fitContent();
         }
 
         async function loadApiData(instrument) {
