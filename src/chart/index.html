@@ -441,7 +441,7 @@
         const DATA_CACHE = {};   // cache raw daily/weekly arrays per instrument+tfFile
 
         // фиксированное расстояние между свечами для каждого таймфрейма
-        const BAR_SPACING = { '4h': 2, '1D': 3, '3D': 5, '1W': 5 };
+        const BAR_SPACING = { '4h': 2, '1D': 2, '3D': 2, '1W': 2 };
 
         function applySpacing() {
             if (!chart) return;
@@ -597,15 +597,17 @@
                 width: chartContainer.clientWidth,
                 height: chartContainer.clientHeight,
                 layout: {
-                    background: { color: '#0D1421' },
-                    textColor: '#B2B5BE',
+                    background: { color: '#0F131A' },
+                    textColor: '#B7BDC6',
                 },
                 grid: {
-                    vertLines: { color: '#2A2E39' },
-                    horzLines: { color: '#2A2E39' },
+                    vertLines: { color: '#1E232B' },
+                    horzLines: { color: '#1E232B' },
                 },
                 crosshair: {
                     mode: LightweightCharts.CrosshairMode.Normal,
+                    vertLine:{ color:'#555', width:1, style:LightweightCharts.LineStyle.Dashed },
+                    horzLine:{ color:'#555', width:1, style:LightweightCharts.LineStyle.Dashed },
                 },
                 leftPriceScale: {
                     visible: true,
@@ -627,7 +629,7 @@
                     borderColor: '#2A2E39',
                     timeVisible: true,
                     secondsVisible: false,
-                    barSpacing: 4,        /* меньшее расстояние между свечами */
+                    barSpacing: 2,
                     minBarSpacing: 2
                 },
             });
@@ -647,9 +649,12 @@
             comparisonSeries = chart.addCandlestickSeries({
                 upColor: '#26a69a',
                 downColor: '#ef5350',
-                borderVisible: false,
-                wickUpColor: '#26a69a',
-                wickDownColor: '#ef5350'
+                borderUpColor:'#26a69a',
+                borderDownColor:'#ef5350',
+                wickUpColor:'#26a69a',
+                wickDownColor:'#ef5350',
+                borderVisible:true,
+                wickVisible:true
             });
 
             // Надёжный ресайз через ResizeObserver (ловит любые изменения контейнера)
