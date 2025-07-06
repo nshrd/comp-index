@@ -315,6 +315,13 @@
             opacity: 0.35;
             pointer-events: none;
         }
+
+        /* поиск инструмента */
+        #search-wrapper{position:relative;}
+        .dropdown{position:absolute;top:28px;left:0;background:#1e222d;border:1px solid #2a2e39;list-style:none;margin:0;padding:4px;max-height:160px;overflow:auto;width:140px;z-index:60;}
+        .dropdown li{padding:2px 4px;cursor:pointer;}
+        .dropdown li:hover{background:#2a2e39;}
+        .dropdown .no-match{color:#ff4d4f;cursor:default;}
     </style>
 </head>
 <body>
@@ -338,7 +345,11 @@
             </div>
 
             <div class="toolbar-group" id="instrument-buttons" style="margin-left: 20px;">
-                <button class="toolbar-btn instrument-btn active" data-instrument="btc">BTC</button>
+                <span id="search-wrapper">
+                    <button id="search-btn" class="toolbar-btn instrument-btn active" data-instrument="btc">BTC</button>
+                    <input id="search-input" type="text" placeholder="Ticker…" style="display:none;width:90px;">
+                    <ul id="search-suggestions" class="dropdown" style="display:none;"></ul>
+                </span>
                 <button class="toolbar-btn instrument-btn" data-instrument="spx">S&P 500</button>
                 <button class="toolbar-btn instrument-btn" data-instrument="vix">VIX</button>
                 <button class="toolbar-btn instrument-btn" data-instrument="dxy">DXY</button>
@@ -416,6 +427,60 @@
         function initializeControls() {
             // Установка значений по умолчанию
             document.getElementById('ma-period-input').value = currentMaPeriod;
+
+            // === динамический поиск инструмента ===
+            let supportedSymbols = [];
+            fetch('/api/crypto/symbols').then(r=>r.json()).then(arr=>{supportedSymbols=arr||[];});
+
+            const searchBtn  = document.getElementById('search-btn');
+            const searchInput= document.getElementById('search-input');
+            const suggBox   = document.getElementById('search-suggestions');
+
+            searchBtn.addEventListener('click', ()=>{
+                searchBtn.style.display='none';
+                searchInput.style.display='inline-block';
+                searchInput.focus();
+            });
+
+            searchInput.addEventListener('input', ()=>{
+                const q = searchInput.value.trim().toUpperCase();
+                suggBox.innerHTML='';
+                if(!q){suggBox.style.display='none';return;}
+                const matches = supportedSymbols.filter(s=>s.startsWith(q)).slice(0,20);
+                suggBox.style.display='block';
+                if(matches.length){
+                    matches.forEach(sym=>{
+                        const li=document.createElement('li');li.textContent=sym;li.onclick=()=>selectSymbol(sym);suggBox.appendChild(li);
+                    });
+                }else{
+                    const li=document.createElement('li');li.textContent='Тикер не найден';li.className='no-match';suggBox.appendChild(li);
+                }
+            });
+
+            function selectSymbol(sym){
+                suggBox.style.display='none';
+                searchInput.value='';
+                searchInput.style.display='none';
+                searchBtn.textContent=sym;
+                searchBtn.dataset.instrument='custom';
+                searchBtn.style.display='inline-block';
+
+                // регистрируем инструмент динамически
+                CONFIG.INSTRUMENTS.custom={
+                    name:sym,
+                    dataSource:'api',
+                    apiSymbol:`${sym}USDT`,
+                    color:'#F7931A',
+                    priceScaleId:'right',
+                    seriesType:'candlestick',
+                    supportedTimeframes:['240','D','3D','W']
+                };
+
+                currentComparison='custom';
+                updateInstrumentButtons();
+                updateTimeframeButtons();
+                loadData();
+            }
 
             // Обработчики событий
             document.getElementById('ma-period-input').addEventListener('change', function() {
