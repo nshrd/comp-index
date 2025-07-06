@@ -429,8 +429,8 @@
         let isLoading = false;
 
         // Кэш данных и серий для инструментов
-        const DATA_CACHE = {};   // ключ: `${instrument}_${tf}`  → массив свечей/линии
-        const SERIES_CACHE = {}; // ключ: instrument → созданная серия
+        const DATA_CACHE = {};   // key = `${instrument}_${tfFile}`
+        const SERIES_CACHE = {}; // key = `${instrument}_${timeframe}` → серия
 
         // Инициализация приложения
         document.addEventListener('DOMContentLoaded', function() {
@@ -763,12 +763,15 @@
             const instrument = CONFIG.INSTRUMENTS[currentComparison];
             if (!instrument) return;
 
-            // Скрываем все созданные ранее серии
+            // Ключ серии с учётом таймфрейма
+            const seriesKey = `${currentComparison}_${currentTimeframe}`;
+
+            // Скрываем все серии
             Object.values(SERIES_CACHE).forEach(s => s.applyOptions({ visible: false }));
 
-            // Получаем / создаём серию для текущего инструмента
-            if (!SERIES_CACHE[currentComparison]) {
-                SERIES_CACHE[currentComparison] = instrument.seriesType === 'line'
+            // Получаем / создаём серию для пары инструмент+таймфрейм
+            if (!SERIES_CACHE[seriesKey]) {
+                SERIES_CACHE[seriesKey] = instrument.seriesType === 'line'
                     ? chart.addLineSeries({
                         color: instrument.color,
                         priceScaleId: 'right',
@@ -783,37 +786,35 @@
                         priceScaleId: 'right',
                     });
             }
-            comparisonSeries = SERIES_CACHE[currentComparison];
+            comparisonSeries = SERIES_CACHE[seriesKey];
             comparisonSeries.applyOptions({ visible: true });
 
-            // Ключ кэша данных учитывает таймфрейм, т.к. при 1D/1W разные массивы
-            const dataKey = `${currentComparison}_${currentTimeframe}`;
-
+            // Ключ кэша данных: используем timeframe (1D/1W) файла; зададим позже
+            let dataKey = `${currentComparison}_${currentTimeframe}`; // временно
+            
             if (DATA_CACHE[dataKey]) {
                 comparisonSeries.setData(DATA_CACHE[dataKey]);
             } else {
                 try {
                     if (instrument.dataSource === 'api') {
                         await loadApiData(instrument);
+                        DATA_CACHE[dataKey] = comparisonData;
                     } else {
-                        await loadFileData(instrument);
+                        // loadFileData возвращает фактический tfFile через глобал
+                        const tfUsed = await loadFileData(instrument); // modify to return tfFile
+                        dataKey = `${currentComparison}_${tfUsed}`;
+                        DATA_CACHE[dataKey] = comparisonData;
                     }
-                    // Сохраняем копию текущих данных в кэш
-                    DATA_CACHE[dataKey] = comparisonData;
                 } catch (error) {
                     console.error('Error loading comparison data:', error);
                     throw error;
                 }
             }
-
-            // Автомасштаб по времени (цена масштабируется автоматически)
-            if (chart) chart.timeScale().fitContent();
-
-            // Устанавливаем видимый диапазон времени: не раньше начала Coinbase
-            if (coinbaseData.length && comparisonData.length && chart) {
-                const start = Math.max(coinbaseData[0].time, comparisonData[0].time);
-                const end = comparisonData[comparisonData.length - 1].time;
-                chart.timeScale().setVisibleRange({ from: start, to: end });
+            
+            // Автомасштаб
+            if (chart) {
+                chart.timeScale().fitContent();
+                chart.priceScale('right').applyOptions({ autoScale: true });
             }
         }
 
@@ -917,8 +918,10 @@
                     console.log(`✅ CSV data loaded for ${instrument.name}: ${displayData.length} candles`);
                 }
                 comparisonData = displayData;
+                return tfFile; // вернуть фактический файл timeframe
             } catch (e) {
                 console.error(`Error loading CSV for ${instrument.name}:`, e);
+                return '1D';
             }
         }
 
@@ -959,15 +962,42 @@
             }
         }
 
+        // Подгоняет график к размеру контейнера
+        function resizeChartToContainer() {
+            const cont = document.getElementById('chart-container');
+            if (!cont || !chart) return;
+            const w = cont.clientWidth;
+            const h = cont.clientHeight;
+            if (typeof chart.resize === 'function') chart.resize(w, h);
+            else chart.applyOptions({ width: w, height: h });
+            chart.timeScale().fitContent();
+        }
+
+        // Ждём, пока высота стабилизируется (не меняется несколько кадров)
+        function waitStableHeight() {
+            let lastH = -1;
+            let stableFrames = 0;
+            function step() {
+                const cont = document.getElementById('chart-container');
+                if (!cont) return;
+                const h = cont.clientHeight;
+                if (h !== lastH) {
+                    lastH = h;
+                    resizeChartToContainer();
+                    stableFrames = 0;
+                    requestAnimationFrame(step);
+                } else if (stableFrames < 5) { // ждём ещё 5 кадров для уверенности
+                    stableFrames++;
+                    requestAnimationFrame(step);
+                }
+            }
+            requestAnimationFrame(step);
+        }
+
         // Обработчик изменения полноэкранного режима
         document.addEventListener('fullscreenchange', () => {
-            // переключаем CSS-класс
-            const isFs = !!document.fullscreenElement;
-            document.body.classList.toggle('fullscreen-mode', isFs);
-
-            if (!chart) return;
-            // Даем браузеру стабилизировать layout, затем пересчитываем
-            setTimeout(recalcChartHeight,100);
+            document.body.classList.toggle('fullscreen-mode', !!document.fullscreenElement);
+            waitStableHeight();
         });
 
         const TF_MAP = { '4h': '240', '1D': 'D', '3D': '3D', '1W': 'W' };
