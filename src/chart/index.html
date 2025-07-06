@@ -674,29 +674,38 @@
         }
 
         async function loadFileData(instrument) {
-            // Упрощенная заглушка для файловых данных
-            console.log(`📄 File data loading for ${instrument.name} not implemented yet`);
-            
-            // Генерируем тестовые данные
-            const testData = [];
-            const startTime = Math.floor(Date.now() / 1000) - 7 * 24 * 60 * 60; // 7 дней назад
-            
-            for (let i = 0; i < 168; i++) { // 168 часов = 7 дней
-                const base = Math.random() * 100 + 50;
-                const open = base;
-                const high = base + Math.random() * 5;
-                const low = base - Math.random() * 5;
-                const close = base + (Math.random() - 0.5) * 10;
-                testData.push({
-                    time: startTime + i * 3600,
-                    open, high, low, close
-                });
-            }
+            try {
+                // Определяем файл согласно текущему таймфрейму
+                const tfMap = { '4h': '1D', '1D': '1D', '3D': '1D', '1W': '1W' };
+                const tfFile = tfMap[currentTimeframe] || '1D';
 
-            const displayData = aggregateCandleData(testData, currentTimeframe);
-            comparisonData = displayData;
-            if (comparisonSeries) {
-                comparisonSeries.setData(displayData);
+                // Формируем URL. В CONFIG для csv-инструментов указан path '/data/vix/' и т.д.
+                const basePath = instrument.path; // заканчивается слэшем
+                const fileName = instrument.filePattern ? instrument.filePattern.replace('{tf}', tfFile) : `${instrument.symbol}, ${tfFile}.csv`;
+                const url = `${basePath}${fileName}`;
+
+                const resp = await fetch(url);
+                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+                const text = await resp.text();
+
+                const lines = text.trim().split(/\r?\n/).slice(1); // skip header
+                const raw = lines.map(line => line.split(',')).filter(arr => arr.length >= 5);
+
+                const parsed = raw.map(arr => ({
+                    time: Math.floor(new Date(arr[0]).getTime() / 1000),
+                    open: parseFloat(arr[1]),
+                    high: parseFloat(arr[2]),
+                    low:  parseFloat(arr[3]),
+                    close:parseFloat(arr[4])
+                }));
+
+                const displayData = aggregateCandleData(parsed, currentTimeframe);
+                comparisonData = displayData;
+                if (comparisonSeries) comparisonSeries.setData(displayData);
+
+                console.log(`✅ CSV data loaded for ${instrument.name}: ${displayData.length} candles`);
+            } catch (e) {
+                console.error(`Error loading CSV for ${instrument.name}:`, e);
             }
         }
 
