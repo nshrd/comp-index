@@ -467,7 +467,8 @@
             const searchInput= document.getElementById('search-input');
             const suggBox   = document.getElementById('search-suggestions');
 
-            searchBtn.addEventListener('click', ()=>{
+            searchBtn.addEventListener('click', (e)=>{
+                e.stopImmediatePropagation(); // не передавать в общий обработчик instrument-btn
                 searchBtn.style.display='none';
                 searchInput.style.display='inline-block';
                 searchInput.focus();
@@ -490,17 +491,22 @@
                 }
             });
 
+            function prettifySymbol(s){
+                return s.endsWith('USDT') ? s.slice(0,-4) : s;
+            }
+
             function selectSymbol(sym){
                 suggBox.style.display='none';
                 searchInput.value='';
                 searchInput.style.display='none';
-                searchBtn.textContent=sym;
+                const pretty = prettifySymbol(sym);
+                searchBtn.textContent=pretty;
                 searchBtn.dataset.instrument='custom';
                 searchBtn.style.display='inline-block';
 
                 // регистрируем инструмент динамически
                 CONFIG.INSTRUMENTS.custom={
-                    name:sym,
+                    name:pretty,
                     dataSource:'api',
                     apiSymbol:sym,
                     color:'#F7931A',
