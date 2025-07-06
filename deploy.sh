@@ -157,10 +157,9 @@ BACKUP_DIR="/opt/backups/$PROJECT_NAME"
 clone_repository() {
     print_header "Клонирование репозитория"
     
-    # Определяем целевую директорию
-    DEFAULT_DIR="$(pwd)"
-    read -r -p "Введите путь для установки (по умолчанию: $DEFAULT_DIR): " USER_INSTALL_DIR
-    INSTALL_DIR="${USER_INSTALL_DIR:-$DEFAULT_DIR}"
+    # Если переменная INSTALL_DIR не задана, используем директорию самого скрипта
+    INSTALL_DIR="${INSTALL_DIR:-$SCRIPT_DIR}"
+    print_status "Директория установки: $INSTALL_DIR"
     
     if [ -d "$INSTALL_DIR" ]; then
         print_status "Обновление существующего репозитория в $INSTALL_DIR..."
