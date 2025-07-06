@@ -309,6 +309,12 @@
             height: 100vh;
             z-index: 999;
         }
+
+        /* отключённые таймфрейм кнопки */
+        .toolbar-btn.disabled {
+            opacity: 0.35;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
@@ -418,22 +424,24 @@
             document.getElementById('reset-btn').addEventListener('click', resetChart);
             document.getElementById('fullscreen-btn').addEventListener('click', toggleFullscreen);
 
-            // Обработчики кнопок таймфреймов
+            // Кнопки таймфреймов (имеют data-timeframe)
             document.querySelectorAll('.toolbar-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const timeframe = this.dataset.timeframe;
-                    currentTimeframe = timeframe;
+                const tf = btn.dataset.timeframe;
+                if (!tf) return; // пропускаем кнопки без таймфрейма (например instrument)
+                btn.addEventListener('click', () => {
+                    currentTimeframe = tf;
                     updateTimeframeButtons();
                     loadData();
                 });
             });
 
-            // Инструмент-кнопки
+            // Кнопки инструментов
             document.querySelectorAll('.instrument-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    currentComparison = this.dataset.instrument;
+                btn.addEventListener('click', () => {
+                    currentComparison = btn.dataset.instrument;
                     updateInstrumentButtons();
                     updateComparisonInfo();
+                    updateTimeframeButtons();
                     loadData();
                 });
             });
@@ -678,6 +686,13 @@
 
             // Автомасштаб по времени (цена масштабируется автоматически)
             if (chart) chart.timeScale().fitContent();
+
+            // Устанавливаем видимый диапазон времени: не раньше начала Coinbase
+            if (coinbaseData.length && comparisonData.length && chart) {
+                const start = Math.max(coinbaseData[0].time, comparisonData[0].time);
+                const end = comparisonData[comparisonData.length - 1].time;
+                chart.timeScale().setVisibleRange({ from: start, to: end });
+            }
         }
 
         async function loadApiData(instrument) {
@@ -835,10 +850,30 @@
             });
         });
 
+        const TF_MAP = { '4h': '240', '1D': 'D', '3D': '3D', '1W': 'W' };
+
         function updateTimeframeButtons() {
+            const supported = CONFIG.INSTRUMENTS[currentComparison]?.supportedTimeframes || [];
+
             document.querySelectorAll('.toolbar-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.timeframe === currentTimeframe);
+                const tf = btn.dataset.timeframe;
+                if (!tf) return;
+                const code = TF_MAP[tf] || tf;
+                const isSupported = supported.includes(code);
+
+                btn.classList.toggle('disabled', !isSupported);
+                btn.classList.toggle('active', isSupported && tf === currentTimeframe);
             });
+
+            // если текущий timeframe не поддерживается – переключаемся на первый доступный
+            if (!supported.includes(TF_MAP[currentTimeframe] || currentTimeframe)) {
+                if (supported.length) {
+                    const fallback = supported[0];
+                    // обратное отображение
+                    const reverseMap = { '240': '4h', 'D': '1D', '3D': '3D', 'W': '1W' };
+                    currentTimeframe = reverseMap[fallback] || '1D';
+                }
+            }
         }
 
         function updateInstrumentButtons() {

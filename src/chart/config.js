@@ -91,7 +91,7 @@ const INSTRUMENTS = {
         filePattern: 'SP_SPX, {tf}.csv',
         color: '#FF6B35',
         priceScaleId: 'right',
-        seriesType: 'line',
+        seriesType: 'candlestick',
         supportedTimeframes: ['D', '3D', 'W']
     },
     vix: {
@@ -102,7 +102,7 @@ const INSTRUMENTS = {
         filePattern: 'TVC_VIX, {tf}.csv',
         color: '#6A4C93',
         priceScaleId: 'right',
-        seriesType: 'line',
+        seriesType: 'candlestick',
         supportedTimeframes: ['D', '3D', 'W']
     },
     dxy: {
@@ -113,7 +113,7 @@ const INSTRUMENTS = {
         filePattern: 'TVC_DXY, {tf}.csv',
         color: '#1B998B',
         priceScaleId: 'right',
-        seriesType: 'line',
+        seriesType: 'candlestick',
         supportedTimeframes: ['D', '3D', 'W']
     },
     btc: {
@@ -133,7 +133,7 @@ const INSTRUMENTS = {
         filePattern: 'CRYPTOCAP_TOTAL3ESBTC, {tf}.csv',
         color: '#F72585',
         priceScaleId: 'right',
-        seriesType: 'line',
+        seriesType: 'candlestick',
         supportedTimeframes: ['D', '3D', 'W']
     },
     withoutbtceth: {
@@ -143,7 +143,7 @@ const INSTRUMENTS = {
         filePattern: 'CRYPTOCAP_TOTAL3, {tf}.csv',
         color: '#4361EE',
         priceScaleId: 'right',
-        seriesType: 'line',
+        seriesType: 'candlestick',
         supportedTimeframes: ['D', '3D', 'W']
     }
 };
