@@ -344,8 +344,7 @@
             font-size:14px;
         }
         /* при активном вводе инпут заменяет кнопку */
-        :root{ --chart-top:112px; }
-        .chart-area{position:absolute;left:0;right:0;bottom:0;top:var(--chart-top);} 
+        .chart-area{flex:1 1 auto;position:relative;}
         .fullscreen-mode .chart-area{top:0;}
 
         html,body{height:100%;margin:0;}
@@ -442,7 +441,7 @@
         const DATA_CACHE = {};   // cache raw daily/weekly arrays per instrument+tfFile
 
         // фиксированное расстояние между свечами для каждого таймфрейма
-        const BAR_SPACING = { '4h': 2, '1D': 3, '3D': 5, '1W': 7 };
+        const BAR_SPACING = { '4h': 2, '1D': 3, '3D': 5, '1W': 5 };
 
         function applySpacing() {
             if (!chart) return;
@@ -620,7 +619,7 @@
                 rightPriceScale: {
                     borderColor: '#2A2E39',
                     scaleMargins: {
-                        top: 0.05,
+                        top: 0.15,
                         bottom: 0.05,
                     },
                 },
@@ -974,11 +973,6 @@
         // Обработчик изменения полноэкранного режима
         document.addEventListener('fullscreenchange', () => {
             document.body.classList.toggle('fullscreen-mode', !!document.fullscreenElement);
-            if(document.fullscreenElement){
-                document.documentElement.style.setProperty('--chart-top','0px');
-            }else{
-                calculateHeaderHeight();
-            }
         });
 
         const TF_MAP = { '4h': '240', '1D': 'D', '3D': '3D', '1W': 'W' };
@@ -1057,7 +1051,6 @@
             const toolbar=document.querySelector('.toolbar');
             const controls=document.querySelector('.controls');
             const top=(toolbar?.offsetHeight||0)+(controls?.offsetHeight||0);
-            document.documentElement.style.setProperty('--chart-top', top+'px');
             if(chart){ const cont=document.getElementById('chart-container'); chart.resize(cont.clientWidth, cont.clientHeight); chart.timeScale().fitContent(); applySpacing(); }
         }
 
