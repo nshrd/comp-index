@@ -682,15 +682,21 @@
             const startTime = Math.floor(Date.now() / 1000) - 7 * 24 * 60 * 60; // 7 дней назад
             
             for (let i = 0; i < 168; i++) { // 168 часов = 7 дней
+                const base = Math.random() * 100 + 50;
+                const open = base;
+                const high = base + Math.random() * 5;
+                const low = base - Math.random() * 5;
+                const close = base + (Math.random() - 0.5) * 10;
                 testData.push({
                     time: startTime + i * 3600,
-                    value: Math.random() * 100 + 50
+                    open, high, low, close
                 });
             }
 
-            comparisonData = testData;
+            const displayData = aggregateCandleData(testData, currentTimeframe);
+            comparisonData = displayData;
             if (comparisonSeries) {
-                comparisonSeries.setData(testData);
+                comparisonSeries.setData(displayData);
             }
         }
 
