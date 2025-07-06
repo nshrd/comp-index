@@ -347,9 +347,17 @@
         :root{ --chart-top:112px; }
         .chart-area{position:absolute;left:0;right:0;bottom:0;top:var(--chart-top);} 
         .fullscreen-mode .chart-area{top:0;}
+
+        html,body{height:100%;margin:0;}
+        .wrapper{display:flex;flex-direction:column;height:100%;}
+        .chart-area{flex:1 1 auto;position:relative;}
+        #chart-container{position:absolute;inset:0;}
+        .fullscreen-mode .wrapper{height:100vh;}
     </style>
 </head>
 <body>
+    <div class="wrapper">
+    <div class="app">
     <div class="container">
         <!-- Верхняя панель -->
         <div class="top-panel">
@@ -1042,6 +1050,25 @@
             document.documentElement.style.setProperty('--chart-top', top+'px');
             if(chart){ const cont=document.getElementById('chart-container'); chart.resize(cont.clientWidth, cont.clientHeight); chart.timeScale().fitContent(); applySpacing(); }
         }
+
+        // Simple ResizeObserver for chart-container
+        document.addEventListener('DOMContentLoaded', ()=>{
+            const area=document.querySelector('.chart-area');
+            if(window.ResizeObserver&&area){
+                const ro=new ResizeObserver(()=>{
+                    const c=document.getElementById('chart-container');
+                    if(chart&&c) chart.resize(c.clientWidth,c.clientHeight);
+                });
+                ro.observe(area);
+            }
+        });
+        document.addEventListener('fullscreenchange',()=>{
+            document.body.classList.toggle('fullscreen-mode',!!document.fullscreenElement);
+            const c=document.getElementById('chart-container');
+            if(chart&&c) chart.resize(c.clientWidth,c.clientHeight);
+        });
     </script>
+    </div>
+    </div>
 </body>
 </html> 
