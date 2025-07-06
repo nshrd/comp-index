@@ -776,13 +776,16 @@
                 });
 
                 let displayData = [];
+                const isDailyFile = tfFile === '1D';
+                const needsAggregation = (currentTimeframe === '3D') || (currentTimeframe === '1W' && isDailyFile);
+
                 if (instrument.seriesType === 'line') {
                     const lineData = parsed.map(p => ({ time: p.time, value: p.close }));
-                    displayData = aggregateData(lineData, currentTimeframe);
+                    displayData = needsAggregation ? aggregateData(lineData, currentTimeframe) : lineData;
                     if (comparisonSeries) comparisonSeries.setData(displayData);
                     console.log(`✅ CSV data loaded for ${instrument.name}: ${displayData.length} points`);
                 } else {
-                    displayData = aggregateCandleData(parsed, currentTimeframe);
+                    displayData = needsAggregation ? aggregateCandleData(parsed, currentTimeframe) : parsed;
                     if (comparisonSeries) comparisonSeries.setData(displayData);
                     console.log(`✅ CSV data loaded for ${instrument.name}: ${displayData.length} candles`);
                 }
