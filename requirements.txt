@@ -11,6 +11,7 @@ numpy>=1.24.0              # Математические операции
 
 # HTTP и API
 requests>=2.31.0           # Для API запросов (Coinglass)
+Flask-Compress>=1.14       # Сжатие API ответов для экономии трафика
 
 # Configuration
 python-dotenv>=1.0.0       # Переменные окружения

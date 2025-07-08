@@ -7,6 +7,7 @@
     <script src="https://unpkg.com/lightweight-charts@3.8.0/dist/lightweight-charts.standalone.production.js"></script>
     <script src="config.js"></script>
     <script src="optimized_utils.js"></script>
+    <script src="trusted_script_fix.js"></script>
     <style>
         /* ========= ОСНОВНЫЕ СТИЛИ ========= */
         * {
@@ -454,6 +455,11 @@
         document.addEventListener('DOMContentLoaded', function() {
             console.log('✅ TradingView Lightweight Charts loaded successfully');
             
+            // Инициализация Trusted Types для безопасности
+            if (window.TrustedScriptUtils) {
+                window.TrustedScriptUtils.initializeTrustedTypes();
+            }
+            
             // Инициализация элементов управления
             initializeControls();
             
@@ -480,6 +486,9 @@
 
             // === динамический поиск инструмента ===
             let supportedSymbols = [];
+            // Делаем supportedSymbols доступным глобально для безопасных функций
+            window.supportedSymbols = supportedSymbols;
+            
             fetch('/api/crypto/symbols')
                 .then(r=>r.json())
                 .then(resp=>{
@@ -488,8 +497,11 @@
                     else if(Array.isArray(resp?.data)) supportedSymbols=resp.data;
                     else if(resp && typeof resp==='object') supportedSymbols=Object.keys(resp);
                     else supportedSymbols=[];
+                    
+                    // Обновляем глобальную ссылку
+                    window.supportedSymbols = supportedSymbols;
                 })
-                .catch(()=>{supportedSymbols=[];});
+                .catch(()=>{supportedSymbols=[]; window.supportedSymbols = [];});
 
             const searchBtn  = document.getElementById('search-btn');
             const searchInput= document.getElementById('search-input');
@@ -504,7 +516,8 @@
 
             searchInput.addEventListener('input', ()=>{
                 const q = searchInput.value.trim().toUpperCase();
-                suggBox.innerHTML='';
+                // Безопасная очистка вместо innerHTML=''
+                window.TrustedScriptUtils.safeClearElement(suggBox);
                 if(!q){suggBox.style.display='none';return;}
                 const matches = Array.isArray(supportedSymbols)
                     ? supportedSymbols.filter(s=>s.startsWith(q)).slice(0,20)
@@ -512,10 +525,13 @@
                 suggBox.style.display='block';
                 if(matches.length){
                     matches.forEach(sym=>{
-                        const li=document.createElement('li');li.textContent=sym;li.onclick=()=>selectSymbol(sym);suggBox.appendChild(li);
+                        const li = window.TrustedScriptUtils.safeCreateElement('li', sym);
+                        window.TrustedScriptUtils.safeAddEventListener(li, 'click', ()=>selectSymbol(sym));
+                        suggBox.appendChild(li);
                     });
                 }else{
-                    const li=document.createElement('li');li.textContent='Тикер не найден';li.className='no-match';suggBox.appendChild(li);
+                    const li = window.TrustedScriptUtils.safeCreateElement('li', 'Тикер не найден', 'no-match');
+                    suggBox.appendChild(li);
                 }
             });
 

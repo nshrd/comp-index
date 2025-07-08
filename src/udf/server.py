@@ -11,6 +11,7 @@ from datetime import datetime
 from pathlib import Path
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
+from flask_compress import Compress
 import sys
 
 # Добавляем путь к src модулям
@@ -26,6 +27,9 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 CORS(app, origins=['*'])
+
+# Включаем автоматическое сжатие всех ответов для экономии трафика
+Compress(app)
 
 # Глобальные переменные
 cbma_provider = None
