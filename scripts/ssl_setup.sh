@@ -26,6 +26,11 @@ sudo mkdir -p $SSL_CERT_PATH
 sudo mkdir -p $SSL_KEY_PATH
 sudo mkdir -p $WEBROOT_PATH
 
+# Удаление проблемных директорий, если они существуют
+echo "🧹 Очистка проблемных директорий..."
+sudo rm -rf $SSL_CERT_PATH/charts.expert.crt/
+sudo rm -rf $SSL_KEY_PATH/charts.expert.key/
+
 # Временно создаем самоподписанный сертификат для nginx
 echo "📜 Создание временного самоподписанного сертификата..."
 if [ ! -f "$SSL_CERT_PATH/charts.expert.crt" ]; then
