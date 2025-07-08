@@ -5,7 +5,7 @@
 
 set -e
 
-SCRIPT_DIR="$(dirname $(realpath $0))"
+SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 RENEWAL_SCRIPT="$SCRIPT_DIR/ssl_renew.sh"
 CRON_LOG="/var/log/letsencrypt-cron.log"
 

@@ -7,7 +7,7 @@ set -e
 
 DOMAIN="charts.expert"
 EMAIL="admin@charts.expert"  # Замените на ваш email
-NGINX_CONF_PATH="./nginx/nginx.conf"
+# NGINX_CONF_PATH="./nginx/nginx.conf"  # Не используется
 SSL_CERT_PATH="/etc/ssl/certs"
 SSL_KEY_PATH="/etc/ssl/private"
 WEBROOT_PATH="/tmp/letsencrypt-webroot"

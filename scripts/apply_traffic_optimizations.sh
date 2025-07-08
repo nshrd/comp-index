@@ -143,6 +143,7 @@ fi
 echo ""
 echo "2. Тестирование rate limiting (делаем 15 быстрых запросов):"
 RATE_LIMITED=0
+# shellcheck disable=SC2034
 for i in {1..15}; do
     RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost/api/status)
     if [ "$RESPONSE" = "429" ]; then

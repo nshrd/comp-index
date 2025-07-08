@@ -9,7 +9,7 @@ DOMAIN="charts.expert"
 SSL_CERT_PATH="/etc/ssl/certs"
 SSL_KEY_PATH="/etc/ssl/private"
 WEBROOT_PATH="/tmp/letsencrypt-webroot"
-COMPOSE_FILE="$(dirname $(realpath $0))/../docker-compose.yml"
+COMPOSE_FILE="$(dirname "$(realpath "$0")")/../docker-compose.yml"
 LOG_FILE="/var/log/letsencrypt-renewal.log"
 
 # Логирование
@@ -38,7 +38,7 @@ mkdir -p $WEBROOT_PATH
 
 # Временная остановка nginx
 log "🛑 Остановка nginx для обновления сертификата..."
-cd $(dirname $COMPOSE_FILE)
+cd "$(dirname "$COMPOSE_FILE")"
 docker-compose stop nginx
 
 # Запуск временного nginx для challenge
