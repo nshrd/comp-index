@@ -24,7 +24,7 @@ services:
         echo 'Initial build complete. Starting scheduler...'
         while true; do
           sleep 3600
-          echo 'Updating index at '$(date)'...'
+          echo 'Updating index at '$$(date)'...'
           python builder/build_index.py
           echo 'Index update complete.'
         done
