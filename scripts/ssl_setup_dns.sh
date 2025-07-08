@@ -31,10 +31,10 @@ sudo rm -rf $SSL_KEY_PATH/charts.expert.key/
 echo "🌐 Запуск DNS-01 challenge..."
 echo "⚠️  ВНИМАНИЕ: Вам нужно будет добавить TXT записи в DNS!"
 
-# Запуск certbot в ручном режиме DNS
+# Запуск certbot в ручном режиме DNS (используем более новую версию)
 sudo docker run --rm -it \
   -v /etc/letsencrypt:/etc/letsencrypt \
-  certbot/certbot:latest \
+  certbot/certbot:v2.11.0 \
   certonly \
   --manual \
   --preferred-challenges dns \
