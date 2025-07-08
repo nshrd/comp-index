@@ -11,6 +11,7 @@ import time
 
 class SymbolType(Enum):
     """Типы символов согласно TradingView"""
+
     STOCK = "stock"
     INDEX = "index"
     CRYPTO = "crypto"
@@ -21,6 +22,7 @@ class SymbolType(Enum):
 
 class PriceScaleMode(Enum):
     """Режимы масштабирования цен"""
+
     NORMAL = 0
     LOGARITHMIC = 1
     PERCENTAGE = 2
@@ -89,7 +91,7 @@ class TradingViewSymbolInfo:
             "currency_code": self.currency_code,
             "exchange": self.exchange,
             "listed_exchange": self.listed_exchange,
-            "full_name": self.full_name
+            "full_name": self.full_name,
         }
 
 
@@ -116,7 +118,7 @@ class TradingViewConfig:
             self.exchanges = [
                 {"value": "", "name": "All Exchanges", "desc": ""},
                 {"value": "Binance", "name": "Binance", "desc": "Binance Exchange"},
-                {"value": "Coinbase", "name": "Coinbase", "desc": "Coinbase Exchange"}
+                {"value": "Coinbase", "name": "Coinbase", "desc": "Coinbase Exchange"},
             ]
 
         if self.symbols_types is None:
@@ -125,7 +127,7 @@ class TradingViewConfig:
                 {"name": "Stock", "value": "stock"},
                 {"name": "Index", "value": "index"},
                 {"name": "Crypto", "value": "crypto"},
-                {"name": "Forex", "value": "forex"}
+                {"name": "Forex", "value": "forex"},
             ]
 
     def to_dict(self) -> Dict[str, Any]:
@@ -139,7 +141,7 @@ class TradingViewConfig:
             "supports_streaming": self.supports_streaming,
             "supported_resolutions": self.supported_resolutions,
             "exchanges": self.exchanges,
-            "symbols_types": self.symbols_types
+            "symbols_types": self.symbols_types,
         }
 
 
@@ -166,13 +168,13 @@ class TradingViewFormatter:
             volume_precision=0,
             exchange="",
             listed_exchange="",
-            full_name="Coinbase Moving Average Index"
+            full_name="Coinbase Moving Average Index",
         )
 
     @staticmethod
     def create_crypto_symbol(
-            symbol: str,
-            base_asset: str = None) -> TradingViewSymbolInfo:
+        symbol: str, base_asset: str = None
+    ) -> TradingViewSymbolInfo:
         """Создать стандартную информацию о криптовалютном символе"""
         if not base_asset:
             base_asset = symbol.replace("USDT", "").replace("USD", "")
@@ -195,13 +197,13 @@ class TradingViewFormatter:
             exchange="Binance",
             listed_exchange="Binance",
             full_name=f"{base_asset} / USD",
-            currency_code="USD"
+            currency_code="USD",
         )
 
     @staticmethod
     def create_stock_symbol(
-            symbol: str,
-            company_name: str = None) -> TradingViewSymbolInfo:
+        symbol: str, company_name: str = None
+    ) -> TradingViewSymbolInfo:
         """Создать стандартную информацию о фондовом символе"""
         if not company_name:
             company_name = symbol
@@ -224,42 +226,51 @@ class TradingViewFormatter:
             exchange="NYSE",
             listed_exchange="NYSE",
             full_name=company_name,
-            currency_code="USD"
+            currency_code="USD",
         )
 
     @staticmethod
     def format_history_response(
-        data: List[Dict[str, Any]],
-        status: str = "ok",
-        next_time: Optional[int] = None
+        data: List[Dict[str, Any]], status: str = "ok", next_time: Optional[int] = None
     ) -> Dict[str, Any]:
         """Форматировать ответ history согласно UDF спецификации"""
         if status != "ok" or not data:
             return {
                 "s": status,
-                "errmsg": "No data available" if status == "no_data" else None
+                "errmsg": "No data available" if status == "no_data" else None,
             }
 
         # Сортируем данные по времени
-        sorted_data = sorted(data, key=lambda x: x.get('time', 0))
+        sorted_data = sorted(data, key=lambda x: x.get("time", 0))
 
         response = {
             "s": "ok",
-            "t": [item['time'] for item in sorted_data],
-            "c": [item.get('close', item.get('value', 0)) for item in sorted_data]
+            "t": [item["time"] for item in sorted_data],
+            "c": [item.get("close", item.get("value", 0)) for item in sorted_data],
         }
 
         # Добавляем OHLC данные если доступны
-        if any('open' in item for item in sorted_data):
-            response.update({
-                "o": [item.get('open', item.get('close', item.get('value', 0))) for item in sorted_data],
-                "h": [item.get('high', item.get('close', item.get('value', 0))) for item in sorted_data],
-                "l": [item.get('low', item.get('close', item.get('value', 0))) for item in sorted_data]
-            })
+        if any("open" in item for item in sorted_data):
+            response.update(
+                {
+                    "o": [
+                        item.get("open", item.get("close", item.get("value", 0)))
+                        for item in sorted_data
+                    ],
+                    "h": [
+                        item.get("high", item.get("close", item.get("value", 0)))
+                        for item in sorted_data
+                    ],
+                    "l": [
+                        item.get("low", item.get("close", item.get("value", 0)))
+                        for item in sorted_data
+                    ],
+                }
+            )
 
         # Добавляем объем если доступен
-        if any('volume' in item for item in sorted_data):
-            response["v"] = [item.get('volume', 0) for item in sorted_data]
+        if any("volume" in item for item in sorted_data):
+            response["v"] = [item.get("volume", 0) for item in sorted_data]
 
         # Добавляем next_time если есть еще данные
         if next_time:
@@ -269,9 +280,7 @@ class TradingViewFormatter:
 
     @staticmethod
     def format_search_response(
-        query: str,
-        symbols: List[TradingViewSymbolInfo],
-        limit: int = 30
+        query: str, symbols: List[TradingViewSymbolInfo], limit: int = 30
     ) -> List[Dict[str, Any]]:
         """Форматировать ответ search согласно UDF спецификации"""
         results = []
@@ -279,18 +288,21 @@ class TradingViewFormatter:
 
         for symbol in symbols:
             # Проверяем соответствие запросу
-            if (query_upper in symbol.name.upper() or
-                query_upper in symbol.description.upper() or
-                    query_upper in symbol.ticker.upper()):
-
-                results.append({
-                    "symbol": symbol.ticker,
-                    "full_name": symbol.full_name,
-                    "description": symbol.description,
-                    "exchange": symbol.exchange,
-                    "ticker": symbol.ticker,
-                    "type": symbol.type
-                })
+            if (
+                query_upper in symbol.name.upper()
+                or query_upper in symbol.description.upper()
+                or query_upper in symbol.ticker.upper()
+            ):
+                results.append(
+                    {
+                        "symbol": symbol.ticker,
+                        "full_name": symbol.full_name,
+                        "description": symbol.description,
+                        "exchange": symbol.exchange,
+                        "ticker": symbol.ticker,
+                        "type": symbol.type,
+                    }
+                )
 
                 if len(results) >= limit:
                     break
@@ -299,7 +311,7 @@ class TradingViewFormatter:
 
     @staticmethod
     def format_symbol_info_response(
-        symbols: List[TradingViewSymbolInfo]
+        symbols: List[TradingViewSymbolInfo],
     ) -> Dict[str, List[Any]]:
         """Форматировать ответ symbol_info согласно UDF спецификации"""
         if not symbols:
@@ -319,7 +331,7 @@ class TradingViewFormatter:
             "type": [s.type for s in symbols],
             "timezone": [s.timezone for s in symbols],
             "session-regular": [s.session for s in symbols],
-            "supported_resolutions": [s.supported_resolutions for s in symbols]
+            "supported_resolutions": [s.supported_resolutions for s in symbols],
         }
 
     @staticmethod
@@ -349,7 +361,7 @@ class TradingViewFormatter:
             "W": "1W",
             "1W": "1W",
             "M": "1M",
-            "1M": "1M"
+            "1M": "1M",
         }
         return resolution_map.get(resolution, resolution)
 

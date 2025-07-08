@@ -45,13 +45,14 @@ class CBMAProvider:
                 "has_intraday": False,
                 "has_daily": True,
                 "has_weekly_and_monthly": False,
-                "currency_code": "USD"
+                "currency_code": "USD",
             }
 
         return self._symbol_info
 
-    def get_history(self, symbol: str, from_timestamp: int,
-                    to_timestamp: int, ma_period: int = 14) -> Dict[str, Any]:
+    def get_history(
+        self, symbol: str, from_timestamp: int, to_timestamp: int, ma_period: int = 14
+    ) -> Dict[str, Any]:
         """
         Получить историю котировок CBMA
 
@@ -69,14 +70,17 @@ class CBMAProvider:
 
         try:
             logger.info(
-                f"Getting CBMA history: from={from_timestamp}, to={to_timestamp}, ma_period={ma_period}")
+                f"Getting CBMA history: from={from_timestamp}, to={to_timestamp}, ma_period={ma_period}"
+            )
 
             # ВСЕГДА используем калькулятор для динамического расчета MA с нужным
             # периодом
             logger.info(
-                f"Calculating CBMA data dynamically with MA period {ma_period}...")
+                f"Calculating CBMA data dynamically with MA period {ma_period}..."
+            )
             history_data = self.calculator.get_cbma_history(
-                from_timestamp, to_timestamp, ma_period)
+                from_timestamp, to_timestamp, ma_period
+            )
 
             if not history_data:
                 logger.warning("No CBMA history data returned from calculator")
@@ -91,10 +95,13 @@ class CBMAProvider:
             # Сначала собираем все исходные значения
             for i, item in enumerate(history_data):
                 try:
-                    if isinstance(
-                            item, dict) and 'timestamp' in item and 'cbma' in item:
-                        times.append(int(item['timestamp']))
-                        raw_values.append(float(item['cbma']))
+                    if (
+                        isinstance(item, dict)
+                        and "timestamp" in item
+                        and "cbma" in item
+                    ):
+                        times.append(int(item["timestamp"]))
+                        raw_values.append(float(item["cbma"]))
                     else:
                         logger.warning(f"Invalid CBMA data item at index {i}: {item}")
                 except (KeyError, TypeError, ValueError) as e:
@@ -116,8 +123,9 @@ class CBMAProvider:
                     smoothed_values.append(raw_values[i])
                 else:
                     # Средние точки - среднее из 3 точек
-                    smoothed = (raw_values[i - 1] +
-                                raw_values[i] + raw_values[i + 1]) / 3
+                    smoothed = (
+                        raw_values[i - 1] + raw_values[i] + raw_values[i + 1]
+                    ) / 3
                     smoothed_values.append(smoothed)
 
             logger.info(f"Applied smoothing to {len(smoothed_values)} CBMA values")
@@ -130,16 +138,18 @@ class CBMAProvider:
                 "o": smoothed_values,  # open = close
                 "h": smoothed_values,  # high = close
                 "l": smoothed_values,  # low = close
-                "v": [0] * len(smoothed_values)  # volume = 0
+                "v": [0] * len(smoothed_values),  # volume = 0
             }
 
             logger.info(
-                f"Returned {len(times)} valid CBMA data points for period {from_timestamp}-{to_timestamp}")
+                f"Returned {len(times)} valid CBMA data points for period {from_timestamp}-{to_timestamp}"
+            )
             return result
 
         except Exception as e:
             logger.error(f"Error getting CBMA history: {e}")
             import traceback
+
             logger.error(f"Traceback: {traceback.format_exc()}")
             return {"s": "error", "errmsg": str(e)}
 
@@ -148,16 +158,22 @@ class CBMAProvider:
         query = query.upper()
         results = []
 
-        if "CBMA".startswith(
-                query) or query in "CBMA" or "MA" in query or "COINBASE" in query:
-            results.append({
-                "symbol": "CBMA",
-                "full_name": "CBMA",
-                "description": "Coinbase Moving Average Index (Dynamic MA period)",
-                "exchange": "",
-                "ticker": "CBMA",
-                "type": "index"
-            })
+        if (
+            "CBMA".startswith(query)
+            or query in "CBMA"
+            or "MA" in query
+            or "COINBASE" in query
+        ):
+            results.append(
+                {
+                    "symbol": "CBMA",
+                    "full_name": "CBMA",
+                    "description": "Coinbase Moving Average Index (Dynamic MA period)",
+                    "exchange": "",
+                    "ticker": "CBMA",
+                    "type": "index",
+                }
+            )
 
         return results[:limit]
 
@@ -165,7 +181,7 @@ class CBMAProvider:
         """Получить последнее значение CBMA"""
         try:
             latest = self.calculator.get_latest_cbma()
-            return latest['cbma'] if latest else None
+            return latest["cbma"] if latest else None
         except Exception as e:
             logger.error(f"Error getting latest CBMA value: {e}")
             return None
